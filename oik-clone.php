@@ -3,12 +3,12 @@
 Plugin Name: oik clone
 Plugin URI: http://www.oik-plugins.com/oik-plugins/oik-clone
 Description: clone your WordPress content 
-Version: 0.1
+Version: 0.2
 Author: bobbingwide
 Author URI: http://www.oik-plugins.com/author/bobbingwide
 License: GPL2
 
-    Copyright 2014 Bobbing Wide (email : herb@bobbingwide.com )
+    Copyright 2014, 2015 Bobbing Wide (email : herb@bobbingwide.com )
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 2,
@@ -31,8 +31,8 @@ License: GPL2
  * 
  */
 function oik_clone_loaded() {
-  //add_action( "wp_ajax_oik_clone", "oik_clone_oik_clone" );
-  //add_action( "wp_ajax_nopriv_oik_clone", "oik_clone_nopriv_oik_clone" );
+  add_action( "wp_ajax_oik_clone", "oik_clone_nopriv_oik_clone_post" );
+  add_action( "wp_ajax_nopriv_oik_clone_post", "oik_clone_nopriv_oik_clone_post" );
   add_action( "oik_admin_menu", "oik_clone_oik_admin_menu" );
   add_filter( 'set-screen-option', "oik_clone_set_screen_option", 10, 3 );
 }  
@@ -44,9 +44,15 @@ function oik_clone_loaded() {
  * which is invoked after load-$hook. See wp-admin/admin.php 
  */
 function oik_clone_oik_admin_menu() {
+  register_setting( 'oik_clone', 'bw_clone_servers', 'oik_plugins_validate' ); // No validation for oik-clone
   $hook = add_submenu_page( 'oik_menu', 'oik clone', "Clone", 'manage_options', 'oik_clone', "oik_clone_admin_page" );
   add_action( "load-$hook", "oik_clone_add_options" );
   add_action( "admin_head-$hook", "oik_clone_admin_head" );
+  
+  if ( !defined('DOING_AJAX') ) {
+    add_action( "save_post", "oik_clone_save_post", 10, 3 );
+    add_action( 'add_meta_boxes', 'oik_clone_add_meta_boxes', 10, 2 );
+  }  
 }
 
 /**
@@ -109,6 +115,11 @@ function oik_clone_admin_head() {
       oik_require( "admin/oik-clone-ms.php", "oik-clone" );
       oik_clone_ms_lazy_nav_tabs_oik_clone( $tab );
       break;
+      
+    case "servers":
+      oik_require( "admin/oik-clone-servers.php", "oik-clone" );
+      oik_clone_lazy_nav_tabs_servers();
+      break;
         
     case "self":
     case null:
@@ -130,6 +141,61 @@ function oik_clone_admin_page() {
   //bw_backtrace();
   oik_require( "admin/oik-clone.php", "oik-clone" );
   oik_clone_lazy_admin_page();
+}
+
+/**
+ * Implement cloning when a post is saved 
+ *
+ * We invoke the logic as a lazy function.
+ *
+ * @param ID $id - the ID of the post being updated
+ * @param post $post - the post object
+ * @param bool $update - true more often than not
+ */
+function oik_clone_save_post( $id, $post, $update ) {
+  oik_require( "admin/oik-save-post.php", "oik-clone" );
+  oik_clone_lazy_save_post( $id, $post, $update );
+}
+
+/**
+ * Implement "add_meta_boxes" for oik-clone
+ *
+ * Only add the box for post_type's that support publicize.
+ * 
+ * Note: We can add_post_type_support( $post_type, "publicize" ) 
+ * using the oik-types plugin, or the logic can be in the theme/plugin
+ * 
+ * @param string $post_type - the post type for which the meta boxes are being created
+ * @param object $post - the post object / comment / link
+ */
+function oik_clone_add_meta_boxes( $post_type, $post) {
+  $publicize = post_type_supports( $post_type, "publicize" );
+  if ( $publicize ) {
+    oik_require( "admin/oik-clone-meta-box.php", "oik-clone" );
+    add_meta_box( 'oik_clone', __( "Clone on update", "oik"), 'oik_clone_box', null, 'side', 'default'  );
+  }  
+}
+
+/**
+ * Implement AJAX oik_clone_post for oik-clone
+ *
+ * We use the same routine regardless of logged in status
+ * But we always validate the API key
+ *
+ */
+function oik_clone_nopriv_oik_clone_post() {
+  oik_require( "admin/oik-clone-json.php", "oik-clone" );
+  $target_id = 0;
+  add_filter( 'oik_validate_apikey', 'oik_clone_oik_validate_apikey', 10, 2 );
+  $continue = oik_clone_validate_apikey();
+  if ( $continue ) {
+    oik_require( "admin/oik-clone-clone.php", "oik-clone" );
+    $target_id = oik_clone_lazy_clone_post();
+  }   
+  oik_clone_reply_with_json( $target_id );
+  bw_backtrace();
+  bw_flush();
+  exit();
 }
   
 oik_clone_loaded();

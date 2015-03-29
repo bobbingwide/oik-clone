@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2014
+<?php // (C) Copyright Bobbing Wide 2014, 2015
 
 /**
  * Compare posts in a table
@@ -11,7 +11,7 @@ class OIK_Clone_Compare_List_Table {
   public $target;
   
   function __construct( $args ) {
-    parent::__construct();
+    //parent::__construct();
    //$this->o();
     
     $this->source = $args["source"];

@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2014
+<?php // (C) Copyright Bobbing Wide 2014, 2015
 
 /**
  * Match a post based on the post ID
@@ -63,7 +63,8 @@ function oik_clone_match_post_by_title( $matched, $data ) {
   $args = array( "post_type" => $data->post_type
                , "numberposts" => -1
                );
-  oik_clone_match_add_filter_field( "AND post_title = '" . $data->post_title . "'" );            
+  $post_title = esc_sql( $data->post_title );
+  oik_clone_match_add_filter_field( "AND post_title = '" . $post_title . "'" );            
   $posts = bw_get_posts( $args );
   if ( $posts ) {
     $matched = oik_clone_add_to_matched( $matched, $posts, $data->ID, "title" );
@@ -160,6 +161,7 @@ function oik_clone_match_filter_where( $where = '' ) {
  * 
  */
 function oik_clone_match_post_by_GUID( $matched, $data ) {
+  oik_require( "includes/bw_posts.inc" );
   //p( "Matching {$data->ID} by GUID" );
   $args = array( "numberposts" => -1 
                , "post_type" => "any" 

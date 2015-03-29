@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2014
+<?php // (C) Copyright Bobbing Wide 2014, 2015
 
 /**
  * Validate the action against the given parameters
@@ -151,8 +151,8 @@ function oik_clone_perform_update( $source, $target ) {
 /**
  * Update the target post with the contents from the (source) post
  *
- * Load the target post just to confirm that it's there.
- * Then we basically ignore it since just about everything else comes from the source $post
+ * Having loaded the target post to confirm that it's there,
+ * we basically ignore it since just about everything else comes from the source $post
  * BUT that's just daft since wp_update_post loads the post too!
  *
  * @param object $post - the complete source post, including post_meta
@@ -160,8 +160,10 @@ function oik_clone_perform_update( $source, $target ) {
  * 
  */
 function oik_clone_update_target( $post, $target ) {
+  bw_trace2();
   $target_post = get_object_vars( $post );
   unset( $target_post['guid'] );
+  unset( $target_post['post_meta'] );
   $target_post = wp_slash( $target_post );
   $target_post['ID'] = $target;
   $result = wp_update_post( $target_post, true );
@@ -197,6 +199,7 @@ function oik_clone_update_post_meta( $post, $target ) {
  */
 function oik_clone_delete_all_post_meta( $target ) {
   $post_meta = get_post_meta( $target );
+  unset( $post_meta['_oik_clone_ids'] );
   bw_trace2( $post_meta, "post_meta", true );
   foreach ( $post_meta as $key=> $meta ) {
     bw_trace2( $meta, $key, false );
@@ -214,7 +217,8 @@ function oik_clone_delete_all_post_meta( $target ) {
  * @param ID $target - the post ID of the target post
  */
 function oik_clone_insert_all_post_meta( $post, $target ) {
-  $post_meta = $post->post_meta;
+  $post_meta = (array) $post->post_meta;
+  unset( $post_meta['_oik_clone_ids'] );
   bw_trace2( $post_meta, "post_meta", true );
   foreach ( $post_meta as $key=> $meta ) {
     bw_trace2( $meta, $key, false );
@@ -224,10 +228,6 @@ function oik_clone_insert_all_post_meta( $post, $target ) {
     }  
   }
 } 
-
-
-
-
 
 /**
  * Load the source from the selected source 
@@ -293,7 +293,13 @@ function oik_clone_load_post( $post_id ) {
   oik_require( "includes/bw_posts.inc" );
   $post = get_post( $post_id );
   $post_meta = get_post_meta( $post_id );
-  //bw_trace2( $post_meta, "post_meta" );
+  bw_trace2( $post_meta, "post_meta" );
+  
+  // We need to unset some of the post_meta since it causes problems
+  // if we pass this from master to server
+  //$post_meta = apply_filters( "oik_clone_post_meta", $post_meta );
+  
+  
   $post->post_meta = $post_meta;
   bw_trace2( $post, "post" );
   return( $post );

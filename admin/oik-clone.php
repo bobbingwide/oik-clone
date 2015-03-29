@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2014
+<?php // (C) Copyright Bobbing Wide 2014, 2015
 
 /**
  * Implement "bw_nav_tabs_oik_clone" filter for oik-clone
@@ -9,6 +9,7 @@
  * @TODO - support 'section' -  like WooCommerce - So that the Authentication area for WP-API is simpler
  */
 function oik_clone_nav_tabs( $nav_tabs, $tab ) {
+  $nav_tabs['servers'] = "Servers";
   $nav_tabs['self'] = "Self";
   if ( is_multisite() ) {
     $nav_tabs['ms'] = "Multi-Site";
@@ -37,17 +38,14 @@ function oik_clone_lazy_admin_page() {
   if ( is_multisite() ) {
     add_action( "oik_clone_nav_tab_ms", "oik_clone_nav_tab_ms" );
   }
-  
   oik_menu_header( "Clone admin", "w100pc" );
   oik_require( "includes/bw-nav-tab.php" );  
-  $tab = bw_nav_tabs( "self", "Self" );
+  //$tab = bw_nav_tabs( "self", "Self" );
+  $tab = bw_nav_tabs( "servers", "Servers" );
   //e( "%$tab%" );
   //oik_clone_reset_request_uri(); 
   do_action( "oik_clone_nav_tab_$tab" );
-  
   bw_flush();
-  
-  
 }
 
 /**
