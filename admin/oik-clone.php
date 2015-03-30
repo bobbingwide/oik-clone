@@ -9,10 +9,10 @@
  * @TODO - support 'section' -  like WooCommerce - So that the Authentication area for WP-API is simpler
  */
 function oik_clone_nav_tabs( $nav_tabs, $tab ) {
-  $nav_tabs['servers'] = "Servers";
   $nav_tabs['self'] = "Self";
+  $nav_tabs['servers'] = "Settings";
   if ( is_multisite() ) {
-    $nav_tabs['ms'] = "Multi-Site";
+    $nav_tabs['ms'] = "MultiSite";
   }  
   //$nav_tabs['basic'] = "WP-API Basic";
   //$nav_tabs['oauth1'] = "WP-API OAuth1";
@@ -41,7 +41,7 @@ function oik_clone_lazy_admin_page() {
   oik_menu_header( "Clone admin", "w100pc" );
   oik_require( "includes/bw-nav-tab.php" );  
   //$tab = bw_nav_tabs( "self", "Self" );
-  $tab = bw_nav_tabs( "servers", "Servers" );
+  $tab = bw_nav_tabs( "servers", "Settings" );
   //e( "%$tab%" );
   //oik_clone_reset_request_uri(); 
   do_action( "oik_clone_nav_tab_$tab" );

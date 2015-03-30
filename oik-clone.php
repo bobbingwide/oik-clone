@@ -1,9 +1,9 @@
 <?php
 /*
-Plugin Name: oik clone
+Plugin Name: oik-clone
 Plugin URI: http://www.oik-plugins.com/oik-plugins/oik-clone
 Description: clone your WordPress content 
-Version: 0.2
+Version: 0.3
 Author: bobbingwide
 Author URI: http://www.oik-plugins.com/author/bobbingwide
 License: GPL2
@@ -116,15 +116,15 @@ function oik_clone_admin_head() {
       oik_clone_ms_lazy_nav_tabs_oik_clone( $tab );
       break;
       
-    case "servers":
-      oik_require( "admin/oik-clone-servers.php", "oik-clone" );
-      oik_clone_lazy_nav_tabs_servers();
-      break;
-        
     case "self":
-    case null:
       oik_require( "admin/oik-clone-self.php", "oik-clone" );
       oik_clone_lazy_nav_tabs_oik_clone( "self" );
+      break;
+        
+    case "servers":
+    case null:
+      oik_require( "admin/oik-clone-servers.php", "oik-clone" );
+      oik_clone_lazy_nav_tabs_servers();
       break;
         
     default:

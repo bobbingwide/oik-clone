@@ -40,9 +40,23 @@ function oik_clone_box( $post, $metabox ) {
     //print_r( $clones );
     //print_r( $slaves );
     oik_clone_display_cbs( $slaves, $clones );
+    oik_clone_check_parent_cloned( $post, $slaves );
   } else {
     p( "Cloning not supported for post types that do not support publicize" );
   }
+}
+
+/**
+ * Check if the parent post has been cloned 
+ */
+function oik_clone_check_parent_cloned( $post, $slaves ) {
+  if ( $post->post_parent ) {
+    $clones = get_post_meta( $post->post_parent, "_oik_clone_ids", false );
+    if ( !count( $clones ) ) {
+      echo "<p>Please clone the parent first</p>" ;
+    }
+  }    
+    
 }
                                                     
 /**

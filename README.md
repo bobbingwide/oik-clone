@@ -4,7 +4,7 @@
 * Tags: clone, compare, update, MultiSite
 * Requires at least: 4.1
 * Tested up to: 4.2-beta2
-* Stable tag: 0.2
+* Stable tag: 0.3
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 * Text Domain: oik-clone
@@ -58,7 +58,7 @@ It provides the same actions as the Multisite tab, but the source and target sit
 
 # How does the "Clone on update" work? 
 
-
+This'll be documented in the FAQs on the site
 
 
 
@@ -96,7 +96,7 @@ but in the mean time you have to download and activate oik to make this work.
 
 Yes. Work is needed in the following areas.
 
-- Taxonomies are not handled
+- Hierarchicacl taxonomies are not handled
 - Hierarchical content requires parent content to be cloned first
 - Search and replace is not performed against content
 - Search and replace is not performed against post_meta data which contains post IDs
@@ -112,6 +112,9 @@ Simple validation of an API key.
 1. oik-clone in action
 
 ## Upgrade Notice 
+# 0.3 
+Now has basic support for cloning non-hierarchical taxonomies
+
 # 0.2 
 Prototype for cloning content on Update
 
@@ -119,6 +122,16 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 ## Changelog 
+# 0.3 
+* Added: Simple message on hierarchical posts if the parent has not been cloned
+* Added: admin/oik-clone-taxonomies.php to implement logic to clone taxonomy terms
+* Changed: Should MultiSite be hypenated or spaced or neither?
+* Changed: Slaves tab now called Settings and is the default tab.
+* Changed: oik_clone_load_post loads taxonomies into post->post_taxonomies
+* Changed: oik_clone_perform_import() and oik_clone_update_target() call oik_clone_update_taxonomies()
+* Fixed: Doesn't crash for post_status 'trash'. Doesn't delete clones either.
+* Fixed: oik_clone_get_target_slaves() may not find any values
+
 # 0.2 
 * Added: Displays "Clone on update" meta box for post types that support 'publicize'
 * Added: Performs updates only when post status is "publish" - does not yet support "inherit" for attachments/ other CPTs
@@ -133,7 +146,6 @@ Prototype for WordPress Multi Site cloned sites
 * Fixed: oik_clone_update_target() should not pass the post_meta array to wp_update_post()
 * Changed: oik_clone_delete_all_post_meta() and oik_clone_insert_all_post_meta() should not process "_oik_clone_ids"
 * Tested: Supported on WordPress 4.1 and WPMS 4.1 and above
-
 
 # 0.1 
 * Added: New plugin.

@@ -120,7 +120,8 @@ function oik_clone_lazy_perform_actions() {
  * If no target is specified it's an import, otherwise it's an update.
  * So we can use the same logic for both Import and Update.
  *
- * We need to import the post and the post meta data
+ * We need to import the post and the post meta data and the taxonomies
+ * 
  * 
  */ 
 function oik_clone_perform_import( $source, $target ) {
@@ -131,6 +132,7 @@ function oik_clone_perform_import( $source, $target ) {
     } else {
       $new_post = oik_clone_insert_post( $post );
       oik_clone_update_post_meta( $post, $new_post );
+      oik_clone_update_taxonomies( $post, $new_post );
     }
   } else {
     p( "Failed to load $source" );
@@ -155,7 +157,7 @@ function oik_clone_perform_update( $source, $target ) {
  * we basically ignore it since just about everything else comes from the source $post
  * BUT that's just daft since wp_update_post loads the post too!
  *
- * @param object $post - the complete source post, including post_meta
+ * @param object $post - the complete source post, including post_meta and taxonomies
  * @param ID $target - the ID of the local post to update
  * 
  */
@@ -164,6 +166,7 @@ function oik_clone_update_target( $post, $target ) {
   $target_post = get_object_vars( $post );
   unset( $target_post['guid'] );
   unset( $target_post['post_meta'] );
+  unset( $target_post['post_taxonomies'] );
   $target_post = wp_slash( $target_post );
   $target_post['ID'] = $target;
   $result = wp_update_post( $target_post, true );
@@ -174,6 +177,7 @@ function oik_clone_update_target( $post, $target ) {
   } else {
     e( "Post modified" );
     oik_clone_update_post_meta( $post, $target );
+    oik_clone_update_taxonomies( $post, $target );
   } 
 }
 
@@ -227,7 +231,20 @@ function oik_clone_insert_all_post_meta( $post, $target ) {
       add_post_meta( $target, $key, $value );
     }  
   }
-} 
+}
+
+/**
+ * Update the taxonomies for this post
+ *
+ * 
+ * @param array $post - the source post object 
+ * @param ID $target - the ID of the target post  
+ */ 
+function oik_clone_update_taxonomies( $post, $target ) {
+  oik_require( "admin/oik-clone-taxonomies.php", "oik-clone" );
+  oik_clone_lazy_update_taxonomies( $post, $target );
+}
+  
 
 /**
  * Load the source from the selected source 
@@ -286,8 +303,10 @@ function oik_clone_load_target( $target ) {
 /**
  * Load ALL the information about a post 
  *
- * This includes the post_meta data 
+ * This includes the post_meta data and taxonomies 
  * 
+ * @param ID $post_id - the ID of the post to load
+ * @return object - the post object
  */  
 function oik_clone_load_post( $post_id ) {  
   oik_require( "includes/bw_posts.inc" );
@@ -301,10 +320,16 @@ function oik_clone_load_post( $post_id ) {
   
   
   $post->post_meta = $post_meta;
+  oik_require( "admin/oik-clone-taxonomies.php", "oik-clone" );
+  
+  $taxonomies = oik_clone_load_taxonomies( $post_id, $post );
+  // Should this be $post->terms - to be consistent with REST
+  
+  $post->post_taxonomies = $taxonomies;
+  
   bw_trace2( $post, "post" );
   return( $post );
 }
-
 
 /**
  * Implement side by side comparison of two posts

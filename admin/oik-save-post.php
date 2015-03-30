@@ -38,8 +38,10 @@ function oik_clone_lazy_save_post( $id, $post, $update ) {
       } else {
         // Post type does not support 'publicize' so we don't do anything
       }
-      
-      
+    break;
+    
+    case 'trash':
+      // One day we may also trash the slaves
     break;
     
     default: 
@@ -98,17 +100,19 @@ function oik_clone_get_apikey() {
  * OR is that the responsibility of the slaves themselves
  * 
  * We only need the slaves that are "on"
+ * Note: This function may be called when posts are being programmatically created.
  *
  */
-
 function oik_clone_get_target_slaves() {
   $slaves = bw_array_get( $_REQUEST, "slaves", null );
   $targets = array();
-  foreach ( $slaves as $slave => $value ) {
-    if ( $value == "on" ) {
-      $targets[] = $slave;
+  if ( $slaves ) {
+    foreach ( $slaves as $slave => $value ) {
+      if ( $value == "on" ) {
+        $targets[] = $slave;
+      }
     }
-  }
+  }  
   bw_trace2( $targets  );
   return( $targets );
 }

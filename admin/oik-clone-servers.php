@@ -17,7 +17,7 @@ function oik_clone_lazy_nav_tabs_servers() {
  * Display the detail for the servers tab
  */
 function oik_clone_lazy_nav_tab_servers() {
-  oik_box( null, null, "Servers", "oik_clone_server_options" );
+  oik_box( null, null, "Settings", "oik_clone_server_options" );
   oik_menu_footer();
 }
 
