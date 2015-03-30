@@ -88,7 +88,9 @@ function oik_clone_validate_action( $action, $source, $target ) {
 
 /**
  * Validate and perform the requested action(s)
- 
+ *
+ * @TODO - confirm the reason for do_action "oik_clone_perform_$action" 
+ * 
  */
 function oik_clone_lazy_perform_actions() {
 

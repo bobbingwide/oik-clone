@@ -6,6 +6,7 @@
  *
  * - The payload is in JSON format. 
  * - We need to strip slashes before it can be converted back into an object.
+ * - The mapping is in JSON format.
  * 
  * @return ID - the target ID of the post created/updated... if it worked.
  *
@@ -124,16 +125,20 @@ function oik_clone_find_target_by_GUID( $source ) {
  */
 function oik_clone_attempt_import( $source, $target, $post ) { 
   oik_require( "admin/oik-clone-actions.php", "oik-clone" );
+  oik_require( "admin/oik-clone-relationships.php", "oik-clone" );
   $target_id = oik_clone_determine_target_id( $source, $target, $post );
   if ( $target_id ) {
     $target_post = oik_clone_load_target( $target_id );
     if ( $target_post ) {
+      oik_clone_apply_mapping( $post );
       oik_clone_update_target( $post, $target_id ); 
     } else {
       p( "That's odd" );
     }  
   } else {
     p( "Looks like we'll have to create it" );
+    
+    oik_clone_apply_mapping( $post );
     $target_id = oik_clone_insert_post( $post );
     oik_clone_update_post_meta( $post, $target_id );
   }

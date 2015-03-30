@@ -141,9 +141,13 @@ function oik_clone_publicize( $id, $post, $update ) {
     oik_require( "includes/oik-remote.inc" );
     $payload = oik_clone_load_post( $id );
     $jpayload = json_encode( $payload );
+    oik_require( "admin/oik-clone-relationships.php", "oik-clone" );
+    $relationships = oik_clone_relationships( $payload );
     foreach ( $slaves as $slave ) {
       $target = oik_clone_query_slave_target( $slave, $payload ); 
-      $result = oik_clone_update_slave( $id, $jpayload, $slave, $target );
+      $mapping = $relationships->mapping( $slave );
+      $jmapping = json_encode( $mapping ); 
+      $result = oik_clone_update_slave( $id, $jpayload, $slave, $target, $jmapping );
       $slave_id = oik_clone_determine_slave_id( $target, $result );
       if ( $slave_id != $target ) {
         $post_meta = oik_clone_update_slave_target( $id, $slave, $slave_id );
@@ -251,16 +255,18 @@ function oik_clone_query_slave_target( $slave, $payload ) {
  * @param mixed $payload - the post object, including post_meta
  * @param string $slave - the slave server root
  * @param ID $target - the post ID on the target
+ * @param string $mapping - the JSON encoded mapping
  * @return mixed - the result of the AJAX call 
  * 
  */
-function oik_clone_update_slave( $id, $payload, $slave, $target ) {
+function oik_clone_update_slave( $id, $payload, $slave, $target, $mapping ) {
   $url = "$slave/wp-admin/admin-ajax.php" ;
   $body = array( "action" => "oik_clone_post" 
                , "master" => get_site_url()
                , "oik_apikey" => oik_clone_get_apikey()
                , "target" => $target 
                , "payload" => $payload
+               , "mapping" => $mapping
                );
   $args = array( "body" => $body 
                , 'timeout' => 15

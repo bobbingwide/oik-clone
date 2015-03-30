@@ -3,8 +3,8 @@
 * Donate link: http://www.oik-plugins.com/oik/oik-donate/
 * Tags: clone, compare, update, MultiSite
 * Requires at least: 4.1
-* Tested up to: 4.2-beta2
-* Stable tag: 0.3
+* Tested up to: 4.2-beta3
+* Stable tag: 0.4
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 * Text Domain: oik-clone
@@ -39,7 +39,7 @@ Install on both the client and server machines.
 ## Frequently Asked Questions 
 
 
-# What does the Multi-Site tab do?
+# What does the Multi-Site tab do? 
 
 The initial version of this plugin is designed for use on WordPress MultiSite
 where you have cloned an existing site into a new version, developed the new version
@@ -112,6 +112,9 @@ Simple validation of an API key.
 1. oik-clone in action
 
 ## Upgrade Notice 
+# 0.4 
+Now supports cloning of hiearchical content - maintaining the post_parent on updates.
+
 # 0.3 
 Now has basic support for cloning non-hierarchical taxonomies
 
@@ -122,6 +125,17 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 ## Changelog 
+# 0.4 
+* Added: New logic for cloning relationships between posts.
+* Added: AJAX request includes the known post mapping from master to slave server
+* Added: The server tests this mapping to determine the correct post ID for the post_parent
+* Added: OIK_clone_relationships class implements client end
+* Added: OIK_clone_mapping class implements server end
+* Added: Plugins can implement "oik_clone_build_list" filter for handling client field mappings
+* Added: Base logic supports oik-fields "noderef" field type and "_thumbnail_id"
+* Note: Logic for handling relationships in post_meta data is not yet complete on the server end
+* Note: bw_trace2() calls are being used for debug tracing
+
 # 0.3 
 * Added: Simple message on hierarchical posts if the parent has not been cloned
 * Added: admin/oik-clone-taxonomies.php to implement logic to clone taxonomy terms

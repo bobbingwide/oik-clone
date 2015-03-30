@@ -3,7 +3,7 @@
 Plugin Name: oik-clone
 Plugin URI: http://www.oik-plugins.com/oik-plugins/oik-clone
 Description: clone your WordPress content 
-Version: 0.3
+Version: 0.4
 Author: bobbingwide
 Author URI: http://www.oik-plugins.com/author/bobbingwide
 License: GPL2
