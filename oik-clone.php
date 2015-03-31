@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: oik-clone
-Plugin URI: http://www.oik-plugins.com/oik-plugins/oik-clone
+Plugin URI: http://www.oik-plugins.com/oik-plugins/oik-clone-clone-your-wordpress-content
 Description: clone your WordPress content 
-Version: 0.5
+Version: 0.6
 Author: bobbingwide
 Author URI: http://www.oik-plugins.com/author/bobbingwide
 License: GPL2
@@ -29,6 +29,7 @@ License: GPL2
 /**
  * Function to invoke when loaded 
  * 
+ * Registers the actions and filters that make this plugin work
  */
 function oik_clone_loaded() {
   add_action( "wp_ajax_oik_clone", "oik_clone_nopriv_oik_clone_post" );
@@ -52,6 +53,8 @@ function oik_clone_oik_admin_menu() {
   if ( !defined('DOING_AJAX') ) {
     add_action( "save_post", "oik_clone_save_post", 10, 3 );
     add_action( 'add_meta_boxes', 'oik_clone_add_meta_boxes', 10, 2 );
+    add_action( "edit_attachment", "oik_clone_edit_attachment", 10, 1 );
+    add_action( "add_attachment", "oik_clone_add_attachment", 10, 1 );
   }  
 }
 
@@ -175,6 +178,31 @@ function oik_clone_add_meta_boxes( $post_type, $post) {
     add_meta_box( 'oik_clone', __( "Clone on update", "oik"), 'oik_clone_box', null, 'side', 'default'  );
   }  
 }
+
+/**
+ * Implement "add_attachment" for oik-clone 
+ *
+ * Until we can find a valid reason for handling add_attachment differently
+ * we'll just treat it as edit attachment.
+ */
+function oik_clone_add_attachment( $post_ID ) {
+  oik_clone_edit_attachment( $post_ID );
+}
+
+/**
+ * Implement "edit_attachment" for oik-clone
+ * 
+ * If we're publicizing attachments, which is more likely than not if you
+ * want this thing to work nicely, then perform a lazy load to do the business
+ *
+ * @param ID $post_ID - the attachment post ID
+ */
+function oik_clone_edit_attachment( $post_ID ) {
+  oik_require( "admin/oik-clone-media.php", "oik-clone" );
+  if ( post_type_supports( "attachment", "publicize" ) ) {
+    oik_clone_lazy_edit_attachment( $post_ID );
+  }  
+} 
 
 /**
  * Implement AJAX oik_clone_post for oik-clone

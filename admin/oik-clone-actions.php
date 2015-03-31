@@ -202,11 +202,17 @@ function oik_clone_update_post_meta( $post, $target ) {
 /**
  * Delete all existing post_meta data for the target post
  *
+ * In addition to _oik_clone_ids which is not to be cloned
+ * there's some other post_meta data we won't delete...
+ * as it causes problems when we do.
+ * 
+ *
  * @param ID $target - the target post ID
  */
 function oik_clone_delete_all_post_meta( $target ) {
   $post_meta = get_post_meta( $target );
   unset( $post_meta['_oik_clone_ids'] );
+  unset( $post_meta['_wp_attachment_metadata'] );
   bw_trace2( $post_meta, "post_meta", true );
   foreach ( $post_meta as $key=> $meta ) {
     bw_trace2( $meta, $key, false );
@@ -226,6 +232,7 @@ function oik_clone_delete_all_post_meta( $target ) {
 function oik_clone_insert_all_post_meta( $post, $target ) {
   $post_meta = (array) $post->post_meta;
   unset( $post_meta['_oik_clone_ids'] );
+  unset( $post_meta['_wp_attachment_metadata'] );
   bw_trace2( $post_meta, "post_meta", true );
   foreach ( $post_meta as $key=> $meta ) {
     bw_trace2( $meta, $key, false );

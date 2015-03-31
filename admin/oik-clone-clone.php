@@ -86,6 +86,16 @@ function oik_clone_determine_target_id( $source_id, $target_id, $post ) {
  *
  * @TODO - write logic to find the 'best' if there is more than one
  *
+ * Notes:
+ * - The post type has to match
+ * - Since we're only passing a single post type, which may be "attachment" or "page",
+ *   we have to ensure the post_parent parameter will not be used in the query
+ * - 'attachment's have a post_status of 'inherit'... we don't pass the post status
+ * - Does this mean we can't clone 'private' posts,
+ * - or should we be passing the master's post_status?
+ * - Actually, all we want to do is find the post. 
+ * - We're going to set the status to the same as the source.
+ *
  * @param object $source - the source post object 
  * @return integer - the ID of the 'best' matching post or null
  */
@@ -93,14 +103,14 @@ function oik_clone_find_target_by_GUID( $source ) {
   oik_require( "includes/bw_posts.inc" );
   oik_require( "admin/oik-clone-match.php", "oik-clone" );
   $args = array( "numberposts" => -1 
-               , "post_type" => "any" 
-               //, "exclude" => $data->ID
+               , "post_type" => $source->post_type
+               , "post_parent" => "ignore"
                );
   oik_clone_match_add_filter_field( "AND guid = '" . $source->guid . "'" );            
   $posts = bw_get_posts( $args );
   $target_post = bw_array_get( $posts, 0, null );
   bw_trace2( $target_post, "target_post", false );
-  $target_id = $target_post->ID;
+  $target_id = bw_array_get( $target_post, "ID", null );
   bw_trace2( $target_id, "target_id" );
   return( $target_id );
 }
@@ -126,6 +136,14 @@ function oik_clone_find_target_by_GUID( $source ) {
 function oik_clone_attempt_import( $source, $target, $post ) { 
   oik_require( "admin/oik-clone-actions.php", "oik-clone" );
   oik_require( "admin/oik-clone-relationships.php", "oik-clone" );
+  $media_file = null;
+  
+  if ( $post->post_type == "attachment" ) {
+    oik_require( "admin/oik-clone-media.php", "oik-clone" );
+    $media_file = oik_clone_save_media_file( $post->post_date );
+    $post->file = $media_file['file'];
+  }
+  
   $target_id = oik_clone_determine_target_id( $source, $target, $post );
   if ( $target_id ) {
     $target_post = oik_clone_load_target( $target_id );
@@ -139,9 +157,15 @@ function oik_clone_attempt_import( $source, $target, $post ) {
     p( "Looks like we'll have to create it" );
     
     oik_clone_apply_mapping( $post );
+    
     $target_id = oik_clone_insert_post( $post );
+    if ( $target_id && $media_file ) {
+      oik_clone_update_attachment_metadata( $target_id, $media_file['file'] );
+    }
     oik_clone_update_post_meta( $post, $target_id );
   }
+  
+  
   // update the post meta with the master post ID of the source ... regardless of the current source
   // Can we trust [HTTP_USER_AGENT] => WordPress/4.1.1; http://qw/oikcom ?
   // If not we'll have to pass it.
@@ -151,3 +175,4 @@ function oik_clone_attempt_import( $source, $target, $post ) {
   oik_clone_update_slave_target( $target_id, $master, $source );
   return( $target_id );
 }
+

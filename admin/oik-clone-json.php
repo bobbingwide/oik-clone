@@ -54,6 +54,7 @@ function oik_clone_reply_with_json( $target_id ) {
                  );
   $json = json_encode( $result );
   e( $json );
+  bw_trace2( $json, "json" );
 }
 
 

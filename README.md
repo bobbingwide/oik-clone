@@ -4,7 +4,7 @@
 * Tags: clone, compare, update, MultiSite
 * Requires at least: 4.1
 * Tested up to: 4.2-beta3
-* Stable tag: 0.5
+* Stable tag: 0.6
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 * Text Domain: oik-clone
@@ -20,6 +20,7 @@ Features:
 
 - push content on Update to multiple targets
 - pushes post content and post meta data
+- pushes the attached file, for attachments
 * - maintains relationships: e.g. post_parent and fields referencing other content
 - pull content from other sites in a MultiSite installation
 - compare and update or import from self or a MultiSite site
@@ -125,6 +126,9 @@ Other methods will be implemented.
 1. oik-clone in action
 
 ## Upgrade Notice 
+# 0.6 
+Now supports pushing of attachments and the attached media file. Nearly ready for beta test.
+
 # 0.5 
 Supports mapping of post IDs in post_meta data. Not quite ready for beta test.
 
@@ -141,6 +145,23 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 ## Changelog 
+# 0.6 
+* Added: Cloning for "attachments"
+* Added: Implements actions for "edit_attachment" and "add_attachment"
+* Added: Both actions invoke oik_clone_lazy_edit_attachment() if the attachment post type supports "publicize"
+* Added: admin/oik-clone-media.php
+* Changed: No longer populating the slaves array with defaults
+* Changed: oik_clone_publicize() now accepts $load_media parameter
+* Changed: Currently the media file is loaded regardless of the value of the $target ID
+* Changed: "media" block is also passed to the server, JSON encoded
+* Fixed: Checking of target ID for the slave
+* Changed: tracing in oik_clone_reply_with_json()
+* Changed: oik_clone_find_target_by_GUID() needs to support finding "attachment"s
+* Changed: oik_clone_attempt_import() will load the media file for attachments.
+* Changed: This is passed to the insert_post
+* Changed: After initial creation oik_clone_update_attachment_metadata() is called
+* Changed: Delete and insert all post meta does not alter _wp_attachment_metadata
+
 # 0.5 
 * Added: target server checks the mapping of posts and applies valid mapping updates.
 * Added: Currently hardcoded for _plugin_ref and "noderef" type fields
