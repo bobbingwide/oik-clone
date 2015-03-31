@@ -75,9 +75,12 @@ function oik_clone_relationships( $post ) {
  * Apply the mapping to the target post and the post meta
  *
  * By the time we call this we know that we're going to be applying the changes
- * on the server so now is the time to perform the mapping
- * We do hope for our sakes that there aren't any self references in the post_meta data
- * Maybe we should defer mapping the post_meta data until later.
+ * on the server so now is the time to perform the mapping.
+ * 
+ * If there are any self-references in the post_meta data we need
+ * to ensure that this is correctly mapped.
+ * So we defer the mapping of post_meta data until after the post is created.
+ * Similar argument for the post_parent. 
  * 
  */
 function oik_clone_apply_mapping( $post ) {
@@ -88,8 +91,43 @@ function oik_clone_apply_mapping( $post ) {
   // @TODO better code not using global
   global $oik_clone_mapping;
   $oik_clone_mapping =  $mapping;
-  
-  
+}
+
+/**
+ * Apply mapping and other filters to all post_meta data
+ * 
+ * Things we need to do:
+ * - update post relationships to use the correct target post
+ * - remove post meta data that we don't want to create
+ * 
+ * @param object $post - the complete post including the post_meta field 
+ * 
+ */
+function oik_clone_filter_all_post_meta( $post ) {
+  global $oik_clone_mapping;
+  $mapping = $oik_clone_mapping;
+  $post_meta = (array) $post->post_meta;
+  bw_trace2( $post_meta, "post_meta", true );
+  foreach ( $post_meta as $key=> $meta ) {
+    //$meta = apply_filters( "
+    
+    bw_trace2( $meta, $key, false );
+    if ( $mapping->is_relationship_field( $key ) ) {
+      $meta = $mapping->apply_mapping( $meta ); 
+    } 
+    $filtered_post_meta[ $key ] = $meta;
+  }
+  $post->post_meta = $filtered_post_meta;
+}
+
+/**
+ * Implement "oik_clone_filter_post_meta" for relationship fields
+ * 
+ */
+function oik_clone_filter_post_meta( $meta, $key ) {
+
+
+
 }
 
  

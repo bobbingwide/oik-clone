@@ -83,15 +83,38 @@ class OIK_clone_mapping {
   }
   
   /**
+   * Check the mapping passed from the client
+   *
+   * Build an array of mapped posts to confirm
+   * the mapping that the client ( master ) passed 
+   * For entries where the target post exists then the mapping remains as is
+   * For other entries we set the mapping to 0.
+   * 
+   * Assumption is that get_posts() is more efficient than multiple get_post() calls
+   * We need to confirm this; get_posts() can faff around a hell of a lot with filters.
+   * 
+   * @TODO - performance analysis
+   * 
+   */
+  function check_mapping() {
+  }
+  
+  
+  /**
    * Apply the mapping
    *
    * Apply the mapping to post meta data
    *
    * 
    */
-   function apply_mapping( $post ) {
-     bw_trace2( $post );
-     gobang();
+   function apply_mapping( $meta ) {
+     $mapped = array();
+     foreach ( $meta as $value ) {
+       $mapping = $this->get_mapping( $value ); 
+       $mapped[] = $mapping;   
+     }
+     bw_trace2( $mapped, "mapped" );
+     return( $mapped );
    }
    
   

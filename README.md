@@ -4,7 +4,7 @@
 * Tags: clone, compare, update, MultiSite
 * Requires at least: 4.1
 * Tested up to: 4.2-beta3
-* Stable tag: 0.4
+* Stable tag: 0.5
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 * Text Domain: oik-clone
@@ -16,16 +16,22 @@ Clone content between sites
 
 oik-clone provides tools to merge and synchronise content between WordPress sites.
 
-Version 0.1 was developed to merge content between Multisites, using a pull mechanism.
-It also supports post cloning in a single WordPress installation, though I can't really see a true need for it.
+Features:
 
-Version 0.2 provides a push mechanism, allowing content to be optionally cloned during post updates.
+- push content on Update to multiple targets
+- pushes post content and post meta data
+* - maintains relationships: e.g. post_parent and fields referencing other content
+- pull content from other sites in a MultiSite installation
+- compare and update or import from self or a MultiSite site
+
 
 oik-clone is dependent on the oik base plugin.
 Both plugins need to be installed and activated on each site.
 
 This is a prototype solution to address a specific problem - performance comparison and improvement in multiple implementations.
 SEO is not a consideration.
+
+
 
 
 ## Installation 
@@ -38,6 +44,15 @@ Install on both the client and server machines.
 
 ## Frequently Asked Questions 
 
+# Is there a beta test version? 
+
+A beta test version will be produced when the following requirements have been satisfied:
+
+- Support Attachments
+- Support Hierarchical taxonomies
+
+In the mean time, these are development versions.
+Some of the versions are being Alpha tested on the oik-plugins servers.
 
 # What does the Multi-Site tab do? 
 
@@ -75,7 +90,7 @@ The oik-clone base logic supports
 - Self
 - Multisite
 
-Extension plugins, yet to be published, will support
+Extension plugins, yet to be published, may support
 - REST
 - WXR
 
@@ -96,22 +111,23 @@ but in the mean time you have to download and activate oik to make this work.
 
 Yes. Work is needed in the following areas.
 
-- Hierarchicacl taxonomies are not handled
-- Hierarchical content requires parent content to be cloned first
+- Hierarchical taxonomies are not handled -
+- Hierarchical content requires parent content to be cloned first - partially solved in v0.5
 - Search and replace is not performed against content
-- Search and replace is not performed against post_meta data which contains post IDs
 
 # What authentication method is used? 
+
 Simple validation of an API key.
-
-
-
+Other methods will be implemented.
 
 
 ## Screenshots 
 1. oik-clone in action
 
 ## Upgrade Notice 
+# 0.5 
+Supports mapping of post IDs in post_meta data. Not quite ready for beta test.
+
 # 0.4 
 Now supports cloning of hiearchical content - maintaining the post_parent on updates.
 
@@ -125,6 +141,12 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 ## Changelog 
+# 0.5 
+* Added: target server checks the mapping of posts and applies valid mapping updates.
+* Added: Currently hardcoded for _plugin_ref and "noderef" type fields
+* Note: Not fully tested for multiple select noderef fields.
+* Note: Not tested in the Self/MultiSite tabs
+
 # 0.4 
 * Added: New logic for cloning relationships between posts.
 * Added: AJAX request includes the known post mapping from master to slave server
