@@ -252,7 +252,7 @@ function oik_clone_insert_all_post_meta( $post, $target ) {
  */ 
 function oik_clone_update_taxonomies( $post, $target ) {
   oik_require( "admin/oik-clone-taxonomies.php", "oik-clone" );
-  oik_clone_lazy_update_taxonomies( $post, $target );
+  oik_clone_lazy_update_taxonomies2( $post, $target );
 }
   
 

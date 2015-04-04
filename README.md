@@ -4,7 +4,7 @@
 * Tags: clone, compare, update, MultiSite
 * Requires at least: 4.1
 * Tested up to: 4.2-beta3
-* Stable tag: 0.6
+* Stable tag: 0.7
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 * Text Domain: oik-clone
@@ -19,19 +19,19 @@ oik-clone provides tools to merge and synchronise content between WordPress site
 Features:
 
 - push content on Update to multiple targets
-- pushes post content and post meta data
+- pushes post content, post meta data and taxonomy terms
 - pushes the attached file, for attachments
 * - maintains relationships: e.g. post_parent and fields referencing other content
 - pull content from other sites in a MultiSite installation
 - compare and update or import from self or a MultiSite site
 
 
-oik-clone is dependent on the oik base plugin.
+oik-clone is dependent on the oik base plugin; using the oik-plugin as a library of functions sitting on top of WordPress.
 Both plugins need to be installed and activated on each site.
 
-This is a prototype solution to address a specific problem - performance comparison and improvement in multiple implementations.
-SEO is not a consideration.
-
+This solution was developed to address a couple of specific problems
+ - performance comparison and improvement in multiple implementations. SEO is not a consideration.
+ -
 
 
 
@@ -49,11 +49,12 @@ Install on both the client and server machines.
 
 A beta test version will be produced when the following requirements have been satisfied:
 
-- Support Attachments
-- Support Hierarchical taxonomies
+- Support Attachments (in v0.6 )
+- Support Hierarchical taxonomies (in v0.7)
+- Support mapping of post IDs within content - planned for v0.8
 
 In the mean time, these are development versions.
-Some of the versions are being Alpha tested on the oik-plugins servers.
+v0.7 is now being Alpha tested on the oik-plugins servers.
 
 # What does the Multi-Site tab do? 
 
@@ -123,11 +124,16 @@ Other methods will be implemented.
 
 
 ## Screenshots 
-1. oik-clone in action
+1. Clone on update meta box - select targets
+2. Clone on update meta box - with cloned post links
+3. Clone on update meta box - Previously cloned
 
 ## Upgrade Notice 
+# 0.7 
+Supports pushing of hierarchical taxonomies. For Alpha testing on oik-plugins sites.
+
 # 0.6 
-Now supports pushing of attachments and the attached media file. Nearly ready for beta test.
+Now supports pushing of attachments and the attached media file. Nearly ready for Beta test.
 
 # 0.5 
 Supports mapping of post IDs in post_meta data. Not quite ready for beta test.
@@ -145,6 +151,15 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 ## Changelog 
+# 0.7 
+* Added: Pushing of hierarchical taxonomies
+* Added: Hierarchical taxonomies loaded using oik_clone_load_hierarchical_terms()
+* Added: Flat taxonomies loaded using oik_clone_load_flat_terms()
+* Added: Both routines use class OIK_clone_taxonomies
+* Added: admin/class-oik-clone-taxonomies.php
+* Changed: Now uses oik_clone_lazy_update_taxonomies2()
+* Added: Some screenshots of the Clone on update meta box
+
 # 0.6 
 * Added: Cloning for "attachments"
 * Added: Implements actions for "edit_attachment" and "add_attachment"

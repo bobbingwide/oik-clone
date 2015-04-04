@@ -18,12 +18,16 @@ function oik_clone_load_taxonomies( $post_id, $post ) {
   bw_trace2( $taxonomies, "taxonomies", false );
   $post_taxonomies = array();
   foreach ( $taxonomies as $taxonomy => $data ) {
-    $terms = wp_get_object_terms( $post_id, $taxonomy );
     //bw_trace2( $terms );
     if ( $data->hierarchical ) {
-      $post_taxonomies[ $taxonomy ] = oik_clone_fill_out_tree( $terms ); 
+      $post_taxonomies[ $taxonomy ] = oik_clone_load_hierarchical_terms( $taxonomy, $post_id );
+       
+      //$post_taxonomies[ $taxonomy ] = oik_clone_get_keyed_array( $terms, "name" );
     } else {  
-      $post_taxonomies[ $taxonomy ] = oik_clone_get_keyed_array( $terms, "name" );
+     /// $terms = wp_get_object_terms( $post_id, $taxonomy );
+     // $post_taxonomies[ $taxonomy ] = oik_clone_get_keyed_array( $terms, "name" );
+     
+      $post_taxonomies[ $taxonomy ] = oik_clone_load_flat_terms( $taxonomy, $post_id );
     }
   }
   bw_trace2( $post_taxonomies, "post_taxonomies", false );
@@ -48,40 +52,42 @@ function oik_clone_get_keyed_array( $object_arr, $key ) {
 
 }
 
-
 /**
+ * Load the terms for a hierarchical taxonomy
  * 
- * 
- * When you want to tell another system about your taxonomies
- * then if it's a hieararchical taxonomy you will need to provide some information about the hierarchy,
- * so that it can be reproduced on the server.
- * 
- *  x | Slug / Name  | Completed
- *  - | ------------ | --------
- *    |  4.0         |
- *  x |     4.0.1    |
- *  x |  4.1         |
- *  x |    4.1.1     |
- *    |  ggd         |
- *    |    gd        |
- *    |      father  |
- *  x |        son   |
- *
- * 
- * @param array $terms - array of taxonomy terms to which the post is attached
- * @return array $completed - array of terms to pass to the server
+ * @param ID $post_id - the ID of the post
+ * @param string $taxonomy - the taxonomy name
+ * @return array - array of terms and term hierarchy to pass to the server
  *                           
  */ 
- 
-function oik_clone_fill_out_tree( $terms ) {
-  bw_trace2();
-  return( $terms );
+function oik_clone_load_hierarchical_terms( $taxonomy, $post_id ) {
+  oik_require( "admin/class-oik-clone-taxonomies.php", "oik-clone" );
+  $taxonomy_class = new OIK_clone_taxonomies();
+  $tax = $taxonomy_class->set_taxonomy( $taxonomy );
+  $terms = $taxonomy_class->get_terms( $post_id );
+  $source_tree = $taxonomy_class->get_term_hierarchy();
+  $source_terms = $taxonomy_class->get_source_terms();
+  bw_trace2( $source_terms, "source_terms hierarchical" );
+  return( $source_terms );
+}
 
-} 
-   
-   
-
-
+/**
+ * Load the terms for a flat taxonomy 
+ *
+ * @param ID $post_id - the ID of the post
+ * @param string $taxonomy - the taxonomy name
+ * @return array - array of terms and term hierarchy to pass to the server
+ */
+function oik_clone_load_flat_terms( $taxonomy, $post_id ) {
+  oik_require( "admin/class-oik-clone-taxonomies.php", "oik-clone" );
+  $taxonomy_class = new OIK_clone_taxonomies();
+  $tax = $taxonomy_class->set_taxonomy( $taxonomy );
+  $terms = $taxonomy_class->get_terms( $post_id );
+  //$source_tree = $taxonomy_class->get_term_hierarchy();
+  $source_terms = $taxonomy_class->get_source_terms();
+  bw_trace2( $source_terms, "source_terms flat" );
+  return( $source_terms );
+}
 
 /**
  * Update the taxonomies for the post
@@ -253,9 +259,29 @@ function oik_clone_lazy_update_taxonomies( $post, $target ) {
 }
 
 /**
+ * OO approach to updating taxonomy terms in the target
+ * 
+ * @param array $post - the source post object - which contains post->taxonomies 
+ * @param ID $target - the ID of the target post 
+ */
+function oik_clone_lazy_update_taxonomies2( $post, $target ) {
+  oik_require( "admin/class-oik-clone-taxonomies.php", "oik-clone" );
+  $source_taxonomies = $post->post_taxonomies;
+  $taxonomy_class = new OIK_clone_taxonomies();
+  foreach ( $source_taxonomies as $taxonomy => $value ) {
+    $taxonomy_class->init();
+    $taxonomy_class->set_taxonomy( $taxonomy );
+    $taxonomy_class->receive_source_tree( $post );
+    $taxonomy_class->get_target_terms( $target );
+    $taxonomy_class->get_target_tree();
+    $taxonomy_class->update_target_tree();
+  }
+}
+
+/**
  * Update the taxonomy terms for the post
  * 
-
+ * @TODO - determine if this is a redundant piece of code
 
         The terms array may be an empty array if there are no categories or tags defined for the taxonomy.
         
@@ -284,7 +310,9 @@ function oik_clone_lazy_update_taxonomy_terms( $target, $source_terms, $target_t
   foreach ( $source_terms as $source_term => $term_data ) {
     
     bw_trace2( $term_data, "term_data", false );
-    $terms = array( $term_data->slug );
+    // Trying "name" instead of slug
+    // 2015/04/01
+    $terms = array( $term_data->name );
     wp_set_object_terms( $target, $terms, $term_data->taxonomy, true );
   
   }
