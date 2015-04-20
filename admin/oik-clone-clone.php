@@ -148,7 +148,7 @@ function oik_clone_attempt_import( $source, $target, $post ) {
   if ( $target_id ) {
     $target_post = oik_clone_load_target( $target_id );
     if ( $target_post ) {
-      oik_clone_apply_mapping( $post );
+      $post = oik_clone_apply_mapping( $post );
       oik_clone_update_target( $post, $target_id ); 
     } else {
       p( "That's odd" );
@@ -156,13 +156,14 @@ function oik_clone_attempt_import( $source, $target, $post ) {
   } else {
     p( "Looks like we'll have to create it" );
     
-    oik_clone_apply_mapping( $post );
+    $post = oik_clone_apply_mapping( $post );
     
     $target_id = oik_clone_insert_post( $post );
     if ( $target_id && $media_file ) {
       oik_clone_update_attachment_metadata( $target_id, $media_file['file'] );
     }
     oik_clone_update_post_meta( $post, $target_id );
+    oik_clone_update_taxonomies( $post, $target_id );
   }
   
   

@@ -2,8 +2,8 @@
 /*
 Plugin Name: oik-clone
 Plugin URI: http://www.oik-plugins.com/oik-plugins/oik-clone-clone-your-wordpress-content
-Description: clone your WordPress content 
-Version: 0.7
+Description: Clone your WordPress content 
+Version: 0.8
 Author: bobbingwide
 Author URI: http://www.oik-plugins.com/author/bobbingwide
 License: GPL2
@@ -36,6 +36,7 @@ function oik_clone_loaded() {
   add_action( "wp_ajax_nopriv_oik_clone_post", "oik_clone_nopriv_oik_clone_post" );
   add_action( "oik_admin_menu", "oik_clone_oik_admin_menu" );
   add_filter( 'set-screen-option', "oik_clone_set_screen_option", 10, 3 );
+  add_action( "oik_add_shortcodes", "oik_clone_oik_add_shortcodes" );
 }  
 
 /**
@@ -201,7 +202,8 @@ function oik_clone_edit_attachment( $post_ID ) {
   oik_require( "admin/oik-clone-media.php", "oik-clone" );
   if ( post_type_supports( "attachment", "publicize" ) ) {
     oik_clone_lazy_edit_attachment( $post_ID );
-  }  
+  }
+  //gobang();  
 } 
 
 /**
@@ -224,6 +226,15 @@ function oik_clone_nopriv_oik_clone_post() {
   bw_backtrace();
   bw_flush();
   exit();
+}
+
+/**
+ * Implement "oik_add_shortcodes" action for oik-clone
+ *
+ * We can probably get away with a single shortcode with multiple complex behaviours
+ */
+function oik_clone_oik_add_shortcodes() {
+  bw_add_shortcode( "cloned", "oik_cloned", oik_path( "shortcodes/oik-cloned.php", "oik-clone" ), false );
 }
   
 oik_clone_loaded();

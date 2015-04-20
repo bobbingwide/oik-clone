@@ -124,10 +124,13 @@ function oik_clone_lazy_perform_actions() {
  *
  * We need to import the post and the post meta data and the taxonomies
  * 
+ * @TODO Apply mapping when the source and target hosts are different
+ * 
  * 
  */ 
 function oik_clone_perform_import( $source, $target ) {
   $post = oik_clone_load_source( $source ); 
+  // $post = oik_clone_apply_mapping( $post );
   if ( $post ) {
     if ( $target ) {
       oik_clone_update_target( $post, $target );

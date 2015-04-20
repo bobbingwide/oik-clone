@@ -3,8 +3,8 @@
 * Donate link: http://www.oik-plugins.com/oik/oik-donate/
 * Tags: clone, compare, update, MultiSite
 * Requires at least: 4.1
-* Tested up to: 4.2-beta3
-* Stable tag: 0.7
+* Tested up to: 4.2-beta4
+* Stable tag: 0.8
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 * Text Domain: oik-clone
@@ -22,6 +22,7 @@ Features:
 - pushes post content, post meta data and taxonomy terms
 - pushes the attached file, for attachments
 * - maintains relationships: e.g. post_parent and fields referencing other content
+* - maintains informal relationships: e.g. in post_content
 - pull content from other sites in a MultiSite installation
 - compare and update or import from self or a MultiSite site
 
@@ -46,15 +47,11 @@ Install on both the client and server machines.
 ## Frequently Asked Questions 
 
 # Is there a beta test version? 
+Yes. v0.8 is the first Beta test version.
 
-A beta test version will be produced when the following requirements have been satisfied:
+v0.8 is being Beta tested on the oik-plugins servers and WP-a2z sites.
 
-- Support Attachments (in v0.6 )
-- Support Hierarchical taxonomies (in v0.7)
-- Support mapping of post IDs within content - planned for v0.8
-
-In the mean time, these are development versions.
-v0.7 is now being Alpha tested on the oik-plugins servers.
+Previously v0.7 was Alpha tested on the oik-plugins servers.
 
 # What does the Multi-Site tab do? 
 
@@ -82,19 +79,29 @@ This'll be documented in the FAQs on the site
 # Is this suitable for pushing from Staging to Production? 
 
 It depends.
+If you have a complex content structure or a lot of new/changed content then the answer is "No, not yet"
+If you have a simple content structure - just posts and pages
+then you may find this useful.
+
+To support pushing from Staging to Production requires additional work to identify the network of posts to be cloned.
+
 
 
 # Does this use the REST API? 
-Not yet. That was the plan.
-But it was a lot more complicated than first thought of.
+Not yet, though that was the plan.
+
+It was more complicated than I first thought.
 So I developed the solution as an extensible solution.
-The oik-clone base logic supports
+For the pull model the oik-clone base logic supports
 - Self
 - Multisite
 
 Extension plugins, yet to be published, may support
 - REST
 - WXR
+
+For the push model the oik-clone base logic supports
+- External sites, which includes Multisite
 
 
 # Why is this dependent upon oik? 
@@ -113,14 +120,13 @@ but in the mean time you have to download and activate oik to make this work.
 
 Yes. Work is needed in the following areas.
 
-- Hierarchical taxonomies are not handled -
 - Hierarchical content requires parent content to be cloned first - partially solved in v0.5
-- Search and replace is not performed against content
+- Limitation on media file size imposed by servers
 
 # What authentication method is used? 
 
 Simple validation of an API key.
-Other methods will be implemented.
+Other methods will be implemented in future versions.
 
 
 ## Screenshots 
@@ -129,6 +135,9 @@ Other methods will be implemented.
 3. Clone on update meta box - Previously cloned
 
 ## Upgrade Notice 
+# 0.8 -
+Supports mapping of informal relationships in post content.
+
 # 0.7 
 Supports pushing of hierarchical taxonomies. For Alpha testing on oik-plugins sites.
 
@@ -151,6 +160,22 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 ## Changelog 
+# 0.8 
+* Added: "oik_clone_apply_informal_mapping" filter and functions to apply informal relationship mapping on the target
+* Added: "oik_clone_build_list" filter and function to identify informal relationships
+* Added: OIK_clone_post_file class
+* Added: [cloned] shortcode to display cloned status of a post
+* Added: oik_clone_post_file.php - to replace current logic for posting an attached media file. Not yet integrated.
+* Changed: Increase timeout on oik_clone_update_slave() to cater for media file upload
+* Changed: oik_clone_load_media_file logic only applied for attachments
+* Fixed: Set correct description for new taxonomy terms
+* Fixed: Taxonomies should be updated on new post creation.
+* TODO: oik_clone_apply_mapping() not yet performed in the pull model
+* Added: OIK_clone_informal_relationships class
+* Added: OIK_clone_informal_relationships_source class
+* Added: OIK_clone_informal_relationships_target class
+* Tested: Up to WordPress 4.2-beta4 and MultiSite
+
 # 0.7 
 * Added: Pushing of hierarchical taxonomies
 * Added: Hierarchical taxonomies loaded using oik_clone_load_hierarchical_terms()
@@ -179,7 +204,7 @@ Prototype for WordPress Multi Site cloned sites
 
 # 0.5 
 * Added: target server checks the mapping of posts and applies valid mapping updates.
-* Added: Currently hardcoded for _plugin_ref and "noderef" type fields
+* Added: Currently hardcoded for "_thumbnail_id" and "noderef" type fields
 * Note: Not fully tested for multiple select noderef fields.
 * Note: Not tested in the Self/MultiSite tabs
 
@@ -231,14 +256,9 @@ Prototype for WordPress Multi Site cloned sites
 ## Further reading 
 If you want to read more about the oik plugins then please visit the
 [oik plugin](http://www.oik-plugins.com/oik)
-**"the oik plugin - for often included key-information"**
+**"the oik plugin - oik information kit"**
 
-For other cloning plugins
+For other cloning plugins see:
+[oik-clone FAQs](http://www.oik-plugins.com/oik)
 
-
-* [selective-importers](https://wordpress.org/plugins/selective-importers/) - Importers that put the incoming content into a queue, where you can select which posts to import
-*
-
-Other techniques
-* https://managewp.com/wordpress-migrating-content-and-media
 

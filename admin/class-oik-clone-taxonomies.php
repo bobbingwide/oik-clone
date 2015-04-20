@@ -433,7 +433,7 @@ We really only need
    */ 
   function create_term( $term, $current_parent ) {
     $description = $term->description;
-    $args = array( "description" => description
+    $args = array( "description" => $description
                  , "parent" => $current_parent
                  );
     bw_trace2( $args, "args" );

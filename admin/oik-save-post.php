@@ -298,7 +298,7 @@ function oik_clone_update_slave( $id, $payload, $slave, $target, $mapping, $medi
                , "media" => $media_file
                );
   $args = array( "body" => $body 
-               , 'timeout' => 15
+               , 'timeout' => 30
                ); 
   $result = bw_remote_post( $url, $args );
   bw_trace2( $result );

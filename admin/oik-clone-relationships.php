@@ -63,13 +63,36 @@
  *  
  */
 function oik_clone_relationships( $post ) {
+
+  add_filter( "oik_clone_build_list", "oik_clone_build_list_informal_relationships", 11, 2 );
   oik_require( "admin/class-oik-clone-relationships.php", "oik-clone" );
+  
   $relationships = new OIK_clone_relationships();
   $relationships->build_list( $post );
   $relationships->load_slave_ids();
   return( $relationships );
 }
 
+/**
+ * Implement "oik_clone_build_list" filter for informal relationships
+ *
+ * The post_content and post_excerpt may contain references to other posts by ID
+ * we need to map these to the target IDs
+ * 
+ * The client will create the mapping, and the server will apply it
+ * 
+ * @param array $source_ids - the currently known IDs to be mapped
+ * @param object $post - the post object 
+ * @return array - an updated array of source IDs
+ *
+ */
+function oik_clone_build_list_informal_relationships( $source_ids, $post ) {
+  oik_require( "admin/class-oik-clone-informal-relationships-source.php", "oik-clone" );
+  $content_informal_relationships = new OIK_clone_informal_relationships_source( $source_ids );
+  $content_informal_relationships->find_ids( $post->post_content );
+  $content_informal_relationships->find_ids( $post->post_excerpt );
+  return( $content_informal_relationships->source_ids );
+}
 
 /**
  * Apply the mapping to the target post and the post meta
@@ -85,12 +108,82 @@ function oik_clone_relationships( $post ) {
  */
 function oik_clone_apply_mapping( $post ) {
   oik_require( "admin/class-oik-clone-mapping.php", "oik-clone" );
+  
   $mapping = new OIK_clone_mapping();
   $mapping->load_mapping();
   $mapping->apply_post_parent_mapping( $post );
   // @TODO better code not using global
   global $oik_clone_mapping;
   $oik_clone_mapping =  $mapping;
+  
+  // Now apply filters to apply the informal relationship mapping to the post
+  
+  add_filter( "oik_clone_apply_informal_mapping", "oik_clone_apply_informal_relationship_mapping", 10, 2 );
+  add_filter( "oik_clone_apply_informal_mapping", "oik_clone_apply_informal_relationship_mapping_urls", 11, 2 );
+  $post = apply_filters( "oik_clone_apply_informal_mapping", $post, $mapping->mapping );
+  return( $post );
+}
+
+/**
+ *
+ * Implement "oik_clone_apply_informal_mapping" to the target post IDs
+ *
+ * At the target we apply the mapping to the content when
+ * - we have a candidate post ID
+ * - there is a known mapping in table
+ * - the ID passes the tests
+ *  
+ * @param object $post - the post object 
+ * @param array $target_ids - the mapping from source to target IDs
+ * @return object - the updated post object 
+ * 
+ */
+function oik_clone_apply_informal_relationship_mapping( $post, $target_ids ) {
+  oik_require( "admin/class-oik-clone-informal-relationships-target.php", "oik-clone" );
+  $target_informal_relationships = new OIK_clone_informal_relationships_target( $target_ids );
+  //$target_informal_relationships->set_mapping( $target_ids );
+  $post->post_content = $target_informal_relationships->map_ids( $post->post_content );
+  $post->post_excerpt = $target_informal_relationships->map_ids( $post->post_excerpt );
+  return( $post );
+}
+
+/**
+ * Implement "oik_clone_apply_informal_mapping" to the target post URLs 
+ *
+ * Ignore the target_ids
+ *
+ * For each of the fields in the post that may contain the source ( master ) root URL
+ * replace it with the target ( slave ) URL
+ *
+ * We need to cater for a number of combinations:
+ * - links
+ * - references in shortcodes e.g.
+ *
+ * `
+ * [bw_link example.com]
+ * [bw_link //example.com]
+ * [bw_link http://example.com]
+ * [bw_link https://example.com]
+ * [bw_link example.com/site ]
+ * `
+ * 
+ * Do we need to care about delimeters?
+ * 
+ * @param object $post - the target post object
+ * @param array $target_ids - which we ignore for this filter
+ * @return object - the updated post object
+ * 
+ *
+ */
+function oik_clone_apply_informal_relationship_mapping_urls( $post, $target_ids ) {
+  $master = bw_array_get( $_REQUEST, "master", null );
+  $source = str_replace( "http://", "",  $master );
+  $target = site_url('', 'http' );
+  $target = str_replace( "http://", "",  $target );
+  $post->post_content = str_replace( $source, $target, $post->post_content );
+  $post->post_excerpt = str_replace( $source, $target, $post->post_excerpt );
+  bw_trace2();
+  return( $post );
 }
 
 /**
@@ -125,9 +218,7 @@ function oik_clone_filter_all_post_meta( $post ) {
  * 
  */
 function oik_clone_filter_post_meta( $meta, $key ) {
-
-
-
+  return( $meta );
 }
 
  

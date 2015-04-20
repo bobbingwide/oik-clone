@@ -80,14 +80,16 @@ function oik_clone_load_media_file( $id, $payload ) {
   static $jmedia; 
   if ( empty( $jmedia ) ) {
     $media_file = array();
-    $media_file['url'] = bw_array_get( $_REQUEST, "attachment_url", null );
-    $media_file['type'] = $payload->post_mime_type; 
-    $file = get_post_meta( $id, "_wp_attached_file", true );
-    $media_file['name'] = basename( $file );
-    $base64 = oik_clone_load_media_file_base64( $file );
-    $media_file['md5'] = md5( $base64 ); 
-    bw_trace2( $media_file, "media_file" );
-    $media_file['data'] = $base64;
+    if ( $payload->post_type == "attachment" ) {
+      $media_file['url'] = bw_array_get( $_REQUEST, "attachment_url", null );
+      $media_file['type'] = $payload->post_mime_type; 
+      $file = get_post_meta( $id, "_wp_attached_file", true );
+      $media_file['name'] = basename( $file );
+      $base64 = oik_clone_load_media_file_base64( $file );
+      $media_file['md5'] = md5( $base64 ); 
+      bw_trace2( $media_file, "media_file" );
+      $media_file['data'] = $base64;
+    }  
     $jmedia = json_encode( $media_file ); 
   }
   return( $jmedia );
@@ -109,6 +111,10 @@ function oik_clone_load_media_file_base64( $file ) {
   $basedir = $upload_dir['basedir'];
   $full_file = $basedir . "/". $file;
   $contents = file_get_contents( $full_file );
+  if ( strlen( $contents ) > 750000 ) {
+    $contents = "Dummy file: $file. File too large for push. Replace using ftp";
+    gobang(); 
+  }   
   $base64 = base64_encode( $contents );
   return( $base64 );
 }
