@@ -205,7 +205,7 @@ function oik_clone_filter_all_post_meta( $post ) {
     //$meta = apply_filters( "
     
     bw_trace2( $meta, $key, false );
-    if ( $mapping->is_relationship_field( $key ) ) {
+    if ( $mapping->is_relationship_field( $key, $meta ) ) {
       $meta = $mapping->apply_mapping( $meta ); 
     } 
     $filtered_post_meta[ $key ] = $meta;

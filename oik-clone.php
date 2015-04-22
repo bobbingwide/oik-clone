@@ -3,7 +3,7 @@
 Plugin Name: oik-clone
 Plugin URI: http://www.oik-plugins.com/oik-plugins/oik-clone-clone-your-wordpress-content
 Description: Clone your WordPress content 
-Version: 0.8
+Version: 0.9
 Author: bobbingwide
 Author URI: http://www.oik-plugins.com/author/bobbingwide
 License: GPL2
@@ -185,9 +185,15 @@ function oik_clone_add_meta_boxes( $post_type, $post) {
  *
  * Until we can find a valid reason for handling add_attachment differently
  * we'll just treat it as edit attachment.
+ * 
+ * Actually, we may not want to do this. 
+ * add_attachment is called on initial upload - Media -> Add New
+ * 
  */
 function oik_clone_add_attachment( $post_ID ) {
-  oik_clone_edit_attachment( $post_ID );
+  //oik_clone_edit_attachment( $post_ID );
+  bw_trace2();
+  bw_backtrace();
 }
 
 /**

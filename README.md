@@ -3,8 +3,8 @@
 * Donate link: http://www.oik-plugins.com/oik/oik-donate/
 * Tags: clone, compare, update, MultiSite
 * Requires at least: 4.1
-* Tested up to: 4.2-beta4
-* Stable tag: 0.8
+* Tested up to: 4.2-RC1
+* Stable tag: 0.9
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 * Text Domain: oik-clone
@@ -47,9 +47,9 @@ Install on both the client and server machines.
 ## Frequently Asked Questions 
 
 # Is there a beta test version? 
-Yes. v0.8 is the first Beta test version.
+Yes. v0.8 was the first Beta test version.
 
-v0.8 is being Beta tested on the oik-plugins servers and WP-a2z sites.
+Beta testing of v0.8 was performed on the oik-plugins servers and WP-a2z sites.
 
 Previously v0.7 was Alpha tested on the oik-plugins servers.
 
@@ -135,6 +135,9 @@ Other methods will be implemented in future versions.
 3. Clone on update meta box - Previously cloned
 
 ## Upgrade Notice 
+# 0.9 
+Improved mapping of informal relationships in post content.
+
 # 0.8 -
 Supports mapping of informal relationships in post content.
 
@@ -160,6 +163,11 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 ## Changelog 
+# 0.9 
+* Changed: Improved detection of IDs for informal relationship mapping. Only maps IDs with selected parameter names.
+* Fixed: oik_clone_add_attachment() no longer calls oik_clone_edit_attachments(); too early
+* Changed: Added logic to perform mapping of "_bw_image_link" post meta when stored as an integer, representing a post ID
+
 # 0.8 
 * Added: "oik_clone_apply_informal_mapping" filter and functions to apply informal relationship mapping on the target
 * Added: "oik_clone_build_list" filter and function to identify informal relationships

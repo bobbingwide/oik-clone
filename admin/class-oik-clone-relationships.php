@@ -57,7 +57,7 @@ class OIK_clone_relationships {
     $IDs = $source_IDs;
     $metadata = $post->post_meta;
     foreach ( $post->post_meta as $key => $meta_array ) {
-      if ( $this->is_relationship_field( $key ) ) {
+      if ( $this->is_relationship_field( $key, $meta_array ) ) {
         //bw_trace2( $key, "key", false ); 
         //bw_trace2( $meta_array, "meta", false ); 
         $IDs = array_merge( $IDs, $meta_array ); 
@@ -70,6 +70,7 @@ class OIK_clone_relationships {
     return( $IDs );
   }
   
+  
   /**
    * Check if this is a relationship field?
    * 
@@ -77,15 +78,20 @@ class OIK_clone_relationships {
    * checking its meta_key or field type
    * 
    * @param string $key - the meta_key
+   * @param string $meta_value - the meta_value
    * @return bool - true if this is a relationship field
    *
    */
-  function is_relationship_field( $key ) {
+  function is_relationship_field( $key, $meta_value ) {
     $is_relationship_field = false;
     switch ( $key ) {
       case "_thumbnail_id":
         $is_relationship_field = true;
-        //gobang();
+        break;
+        
+      case "_bw_image_link":
+        $is_relationship_field = is_numeric( $meta_value[0] ); 
+        bw_trace2( $is_relationship_field, "is_relationship" ); 
         break;
         
       default:

@@ -166,6 +166,8 @@ function oik_clone_publicize( $id, $load_media=false ) {
     }
   } else { 
     p( "No slaves to which to clone" );
+    bw_backtrace();
+    
   }
   //gobang();
 

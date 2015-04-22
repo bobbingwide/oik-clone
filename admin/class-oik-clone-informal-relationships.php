@@ -11,17 +11,22 @@ abstract class OIK_clone_informal_relationships {
   public $state = '0';
   public $chr;
   public $char_type = '0';
-  public $source_ids;
   public $state_types;
-  public $source;
+  /**
+   * token index of the latest start of a shortcode or query parameter
+   * We don't have to backtrack past this point
+   * 
+   */
+  public $latest_shortcode_start;
+  public $valid_tokens;
   
 
-  function __construct( $source_ids=null ) {
+  function __construct() {
     $this->chr = null;
     $this->char_type = '0';
     $this->set_state_types();
+    $this->set_valid_tokens();
     $this->token_init();
-  
   }
   
   function set_mapping( $target_ids ) {
@@ -50,8 +55,8 @@ abstract class OIK_clone_informal_relationships {
    *  2   | significant delimeter | 
    *  0   | anything else
    * 
-   * Once we've started an anything else string a digit won't end it.
-   * But a significant delimeter will
+   * Once we've started an 'anything else' string a digit won't end it.
+   * But a significant delimeter will.
    *  
    */
   function get_char_type() {
@@ -79,6 +84,8 @@ abstract class OIK_clone_informal_relationships {
       case ']':
       case '"':
       case "'":
+      case "[";
+      case "?";
         $this->char_type = '2';
         
     }
@@ -111,6 +118,40 @@ abstract class OIK_clone_informal_relationships {
                               );
    //print_r( $this->state_types );                              
   }
+  
+  /**
+   * Define the valid token types for post ID context
+   * 
+   * - Some parameter names are not valid for IDs but are valid for integers. e.g. posts_per_page=10
+   * - Other parameter names are for taxonomy or user IDs... e.g. cat=5, author=1 
+   * - We may need to handle these in the future
+   * - And then there's a set of parameter names where we do expect to find post IDs
+   *
+   * The array we create is for the parameter names which can be IDs.
+   * If we find anything else we say it's not a post ID, so it won't get mapped
+   * 
+   * Having populated the array we flip the keys for a quick check in check_token()  
+   *                           
+   * @TODO - We also have to take into account positional parameters somehow
+   */
+  function set_valid_tokens() {
+    $this->valid_tokens = array( "id"
+                               , "ids"
+                               , "p"
+                               , "exclude"
+                               , "include"
+                               , "page_id"
+                               , "post_parent"
+                               , "post_parent__in"
+                               , "post_parent__not_in"
+                               , "post__in"
+                               , "post__not_in"
+                               , "meta_value"
+                               , "meta_value_num"
+                               );
+    // $this->valid_tokens = apply_filters( "oik_clone_valid_tokens", $this->valid_tokens );
+    $this->valid_tokens = array_flip( $this->valid_tokens );                           
+  }                               
   
   /**
    * Find out what action to take
@@ -195,15 +236,44 @@ abstract class OIK_clone_informal_relationships {
    * Note: It shouldn't be possible to have adjacent tokens of the same type; except the first and last, which are edge cases
    */
   function identify_ids() {
+    $this->latest_shortcode_start = 0;
     $ct = count( $this->tokens );
     $ct--;
     for ( $t = 1; $t < $ct; $t++ ) {
+      $this->set_latest_shortcode_start( $t-1 );
       $match = $this->tokens[ $t-1 ]['type'];
       $match .= $this->tokens[ $t ]['type'];
       $match .= $this->tokens[ $t+1 ]['type'];
       if ( $match == "212" ) {
         $this->maybe_add_id( $this->tokens[$t]['token'], $t );
+      } else {
+        //echo $match . PHP_EOL;
       } 
+    }
+  }
+  
+  /** 
+   * Set the latest shortcode start index
+   *
+   * Processing depends on the token value. 
+   * Remember that we're going to backtrack to this position
+   * So we can move it forward as quickly as we like, can't we?
+   * 
+   */
+  function set_latest_shortcode_start( $index ) {
+    switch ( $this->tokens[ $index ]['token'] ) {
+      case "[":
+      case "?":
+        $this->latest_shortcode_start = $index;
+        //echo "Latest: $index" . PHP_EOL;
+        break;
+        
+      case "]":
+        $this->latest_shortcode_start = 0;
+        break;
+        
+      default: 
+        // Leave as is
     }
   }
   
@@ -225,21 +295,81 @@ abstract class OIK_clone_informal_relationships {
    */
   function maybe_add_id( $id, $t ) {
     $intvalid = intval( $id );
-    if ( $intvalid ) {
+    if ( $intvalid && $this->is_in_context( $t ) ) {
+      //echo "Token $t a goodun" . PHP_EOL;
       $this->handle_id( $id, $t );
-      /**
-      if ( $this->source ) {
-        $this->add_id( $intvalid );
-      }
-      if ( $this->target ) {
-        $this->replace_id( $intvalid, $t );
-      }  
-      */
     }
   }
   
-  abstract function handle_id( $id, $t );
+  /**
+   * Check if this is an ID in context 
+   *
+   * We want to know whether or not we think this is an ID.
+   * So we check the context, by backtracking no further than the start of the shortcode
+   * to see what sort of parameter we might be processing.
+   *
+   * If we find an "=" then we check the previous token
+   * If we don't then we keep going until we see a space.
+   
+   *
+   */
+  function is_in_context( $t ) {
+    $in_context = null;
+    if ( $this->latest_shortcode_start ) {
+      $t--;
+      while ( $in_context === null && ( $t > ( $this->latest_shortcode_start ) ) ) {
+        $in_context = $this->check_context( $t );
+        $t--;
+      }
+      // If we've got back to the start and not yet confirmed it
+      // then perhaps this is a positional parameter
+      // so let's err on the true side rather than false.
+      if ( null === $in_context ) { 
+        $in_context = true;
+      }
+    }
+    return( $in_context );
+  }
   
+  /**
+   * Return true if the ID is in context
+   *
+   * Note: In shortcode processing the parameter names are lower cased
+   * so we should convert them as well
+   * 
+   * @param integer $t - the index of the token
+   * 
+   */
+  function check_context( $t ) {
+    $in_context = null;
+    
+    //echo "$t $in_context" . PHP_EOL;
+    //echo $this->tokens[ $t ]['token'] . PHP_EOL;
+    if ( $this->tokens[ $t ]['token'] == "=" ) {
+      $token_type = $this->tokens[ $t-1 ]['type'];
+      //echo "token_type: $token_type" . PHP_EOL;
+      if ( $token_type == "0" ) {
+        $token_value = strtolower( $this->tokens[ $t-1 ]['token'] ); 
+        $in_context = $this->check_token( $token_value  );  
+      }
+    }
+    return( $in_context );
+  }
+  
+  /**
+   * Return true if the token is a valid context token
+   * 
+   * @return bool - true if it's a valid context, false otherwise
+   */
+  function check_token( $token_value ) {
+    //echo "Token value: $token_value" . PHP_EOL;
+    $in_context = isset( $this->valid_tokens[ $token_value ] );
+    //print_r( $this->valid_tokens );
+    //var_dump( $in_context );
+    return( $in_context );
+  }   
+  
+  abstract function handle_id( $id, $t );
    
   /**
    * Map the IDs and reassemble the content

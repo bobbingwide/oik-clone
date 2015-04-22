@@ -130,15 +130,21 @@ class OIK_clone_mapping {
    * 
    * 
    * @param string $key - the meta_key
+   * @param array $meta_value - the meta value
    * @return bool - true if this is a relationship field
    *
    */
-  function is_relationship_field( $key ) {
+  function is_relationship_field( $key, $meta_value ) {
     $is_relationship_field = false;
     switch ( $key ) {
       case "_thumbnail_id":
         $is_relationship_field = true;
         //gobang();
+        break;
+        
+      case "_bw_image_link":
+        $is_relationship_field = is_numeric( $meta_value[0] );
+        bw_trace2( $is_relationship_field, "is_relationship_field" );
         break;
         
       default:
