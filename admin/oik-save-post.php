@@ -169,8 +169,6 @@ function oik_clone_publicize( $id, $load_media=false ) {
     bw_backtrace();
     
   }
-  //gobang();
-
 }
 
 /**
@@ -290,6 +288,28 @@ function oik_clone_query_slave_target( $slave, $payload ) {
  * @return mixed - the result of the AJAX call 
  */
 function oik_clone_update_slave( $id, $payload, $slave, $target, $mapping, $media_file=null ) {
+  if ( "[]" == $media_file ) {
+    $result = oik_clone_update_slave_simple( $id, $payload, $slave, $target, $mapping );
+  } else {
+    $result = oik_clone_update_slave_multipart( $id, $payload, $slave, $target, $mapping, $media_file );
+  }
+  return( $result );
+}
+
+/**
+ * Update the slave with a simple message
+ *
+ * If there is no media file then we can probably use this most of the time
+ *
+ * @param ID $id - the source ID
+ * @param mixed $payload - the post object, including post_meta
+ * @param string $slave - the slave server root
+ * @param ID $target - the post ID on the target
+ * @param string $mapping - the JSON encoded mapping
+ * @param string $media_file - JSON encoded media file. May be null 
+ * @return mixed - the result of the AJAX call 
+ */
+function oik_clone_update_slave_simple( $id, $payload, $slave, $target, $mapping, $media_file=null ) {
   $url = "$slave/wp-admin/admin-ajax.php" ;
   $body = array( "action" => "oik_clone_post" 
                , "master" => get_site_url()
@@ -304,5 +324,52 @@ function oik_clone_update_slave( $id, $payload, $slave, $target, $mapping, $medi
                ); 
   $result = bw_remote_post( $url, $args );
   bw_trace2( $result );
+  return( $result );
+}
+
+
+/**
+ * Update the slave with a multipart message
+ *
+ * When there is a media file and the total body of the POST exceeds some limit
+ * then we need to use a multipart form
+ *
+ * We've already loaded the media_file so we pass this through which may save
+ * the class loading it again.
+ * 
+ * @TODO Check performance considerations
+ * 
+ * @param ID $id - the source ID
+ * @param mixed $payload - the post object, including post_meta
+ * @param string $slave - the slave server root
+ * @param ID $target - the post ID on the target
+ * @param string $mapping - the JSON encoded mapping
+ * @param string $media_file - JSON encoded media file. May be null 
+ * @return mixed - the result of the AJAX call 
+ */
+function oik_clone_update_slave_multipart( $id, $payload, $slave, $target, $mapping, $media_file=null ) {
+  if ( $media_file ) {
+    $media = json_decode( $media_file );
+    bw_trace2( $media, "media" );
+    $file = $media->name;
+    $file_type = $media->type;
+    $url = "$slave/wp-admin/admin-ajax.php" ;
+    $body = array( "action" => "oik_clone_post" 
+                 , "master" => get_site_url()
+                 , "oik_apikey" => oik_clone_get_apikey()
+                 , "target" => $target 
+                 , "payload" => $payload
+                 , "mapping" => $mapping
+                 , "media" => $media
+                 );
+    $args = array( "body" => $body 
+                 , 'timeout' => 30
+                 ); 
+    oik_require( "admin/oik-clone-post-file.php", "oik-clone" );
+    $result = bw_remote_post_file( $url, $args, $file, $file_type );
+  } else {
+    bw_trace2( "Missing media_file parameter" );
+    $result = null;
+  }
   return( $result );
 }

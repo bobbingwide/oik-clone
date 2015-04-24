@@ -47,6 +47,9 @@ Install on both the client and server machines.
 == Frequently Asked Questions ==
 
 = Is there a beta test version? =
+
+Beta versions for v1.0 are suffixed -beta.mmdd
+
 Yes. v0.8 was the first Beta test version.
 
 Beta testing of v0.8 was performed on the oik-plugins servers and WP-a2z sites.
@@ -135,6 +138,9 @@ Other methods will be implemented in future versions.
 3. Clone on update meta box - Previously cloned  
 
 == Upgrade Notice ==
+= 1.0-beta.0422 =
+Improved support for larger media files. Improved mapping of informal relationships in post content. 
+
 = 0.9 =
 Improved mapping of informal relationships in post content.
 
@@ -163,6 +169,16 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 == Changelog ==
+= 1.0-beta.0422 =
+* Changed: Media files are now passed using multipart forms. See [api oik_clone_update_slave_multipart()] 
+* Changed: MD5 calculation and checking is performed against the original file, not the base64 encoded version
+* Changed: [api bw_remote_post_file()] 
+* Added: [api oik_clone_load_media_from_files]
+* Changed: [api OIK_clone_post_file::file_contents] handles media passed through $args['body']['media']
+* Fixed: [api OIK_clone_post_file::attach_body()] passes each top level array entry as a separate field
+* Added: [api OIK_clone_post_file::detach_media] to detect media passed through $args['body']['media']
+* Fixed: Informal relationship mapping: detect the end of query args to prevent out of context IDs from being mapped
+
 = 0.9 =
 * Changed: Improved detection of IDs for informal relationship mapping. Only maps IDs with selected parameter names.
 * Fixed: oik_clone_add_attachment() no longer calls oik_clone_edit_attachments(); too early

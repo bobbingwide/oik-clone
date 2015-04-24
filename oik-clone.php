@@ -3,7 +3,7 @@
 Plugin Name: oik-clone
 Plugin URI: http://www.oik-plugins.com/oik-plugins/oik-clone-clone-your-wordpress-content
 Description: Clone your WordPress content 
-Version: 0.9
+Version: 1.0-beta.0422
 Author: bobbingwide
 Author URI: http://www.oik-plugins.com/author/bobbingwide
 License: GPL2
@@ -220,6 +220,7 @@ function oik_clone_edit_attachment( $post_ID ) {
  *
  */
 function oik_clone_nopriv_oik_clone_post() {
+  //bw_trace2();
   oik_require( "admin/oik-clone-json.php", "oik-clone" );
   $target_id = 0;
   add_filter( 'oik_validate_apikey', 'oik_clone_oik_validate_apikey', 10, 2 );

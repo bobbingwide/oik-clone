@@ -85,14 +85,32 @@ function oik_clone_load_media_file( $id, $payload ) {
       $media_file['type'] = $payload->post_mime_type; 
       $file = get_post_meta( $id, "_wp_attached_file", true );
       $media_file['name'] = basename( $file );
-      $base64 = oik_clone_load_media_file_base64( $file );
-      $media_file['md5'] = md5( $base64 ); 
+      $full_file = oik_clone_determine_full_file( $file );
+      $media_file['file'] = $full_file;
+      
+      $contents = file_get_contents( $full_file );
+      
+      $media_file['md5'] = md5( $contents ); 
+      $base64 = oik_clone_load_media_file_base64( $contents );
+      // $media_file['md5'] = md5( $base64 ); 
+      $media_file['size'] = filesize( $full_file );
       bw_trace2( $media_file, "media_file" );
       $media_file['data'] = $base64;
     }  
     $jmedia = json_encode( $media_file ); 
   }
   return( $jmedia );
+}
+
+/**
+ * Determine full file name
+ * 
+ */
+function oik_clone_determine_full_file( $file ) {
+  $upload_dir = wp_upload_dir();
+  $basedir = $upload_dir['basedir'];
+  $full_file = $basedir . "/". $file;
+  return( $full_file );
 }
 
 /**
@@ -106,15 +124,11 @@ function oik_clone_load_media_file( $id, $payload ) {
  * @return string - the base64 encoded version of the contents of the file
  *
  */   
-function oik_clone_load_media_file_base64( $file ) {
-  $upload_dir = wp_upload_dir();
-  $basedir = $upload_dir['basedir'];
-  $full_file = $basedir . "/". $file;
-  $contents = file_get_contents( $full_file );
-  if ( strlen( $contents ) > 750000 ) {
-    $contents = "Dummy file: $file. File too large for push. Replace using ftp";
-    gobang(); 
-  }   
+function oik_clone_load_media_file_base64( $contents ) {
+  //if ( strlen( $contents ) > 750000 ) {
+  //  $contents = "Dummy file: $file. File too large for push. Replace using ftp";
+  //  gobang(); 
+  //}   
   $base64 = base64_encode( $contents );
   return( $base64 );
 }
@@ -158,8 +172,48 @@ function oik_clone_save_media_file( $time ) {
         }
       }
     }
-  }    
+  } else {
+    $media_file = oik_clone_load_media_from_files( $time );
+  } 
+      
   return( $media_file );
+}
+
+/**
+ * Extract the media information from the $_FILES array
+ *
+ * We also need to get additional fields
+ * since this doesn't seem to be available any other way
+ *
+ 
+    [filecontent] => chunked
+    [filesize] => 238647
+    [filemd5] = a1b2c3d4e5f6g7h8etc
+ */
+
+function oik_clone_load_media_from_files( $time ) {
+  bw_trace2( $_FILES, "_FILES" );
+  $media_file = null;
+  if ( isset( $_FILES['file'] ) ) {
+    $tmp_file = $_FILES['file']['tmp_name'];
+    $name = $_FILES['file']['name'];
+    $type = $_FILES['file']['type'];
+    $data = file_get_contents( $tmp_file );
+  
+    $filecontent = bw_array_get( $_REQUEST, "filecontent", null );
+    $filesize = bw_array_get( $_REQUEST, "filesize", null );
+    $filemd5 = bw_array_get( $_REQUEST, "filemd5", null );
+    
+    $contents = oik_clone_validate_media_fields( $data, $filemd5 );
+    if ( $contents ) {
+      $tmp_file = oik_clone_write_tmp_file( $name, $contents );
+      if ( $tmp_file ) {
+        $media_file = oik_clone_write_media_file( $name, $type, $tmp_file, $time );
+      }
+    }
+  }
+  return( $media_file );
+
 }
 
 /**
@@ -173,12 +227,13 @@ function oik_clone_save_media_file( $time ) {
  * @return string - decoded contents
  */
 function oik_clone_validate_media_fields( $data, $md5 ) {
-  $testmd5 = md5( $data );
+  $contents = base64_decode( $data ); 
+  $testmd5 = md5( $contents );
   if ( $md5 == $testmd5 ) {
-    $contents = base64_decode( $data ); 
+    p( "MD5 OK" );
   } else {
-    p( "MD5 mismatch $testmd5 $md5" );
-    $contents = null;
+    p( "MD5 mismatch: $testmd5 <> $md5" );
+    // $contents = null;
   }
   //bw_trace2( $contents, "contents" );
   return( $contents );

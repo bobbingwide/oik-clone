@@ -84,8 +84,13 @@ abstract class OIK_clone_informal_relationships {
       case ']':
       case '"':
       case "'":
-      case "[";
-      case "?";
+      case "[":
+      case "?":
+      case "&":
+      case "/":
+      case "\\":
+      case "<":
+      case ">":
         $this->char_type = '2';
         
     }
@@ -258,17 +263,23 @@ abstract class OIK_clone_informal_relationships {
    * Processing depends on the token value. 
    * Remember that we're going to backtrack to this position
    * So we can move it forward as quickly as we like, can't we?
+   * @TODO Probably not. It's horribly complicated isn't it! 
    * 
    */
   function set_latest_shortcode_start( $index ) {
     switch ( $this->tokens[ $index ]['token'] ) {
       case "[":
       case "?":
+      case "&":
         $this->latest_shortcode_start = $index;
         //echo "Latest: $index" . PHP_EOL;
         break;
         
       case "]":
+      case "/":
+      case "\\":
+      case "<":
+      case ">":
         $this->latest_shortcode_start = 0;
         break;
         

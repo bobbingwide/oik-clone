@@ -17,6 +17,10 @@ class OIK_clone_post_file {
   
   public $args;
   
+  public $media;
+  
+  public $md5;
+  
   /** 
    * Constructor for OIK_clone_post_file
    *
@@ -25,6 +29,8 @@ class OIK_clone_post_file {
     $this->set_boundary();
     $this->file = null;
     $this->file_type = null;
+    $this->media = null;
+    $this->md5 = null;
   }
   
   /**
@@ -83,7 +89,10 @@ class OIK_clone_post_file {
    *
    */
   function body() {
-    return( $this->args['body'] . PHP_EOL );
+    //bw_trace2( $this->args['body'], "this args body" );
+    $body = json_encode( $this->args['body'] );
+    $body .= PHP_EOL;
+    return( $body );
   }
   
   
@@ -114,14 +123,21 @@ class OIK_clone_post_file {
   
   /**
    * Return the chunked base64 format of the file
+   * 
    */
   function file_contents() {
-    $contents = file_get_contents( $this->file );
-    //if ( strlen( $contents ) > 750000 ) {
-    //  $contents = "Dummy file: $file. File too large for push. Replace using ftp";
-    //  gobang(); 
-    //}   
-    $base64 = base64_encode( $contents );
+    if ( $this->media ) {
+      $base64 = $this->media->data;
+      $this->md5 = $this->media->md5;
+    } else {
+      $contents = file_get_contents( $this->file );
+      //if ( strlen( $contents ) > 750000 ) {
+      //  $contents = "Dummy file: $file. File too large for push. Replace using ftp";
+      //  gobang(); 
+      //}   
+      $base64 = base64_encode( $contents );
+      $this->md5 = md5( $base64 );
+    }  
     $chunked = chunk_split( $base64 );
     return( $chunked );
     //return( $contents );
@@ -149,13 +165,19 @@ class OIK_clone_post_file {
    * Return the "body" as if it were multipart form data called "body"
    * 
    * We assume the body has already been encoded into a form the target understands
+   * Nope
    *
    */
   function attach_body() {
-    $filedata = $this->boundary_line();
-    $filedata .= $this->body_disposition();
-    $filedata .= $this->body();
-    $filedata .= PHP_EOL;
+    $filedata = null;
+    foreach ( $this->args['body'] as $name => $value ) {
+      $filedata .= $this->attach_var( $name, $value );
+    } 
+  
+    //$filedata = $this->boundary_line();
+    //$filedata .= $this->body_disposition();
+    //$filedata .= $this->body();
+    //$filedata .= PHP_EOL;
     return( $filedata );
   }
   
@@ -175,7 +197,7 @@ class OIK_clone_post_file {
     $filedata .= $this->body_disposition( $name );
     $filedata .= $value;
     $filedata .= PHP_EOL;
-    echo $filedata;
+    //echo $filedata;
     return( $filedata );   
   }
 
@@ -213,13 +235,15 @@ class OIK_clone_post_file {
     $this->args = $args;
   
     //$body = $args['body'];
+    $this->detach_media();
     
     $new_body = "";
     $new_body = $this->attach_body();
     //$new_body .= $this->attach_var( "filename", $file );
     $new_body .= $this->attach_var( "filecontent", "chunked" );
-    $new_body .= $this->attach_var( "filesize", filesize( $file ) );
+    $new_body .= $this->attach_var( "filesize", $this->filesize( $file ) );
     $new_body .= $this->attach_file( $file, $file_type );
+    $new_body .= $this->attach_var( "filemd5", $this->md5 );
     
     $new_body .= $this->boundary_line( true );
     //print_r( $new_body );
@@ -232,15 +256,33 @@ class OIK_clone_post_file {
     $this->headers();
     
     bw_trace2( $this->args, "this args" );
-    //print_r( $this->args );
-    
     $result = bw_remote_post( $url, $this->args );
-    
-    //$stream = new WP_Http_Streams();
-    //$stream->request( $url,  $this->args );
-    
-    // Now we send it
     return( $result );
+  }
+  
+  function filesize( $file ) {
+    if ( $this->media ) {
+      $filesize = $this->media->size;
+    } else {
+      $filesize = filesize( $file );
+    }
+    return( $filesize );
+  }
+  
+  /**
+   * Detach the media file if passed in the args
+   *
+   * The media is expected to be json_decoded by this time.
+   *
+   */
+  function detach_media() {
+    if ( isset( $this->args['body']['media'] ) ) {
+      $this->media = $this->args['body']['media'];
+      unset( $this->args['body']['media'] );
+    } else {
+      $this->media = null;
+    }
+    //bw_trace2( $this->media, "this media" );
   }
   
 
