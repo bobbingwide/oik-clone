@@ -11,13 +11,19 @@ class OIK_Clone_Compare_List_Table {
   public $target;
   
   function __construct( $args ) {
-    //parent::__construct();
-   //$this->o();
-    
     $this->source = $args["source"];
     $this->target = $args["target"]; 
   }
-  
+	
+	/**
+	 * Return the result of the comparison
+	 * 
+	 * The result can be "=", ">" or "<" which we assume is non-translatable
+	 *
+	 * @param string $source_value the source value
+	 * @param string $target_value the target value
+	 * @return string the result
+	 */
   function result( $source_value, $target_value ) {
     if ( $source_value == $target_value ) {
       $result = "=";
@@ -29,7 +35,15 @@ class OIK_Clone_Compare_List_Table {
     return( $result );
   
   }
-  
+	
+	/**
+	 * Return the column's value
+	 *
+	 * If there isn't a value we substitute a non blank space
+	 *
+	 * @param string $value the column's value
+	 * @return string escaped value
+	 */
   function colvalue( $value ) {
     if ( $value ) { 
       $value = esc_html( $value );
@@ -57,7 +71,7 @@ class OIK_Clone_Compare_List_Table {
    *
    */
    function flatten_values( $data ) {
-     bw_trace2();
+     //bw_trace2();
      if ( $data ) {
        $values = implode( ", ", $data ); 
      } else {
@@ -82,7 +96,7 @@ class OIK_Clone_Compare_List_Table {
     //ksort( $target_post_meta ); 
     //$sv = print_r( $source_post_meta, true );
     //$tv = print_r( $target_post_meta, true );
-    bw_tablerow( array( "<b>post_meta</b>" ) );
+    bw_tablerow( array( __( "<b>post_meta</b>", 'oik-clone' ) ) );
     
     $matched = $this->assoc_array_match( $source_post_meta, $target_post_meta );
     foreach ( $matched as $key => $data ) {

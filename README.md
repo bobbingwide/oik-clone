@@ -3,7 +3,7 @@
 * Donate link: http://www.oik-plugins.com/oik/oik-donate/
 * Tags: clone, compare, update, MultiSite
 * Requires at least: 4.1
-* Tested up to: 4.2-RC1
+* Tested up to: 4.2.2
 * Stable tag: 0.9
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -138,6 +138,11 @@ Other methods will be implemented in future versions.
 3. Clone on update meta box - Previously cloned
 
 ## Upgrade Notice 
+# 1.0-beta.0511 
+Required where the target doesn't have oik-fields active.
+Now partially internationalized, with support for the bbboing language ( bb_BB locale ).
+Depends on oik v2.6-alpha.0511 or higher
+
 # 1.0-beta.0422 
 Improved support for larger media files. Improved mapping of informal relationships in post content.
 
@@ -169,6 +174,16 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 ## Changelog 
+# 1.0-beta.0511 
+* Changed: Improved security using esc_url() around add_query_arg()
+* Fixed: is_relationship_field() method loads "includes/bw_fields.inc". Needed if oik-fields is not activated.
+* Fixed: temporary fix for multisite pull; only calls oik_clone_filter_all_post_meta if it exists.
+* Fixed: temporary fix in oik_clone_publicize(); commented out "No slaves to clone" message which was being displayed in WPMS pull
+* Added: Logic to disable heartbeat processing based on a constant "HEARTBEAT". Disables processing if HEARTBEAT is false
+* Added: Logic to force use of oik_clone_update_slave_simple(), when constant "OIK_CLONE_FORCE_SIMPLE" is set
+* Added: prototype filter function for "heartbeat_settings" to control heartbeat interval
+* Added: partially localized version in the bbboing language ( locale bb_BB )
+
 # 1.0-beta.0422 
 * Changed: Media files are now passed using multipart forms. See [api oik_clone_update_slave_multipart()]
 * Changed: MD5 calculation and checking is performed against the original file, not the base64 encoded version

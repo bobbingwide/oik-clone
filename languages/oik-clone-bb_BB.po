@@ -1,0 +1,223 @@
+# Copyright (C) 2015 oik-clone
+# This file is distributed under the same license as the oik-clone package.
+msgid ""
+msgstr ""
+"Project-Id-Version: oik-clone 1.0-beta.0511\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/oik-clone\n"
+"POT-Creation-Date: 2015-05-11 16:34:26+00:00\n"
+"MIME-Version: 1.0\n"
+"Plural-Forms: nplurals=2; plural=n == 1 ? 0 : 1;\n"
+"Language: bb_BB\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2015-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+#: admin/class-oik-clone-compare-list-table.php:99
+msgid "<b>post_meta</b>"
+msgstr "<b>post_meta</b>"
+
+#. translators: manage posts column name
+#: admin/class-oik-clone-list-table.php:68
+msgctxt "column name"
+msgid "Title"
+msgstr "Ttile"
+
+#: admin/class-oik-clone-list-table.php:69
+msgid "Matched by"
+msgstr "Mhtecad by"
+
+#: admin/class-oik-clone-list-table.php:70
+msgid "ID"
+msgstr "ID"
+
+#: admin/class-oik-clone-list-table.php:71
+msgid "Modified"
+msgstr "Mdeiiofd"
+
+#: admin/class-oik-clone-list-table.php:72
+msgid "Slug"
+msgstr "Sulg"
+
+#: admin/class-oik-clone-list-table.php:73
+msgid "Post type"
+msgstr "Psot tpye"
+
+#: admin/class-oik-clone-list-table.php:250
+msgid "Update"
+msgstr "Uptdae"
+
+#: admin/class-oik-clone-list-table.php:251
+msgid "Compare"
+msgstr "Cromape"
+
+#: admin/class-oik-clone-list-table.php:253
+msgid "Import new"
+msgstr "Iomrpt nEw"
+
+#: admin/oik-clone-actions.php:38
+msgid "Performing import"
+msgstr "Pmnerfoirg irompt"
+
+#: admin/oik-clone-actions.php:46 admin/oik-clone-actions.php:61
+msgid "Invalid - no source specified"
+msgstr "Ilinvad - nO suorce scipifeed"
+
+#: admin/oik-clone-actions.php:53
+msgid "Performing update"
+msgstr "Prinmofreg utpdae"
+
+#: admin/oik-clone-actions.php:115
+msgid "Invalid request."
+msgstr "Ialvind rsuqeet."
+
+#: admin/oik-clone-actions.php:299
+msgid "oops"
+msgstr "opos"
+
+#: admin/oik-clone-clone.php:35
+msgid "Payload is not an object"
+msgstr "Pyoaald Is nOt An ojcbet"
+
+#: admin/oik-clone-clone.php:38
+msgid "Missing payload"
+msgstr "Mnissig paaylod"
+
+#: admin/oik-clone-clone.php:154
+msgid "That's odd"
+msgstr "That's Odd"
+
+#: admin/oik-clone-clone.php:157
+msgid "Looks like we'll have to create it"
+msgstr "Lkoos like wE'll hvae tO ctreae It"
+
+#: admin/oik-clone-json.php:34
+msgid "Missing oik_apikey"
+msgstr "Miinssg OIk_aiekpy"
+
+#: admin/oik-clone-media.php:233
+msgid "MD5 OK"
+msgstr "MD5 OK"
+
+#: admin/oik-clone-meta-box.php:45
+msgid "Cloning not supported for post types that do not support publicize"
+msgstr "Coilnng nOt stuoperpd fOr psot tpyes taht dO nOt suorppt pilczbuie"
+
+#: admin/oik-clone-ms.php:67
+msgid "source site"
+msgstr "suroce stie"
+
+#: admin/oik-clone-ms.php:69 admin/oik-clone-self.php:62
+msgid "Activity"
+msgstr "Aititcvy"
+
+#: admin/oik-clone-ms.php:71
+msgid "MultiSite Posts"
+msgstr "MtuiitlSe Pstos"
+
+#: admin/oik-clone-ms.php:87 admin/oik-clone-wp-api.php:24
+msgid "Choose the source site to compare against."
+msgstr "Chosoe thE socure stie tO crpaome aagsint."
+
+#: admin/oik-clone-ms.php:97
+msgid "Only available in Multi-Site environment. Use Self"
+msgstr "Olny aiaallvbe In Mluti-Stie enrnvnieomt. UsE Slef"
+
+#: admin/oik-clone-self.php:66
+msgid "Posts"
+msgstr "Potss"
+
+#: admin/oik-clone-self.php:142
+msgid "steady now"
+msgstr "sdteay nOw"
+
+#: admin/oik-clone-servers.php:20
+msgid "Settings"
+msgstr "Steitgns"
+
+#: admin/oik-clone-servers.php:40
+msgid "Servers"
+msgstr "Sreevrs"
+
+#: admin/oik-clone-servers.php:41
+msgid "Server API key"
+msgstr "Serevr API kEy"
+
+#: admin/oik-clone-wp-api.php:10
+msgid ""
+"Upgrade required. To use WP-API please purchase and install the oik-clone-wp-"
+"api plugin."
+msgstr ""
+"Ugradpe rqeeirud. TO UsE WP-API pslaee psucrhae And inastll thE OIk-cnloe-wp-"
+"ApI plguin."
+
+#: admin/oik-clone-wp-api.php:32
+msgid "Site URL"
+msgstr "Stie URL"
+
+#: admin/oik-clone-wp-api.php:45
+msgid "Timeout (secs)"
+msgstr "Tiouemt (sces)"
+
+#: admin/oik-clone-wp-api.php:122
+msgid "Nothing selected"
+msgstr "Nihontg seeecltd"
+
+#: admin/oik-clone-wp-api.php:150
+msgid "Error"
+msgstr "Eorrr"
+
+#: admin/oik-clone.php:41
+msgid "Clone admin"
+msgstr "Colne aidmn"
+
+#: oik-clone.php:55
+msgid "Clone"
+msgstr "Cnloe"
+
+#: oik-clone.php:81
+msgid "Items"
+msgstr "Imets"
+
+#: oik-clone.php:189
+msgid "Clone on update"
+msgstr "Cnole On udapte"
+
+#: shortcodes/oik-cloned.php:70
+msgid "<i>ID</i>"
+msgstr "<i>ID</i>"
+
+#: shortcodes/oik-cloned.php:70
+msgid "Post ID"
+msgstr "Psot ID"
+
+#: shortcodes/oik-cloned.php:71
+msgid "o|d"
+msgstr "O|d"
+
+#: shortcodes/oik-cloned.php:71
+msgid "List type"
+msgstr "List tpye"
+
+#. Plugin Name of the plugin/theme
+msgid "oik-clone"
+msgstr "OIk-conle"
+
+#. Plugin URI of the plugin/theme
+msgid ""
+"http://www.oik-plugins.com/oik-plugins/oik-clone-clone-your-wordpress-content"
+msgstr ""
+"http://www.oik-plugins.com/oik-plugins/oik-clone-clone-your-wordpress-content"
+
+#. Description of the plugin/theme
+msgid "Clone your WordPress content"
+msgstr "Colne yuor WsroredPs cntenot"
+
+#. Author of the plugin/theme
+msgid "bobbingwide"
+msgstr "bigwibbdone"
+
+#. Author URI of the plugin/theme
+msgid "http://www.oik-plugins.com/author/bobbingwide"
+msgstr "http://www.oik-plugins.com/author/bobbingwide"
+

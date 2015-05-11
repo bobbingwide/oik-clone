@@ -198,7 +198,10 @@ function oik_clone_update_target( $post, $target ) {
  */ 
 function oik_clone_update_post_meta( $post, $target ) {
   oik_clone_delete_all_post_meta( $target );
-  oik_clone_filter_all_post_meta( $post );
+	//oik_require( "admin/oik-clone-relationships.php", "oik-clone" );
+	if ( function_exists( "oik_clone_filter_all_post_meta" ) ) {
+    oik_clone_filter_all_post_meta( $post );
+	}
   oik_clone_insert_all_post_meta( $post, $target );
 }
 

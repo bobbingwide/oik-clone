@@ -58,6 +58,7 @@ function oik_clone_lazy_save_post( $id, $post, $update ) {
       break;
       
   }
+	
 }
 
 /**
@@ -165,7 +166,7 @@ function oik_clone_publicize( $id, $load_media=false ) {
       }
     }
   } else { 
-    p( "No slaves to which to clone" );
+    //p( "No slaves to which to clone" );
     bw_backtrace();
     
   }
@@ -288,7 +289,7 @@ function oik_clone_query_slave_target( $slave, $payload ) {
  * @return mixed - the result of the AJAX call 
  */
 function oik_clone_update_slave( $id, $payload, $slave, $target, $mapping, $media_file=null ) {
-  if ( "[]" == $media_file ) {
+  if ( "[]" == $media_file || defined( 'OIK_CLONE_FORCE_SIMPLE' ) ) {
     $result = oik_clone_update_slave_simple( $id, $payload, $slave, $target, $mapping );
   } else {
     $result = oik_clone_update_slave_multipart( $id, $payload, $slave, $target, $mapping, $media_file );
@@ -327,7 +328,6 @@ function oik_clone_update_slave_simple( $id, $payload, $slave, $target, $mapping
   return( $result );
 }
 
-
 /**
  * Update the slave with a multipart message
  *
@@ -350,7 +350,7 @@ function oik_clone_update_slave_simple( $id, $payload, $slave, $target, $mapping
 function oik_clone_update_slave_multipart( $id, $payload, $slave, $target, $mapping, $media_file=null ) {
   if ( $media_file ) {
     $media = json_decode( $media_file );
-    bw_trace2( $media, "media" );
+    //bw_trace2( $media, "media" );
     $file = $media->name;
     $file_type = $media->type;
     $url = "$slave/wp-admin/admin-ajax.php" ;

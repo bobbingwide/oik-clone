@@ -3,10 +3,12 @@
 Plugin Name: oik-clone
 Plugin URI: http://www.oik-plugins.com/oik-plugins/oik-clone-clone-your-wordpress-content
 Description: Clone your WordPress content 
-Version: 1.0-beta.0422
+Version: 1.0-beta.0511
 Author: bobbingwide
 Author URI: http://www.oik-plugins.com/author/bobbingwide
 License: GPL2
+Text Domain: oik-clone
+Domain Path: /languages/
 
     Copyright 2014, 2015 Bobbing Wide (email : herb@bobbingwide.com )
 
@@ -37,6 +39,8 @@ function oik_clone_loaded() {
   add_action( "oik_admin_menu", "oik_clone_oik_admin_menu" );
   add_filter( 'set-screen-option', "oik_clone_set_screen_option", 10, 3 );
   add_action( "oik_add_shortcodes", "oik_clone_oik_add_shortcodes" );
+  add_filter( "heartbeat_settings", "oik_clone_heartbeat_settings" );
+  
 }  
 
 /**
@@ -46,8 +50,9 @@ function oik_clone_loaded() {
  * which is invoked after load-$hook. See wp-admin/admin.php 
  */
 function oik_clone_oik_admin_menu() {
+  bw_load_plugin_textdomain( "oik-clone" );
   register_setting( 'oik_clone', 'bw_clone_servers', 'oik_plugins_validate' ); // No validation for oik-clone
-  $hook = add_submenu_page( 'oik_menu', 'oik clone', "Clone", 'manage_options', 'oik_clone', "oik_clone_admin_page" );
+  $hook = add_submenu_page( 'oik_menu', 'oik clone', __( "Clone", 'oik-clone' ), 'manage_options', 'oik_clone', "oik_clone_admin_page" );
   add_action( "load-$hook", "oik_clone_add_options" );
   add_action( "admin_head-$hook", "oik_clone_admin_head" );
   
@@ -56,7 +61,12 @@ function oik_clone_oik_admin_menu() {
     add_action( 'add_meta_boxes', 'oik_clone_add_meta_boxes', 10, 2 );
     add_action( "edit_attachment", "oik_clone_edit_attachment", 10, 1 );
     add_action( "add_attachment", "oik_clone_add_attachment", 10, 1 );
-  }  
+  }
+  // Temporarily disable heartbeat processing
+  // 
+	if ( defined( "HEARTBEAT" ) && false == HEARTBEAT ) { 
+		wp_deregister_script('heartbeat');
+	}
 }
 
 /**
@@ -68,7 +78,7 @@ function oik_clone_oik_admin_menu() {
  */
 function oik_clone_add_options() {
   $option = 'per_page';
-  $args = array( 'label' => __( 'Items' )
+  $args = array( 'label' => __( 'Items', 'oik-clone' )
                , 'default' => 3
                , 'option' => 'oik_clone_per_page'
                );
@@ -176,7 +186,7 @@ function oik_clone_add_meta_boxes( $post_type, $post) {
   $publicize = post_type_supports( $post_type, "publicize" );
   if ( $publicize ) {
     oik_require( "admin/oik-clone-meta-box.php", "oik-clone" );
-    add_meta_box( 'oik_clone', __( "Clone on update", "oik"), 'oik_clone_box', null, 'side', 'default'  );
+    add_meta_box( 'oik_clone', __( "Clone on update", 'oik-clone' ), 'oik_clone_box', null, 'side', 'default'  );
   }  
 }
 
@@ -233,6 +243,17 @@ function oik_clone_nopriv_oik_clone_post() {
   bw_backtrace();
   bw_flush();
   exit();
+}
+
+/**
+ * Implement "heartbeat_settings" filter for oik-clone
+ *
+ * 
+ */
+function oik_clone_heartbeat_settings( $settings ) {
+  bw_trace2();
+  $settings['interval'] = 60;
+  return( $settings );
 }
 
 /**

@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2014
+<?php // (C) Copyright Bobbing Wide 2014, 2015
 
 
 /**
@@ -60,27 +60,17 @@ class OIK_Clone_List_Table extends BW_List_Table {
    * 
    */
   function get_columns() {
-    //bw_backtrace();
-    //gobang();
-    
-    //$columns = array( 'ID' => 'ID'
-    //                , 'post_title' => 'post_title' 
-    //                );
-    //$columns = bw_assoc( bw_as_array( "ID,post_title,post_modified,guid,post_name,post_type" ));
-    //echo "get_columns"; 
-    // We need to add the filter to return column headings
     $columns = array();
     
 		$columns['cb'] = '<input type="checkbox" />';
 
 		/* translators: manage posts column name */
-		$columns['post_title'] = _x( 'Title', 'column name' );
-    $columns['matched'] = __( "Matched by" );
-    //$columns['status'] = __( "Status" );
-    $columns['ID'] = "ID";
-    $columns['post_modified'] = "Modified";
+		$columns['post_title'] = _x( 'Title', 'column name', 'oik-clone' );
+    $columns['matched'] = __( "Matched by", 'oik-clone' );
+    $columns['ID'] = __( "ID", 'oik-clone' );
+    $columns['post_modified'] = __( "Modified", 'oik-clone' );
     $columns['post_name'] = __( "Slug" );
-    $columns['post_type'] = __( "Post type" );
+    $columns['post_type'] = __( "Post type", 'oik-clone' );
     
 		/**
 		 * Filter the columns displayed in the Posts list table for a specific post type.
@@ -184,7 +174,7 @@ class OIK_Clone_List_Table extends BW_List_Table {
     
     bw_trace2( $_SERVER, "server", false );
     
-    $_SERVER['REQUEST_URI'] = add_query_arg( $source_field, $source );
+    $_SERVER['REQUEST_URI'] = esc_url( add_query_arg( $source_field, $source ) );
     bw_trace2( $_SERVER, "server" ,false );
   }
   
@@ -243,7 +233,7 @@ class OIK_Clone_List_Table extends BW_List_Table {
      <span class="trash">
      <a class="submitdelete" title="Move this item to the Trash" 
         href="http://qw/wordpress/wp-admin/post.php?post=28389&amp;action=trash&amp;_wpnonce=632928a290">Trash</a> | </span>
-     <span class="view"><a href="http://qw/wordpress/oik-plugins/oik-clone/" title="View “oik-clone”" rel="permalink">View</a>
+     <span class="view"><a href="http://qw/wordpress/oik-plugins/oik-clone/" title="View 'oik-clone'" rel="permalink">View</a>
      </span>
      </div>
    */
@@ -257,13 +247,12 @@ class OIK_Clone_List_Table extends BW_List_Table {
     
     if ( isset( $item['target'] ) ) {
       $args['target'] = $item['target'];
-      $actions['update'] = $this->create_action_link( $item, "update", "Update", $args );
-      $actions['compare'] = $this->create_action_link( $item, "compare", "Compare", $args );
+      $actions['update'] = $this->create_action_link( $item, "update", __( "Update", 'oik-clone' ), $args );
+      $actions['compare'] = $this->create_action_link( $item, "compare", __( "Compare", 'oik-clone' ), $args );
     } else {
-      $actions['import'] = $this->create_action_link( $item, "import", "Import new", $args );
+      $actions['import'] = $this->create_action_link( $item, "import", __( "Import new", 'oik-clone' ), $args );
     }
     $title .= $this->row_actions( $actions );
-    //gobang();
     return( $title ); 
   }
     
@@ -388,7 +377,7 @@ class OIK_Clone_List_Table extends BW_List_Table {
     //$request_uri = $_SERVER['REQUEST_URI'];
     $request_uri = remove_query_arg( array( "action", "source", "target" ) );
     //$request_uri = add_query_arg( "_
-    $_SERVER['REQUEST_URI'] = $request_uri;
+    $_SERVER['REQUEST_URI'] = esc_url( $request_uri );
     //$this->o();
   }  
   

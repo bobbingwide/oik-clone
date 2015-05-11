@@ -1,0 +1,218 @@
+# Copyright (C) 2015 oik-clone
+# This file is distributed under the same license as the oik-clone package.
+msgid ""
+msgstr ""
+"Project-Id-Version: oik-clone 1.0-beta.0511\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/oik-clone\n"
+"POT-Creation-Date: 2015-05-11 16:34:26+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2015-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: admin/class-oik-clone-compare-list-table.php:99
+msgid "<b>post_meta</b>"
+msgstr ""
+
+#. translators: manage posts column name
+#: admin/class-oik-clone-list-table.php:68
+msgctxt "column name"
+msgid "Title"
+msgstr ""
+
+#: admin/class-oik-clone-list-table.php:69
+msgid "Matched by"
+msgstr ""
+
+#: admin/class-oik-clone-list-table.php:70
+msgid "ID"
+msgstr ""
+
+#: admin/class-oik-clone-list-table.php:71
+msgid "Modified"
+msgstr ""
+
+#: admin/class-oik-clone-list-table.php:72
+msgid "Slug"
+msgstr ""
+
+#: admin/class-oik-clone-list-table.php:73
+msgid "Post type"
+msgstr ""
+
+#: admin/class-oik-clone-list-table.php:250
+msgid "Update"
+msgstr ""
+
+#: admin/class-oik-clone-list-table.php:251
+msgid "Compare"
+msgstr ""
+
+#: admin/class-oik-clone-list-table.php:253
+msgid "Import new"
+msgstr ""
+
+#: admin/oik-clone-actions.php:38
+msgid "Performing import"
+msgstr ""
+
+#: admin/oik-clone-actions.php:46 admin/oik-clone-actions.php:61
+msgid "Invalid - no source specified"
+msgstr ""
+
+#: admin/oik-clone-actions.php:53
+msgid "Performing update"
+msgstr ""
+
+#: admin/oik-clone-actions.php:115
+msgid "Invalid request."
+msgstr ""
+
+#: admin/oik-clone-actions.php:299
+msgid "oops"
+msgstr ""
+
+#: admin/oik-clone-clone.php:35
+msgid "Payload is not an object"
+msgstr ""
+
+#: admin/oik-clone-clone.php:38
+msgid "Missing payload"
+msgstr ""
+
+#: admin/oik-clone-clone.php:154
+msgid "That's odd"
+msgstr ""
+
+#: admin/oik-clone-clone.php:157
+msgid "Looks like we'll have to create it"
+msgstr ""
+
+#: admin/oik-clone-json.php:34
+msgid "Missing oik_apikey"
+msgstr ""
+
+#: admin/oik-clone-media.php:233
+msgid "MD5 OK"
+msgstr ""
+
+#: admin/oik-clone-meta-box.php:45
+msgid "Cloning not supported for post types that do not support publicize"
+msgstr ""
+
+#: admin/oik-clone-ms.php:67
+msgid "source site"
+msgstr ""
+
+#: admin/oik-clone-ms.php:69 admin/oik-clone-self.php:62
+msgid "Activity"
+msgstr ""
+
+#: admin/oik-clone-ms.php:71
+msgid "MultiSite Posts"
+msgstr ""
+
+#: admin/oik-clone-ms.php:87 admin/oik-clone-wp-api.php:24
+msgid "Choose the source site to compare against."
+msgstr ""
+
+#: admin/oik-clone-ms.php:97
+msgid "Only available in Multi-Site environment. Use Self"
+msgstr ""
+
+#: admin/oik-clone-self.php:66
+msgid "Posts"
+msgstr ""
+
+#: admin/oik-clone-self.php:142
+msgid "steady now"
+msgstr ""
+
+#: admin/oik-clone-servers.php:20
+msgid "Settings"
+msgstr ""
+
+#: admin/oik-clone-servers.php:40
+msgid "Servers"
+msgstr ""
+
+#: admin/oik-clone-servers.php:41
+msgid "Server API key"
+msgstr ""
+
+#: admin/oik-clone-wp-api.php:10
+msgid ""
+"Upgrade required. To use WP-API please purchase and install the oik-clone-wp-"
+"api plugin."
+msgstr ""
+
+#: admin/oik-clone-wp-api.php:32
+msgid "Site URL"
+msgstr ""
+
+#: admin/oik-clone-wp-api.php:45
+msgid "Timeout (secs)"
+msgstr ""
+
+#: admin/oik-clone-wp-api.php:122
+msgid "Nothing selected"
+msgstr ""
+
+#: admin/oik-clone-wp-api.php:150
+msgid "Error"
+msgstr ""
+
+#: admin/oik-clone.php:41
+msgid "Clone admin"
+msgstr ""
+
+#: oik-clone.php:55
+msgid "Clone"
+msgstr ""
+
+#: oik-clone.php:81
+msgid "Items"
+msgstr ""
+
+#: oik-clone.php:189
+msgid "Clone on update"
+msgstr ""
+
+#: shortcodes/oik-cloned.php:70
+msgid "<i>ID</i>"
+msgstr ""
+
+#: shortcodes/oik-cloned.php:70
+msgid "Post ID"
+msgstr ""
+
+#: shortcodes/oik-cloned.php:71
+msgid "o|d"
+msgstr ""
+
+#: shortcodes/oik-cloned.php:71
+msgid "List type"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "oik-clone"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid ""
+"http://www.oik-plugins.com/oik-plugins/oik-clone-clone-your-wordpress-content"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Clone your WordPress content"
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "bobbingwide"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://www.oik-plugins.com/author/bobbingwide"
+msgstr ""
