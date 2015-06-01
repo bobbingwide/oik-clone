@@ -32,7 +32,7 @@ Both plugins need to be installed and activated on each site.
 
 This solution was developed to address a couple of specific problems
  - performance comparison and improvement in multiple implementations. SEO is not a consideration.
- -
+ - synchronization of multiple sites for performance analysis
 
 
 
@@ -138,6 +138,9 @@ Other methods will be implemented in future versions.
 3. Clone on update meta box - Previously cloned
 
 ## Upgrade Notice 
+# 1.0-beta.0601 
+Improved discovery of target post using slug.
+
 # 1.0-beta.0511 
 Required where the target doesn't have oik-fields active.
 Now partially internationalized, with support for the bbboing language ( bb_BB locale ).
@@ -174,6 +177,13 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 ## Changelog 
+# 1.0-beta.0611 
+* Changed: Added logic to find target post by slug, when not found by GUID. See oik_clone_find_target_by_slug()
+* Added: Prototype logic for improved Servers settings
+* Added:
+* Changed: Added sanitization when dealing with $_SERVER['REQUEST_URI']
+
+
 # 1.0-beta.0511 
 * Changed: Improved security using esc_url() around add_query_arg()
 * Fixed: is_relationship_field() method loads "includes/bw_fields.inc". Needed if oik-fields is not activated.

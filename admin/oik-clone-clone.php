@@ -71,6 +71,9 @@ function oik_clone_determine_target_id( $source_id, $target_id, $post ) {
   $matched_target_id = 0;
   if ( 0 == $target_id ) {
     $matched_target_id = oik_clone_find_target_by_GUID( $post );
+		if ( !$matched_target_id ) {
+		  $matched_target_id = oik_clone_find_target_by_slug( $post );
+		}
   } else {
     $target = get_post( $target_id ); 
     if ( $target ) {
@@ -107,6 +110,39 @@ function oik_clone_find_target_by_GUID( $source ) {
                , "post_parent" => "ignore"
                );
   oik_clone_match_add_filter_field( "AND guid = '" . $source->guid . "'" );            
+  $posts = bw_get_posts( $args );
+  $target_post = bw_array_get( $posts, 0, null );
+  bw_trace2( $target_post, "target_post", false );
+  $target_id = bw_array_get( $target_post, "ID", null );
+  bw_trace2( $target_id, "target_id" );
+  return( $target_id );
+}
+
+/**
+ * Try finding a match by slug
+ *
+ * Notes:
+ * - The post type has to match
+ * - Since we're only passing a single post type, which may be "attachment" or "page",
+ *   we have to ensure the post_parent parameter will not be used in the query
+ * - 'attachment's have a post_status of 'inherit'... we don't pass the post status
+ * - Does this mean we can't clone 'private' posts,
+ * - or should we be passing the master's post_status?
+ * - Actually, all we want to do is find the post. 
+ * - We're going to set the status to the same as the source.
+ *
+ * @param object $source - the source post object 
+ * @return integer - the ID of the matching post or null
+ */
+function oik_clone_find_target_by_slug( $source ) {
+  oik_require( "includes/bw_posts.inc" );
+  //oik_require( "admin/oik-clone-match.php", "oik-clone" );
+  $args = array( "numberposts" => -1 
+               , "post_type" => $source->post_type
+               , "post_parent" => "ignore"
+							 , "name" => $source->post_name
+               );
+  //oik_clone_match_add_filter_field( "AND guid = '" . $source->guid . "'" );            
   $posts = bw_get_posts( $args );
   $target_post = bw_array_get( $posts, 0, null );
   bw_trace2( $target_post, "target_post", false );

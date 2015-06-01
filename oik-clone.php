@@ -3,7 +3,7 @@
 Plugin Name: oik-clone
 Plugin URI: http://www.oik-plugins.com/oik-plugins/oik-clone-clone-your-wordpress-content
 Description: Clone your WordPress content 
-Version: 1.0-beta.0511
+Version: 1.0-beta.0601
 Author: bobbingwide
 Author URI: http://www.oik-plugins.com/author/bobbingwide
 License: GPL2
@@ -52,7 +52,7 @@ function oik_clone_loaded() {
 function oik_clone_oik_admin_menu() {
   bw_load_plugin_textdomain( "oik-clone" );
   register_setting( 'oik_clone', 'bw_clone_servers', 'oik_plugins_validate' ); // No validation for oik-clone
-  $hook = add_submenu_page( 'oik_menu', 'oik clone', __( "Clone", 'oik-clone' ), 'manage_options', 'oik_clone', "oik_clone_admin_page" );
+  $hook = add_submenu_page( 'oik_menu', __( 'oik clone', 'oik-clone' ), __( "Clone", 'oik-clone' ), 'manage_options', 'oik_clone', "oik_clone_admin_page" );
   add_action( "load-$hook", "oik_clone_add_options" );
   add_action( "admin_head-$hook", "oik_clone_admin_head" );
   
@@ -97,7 +97,7 @@ function oik_clone_set_screen_option( $setit, $option, $value ) {
     $isay = $value;
   } else {
     bw_backtrace();
-    gobang();
+    //gobang();
   }
   return( $isay );
 }
@@ -112,6 +112,7 @@ function oik_clone_set_screen_option( $setit, $option, $value ) {
  * and we need to have instantiated the class in order for this hook to have been registered.
  * Therefore, we need to hook into "admin_head" and determine what's actually happening.
  * Actually, we can hook into the specific action for the page.
+ * 
  * 
    `
  
@@ -134,9 +135,11 @@ function oik_clone_admin_head() {
       oik_require( "admin/oik-clone-self.php", "oik-clone" );
       oik_clone_lazy_nav_tabs_oik_clone( "self" );
       break;
+			
+    case null:
+		  $_REQUEST[ 'tab'] = "servers";
         
     case "servers":
-    case null:
       oik_require( "admin/oik-clone-servers.php", "oik-clone" );
       oik_clone_lazy_nav_tabs_servers();
       break;

@@ -89,6 +89,7 @@ class OIK_Clone_List_Table extends BW_List_Table {
     // list display will have to filter "manage_oik-options_page_oik_clone_columns".
     // 
 		//$columns = apply_filters( "manage_{$screen_id}_columns", $columns );
+	  bw_trace2( $columns, "columns" );
     return( $columns );
   } 
   

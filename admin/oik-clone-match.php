@@ -23,13 +23,12 @@ function oik_clone_match_post_by_ID( $matched, $data ) {
   return( $matched );
 }
 
-
 /**
  * Match a post based on the post's slug
  *
  * This filter will find posts which have the same slug.
  * Assumes that bw_get_posts() is accessible.
- * Note: Even though the "slug" field is called "post_name" the query arg we need to use is slug.
+ * Note: Even though the "slug" field is called "post_name" the query arg we need to use is "name".
  * Ifyou use "post_name" and numberposts is -1 you can run out of memory. 
  * 
  */

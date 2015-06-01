@@ -184,6 +184,10 @@ function oik_clone_determine_slave_id( $target, $result ) {
   //$slave_id = $target;
   $result = json_decode( $result );
   $slave_id = bw_array_get( $result, "slave", $target );
+	bw_trace2( $slave_id, "slave id" );
+	if ( !$slave_id  ) {
+	  gobang();
+	}
   return( $slave_id );
 }
 

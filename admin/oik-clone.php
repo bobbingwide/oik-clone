@@ -59,7 +59,7 @@ function oik_clone_reset_request_uri() {
   //$request_uri = $_SERVER['REQUEST_URI'];
   $request_uri = remove_query_arg( array( "action", "source", "target" ) );
   //$request_uri = add_query_arg( "_
-  $_SERVER['REQUEST_URI'] = $request_uri;
+  $_SERVER['REQUEST_URI'] = esc_url( $request_uri );
 }  
 
 /**
