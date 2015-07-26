@@ -175,6 +175,11 @@ function oik_clone_publicize( $id, $load_media=false ) {
 /**
  * Determine the ID for the slave server
  *
+ * If the target server is not running oik-clone then we will get no response from the AJAX call
+ * which may result in a $slave_id of 0.
+ * 
+ * @TODO Better detection of the result of the HTTP request.
+ *
  * @param ID $target - the post ID that we thought the target should have
  * @param mixed $result - the response from the server - may have a different target ID from first thought of 
  * @return ID - the slave_id

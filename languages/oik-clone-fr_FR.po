@@ -7,7 +7,7 @@ msgstr ""
 "POT-Creation-Date: 2015-07-26 15:34:34+00:00\n"
 "MIME-Version: 1.0\n"
 "Plural-Forms: nplurals=2; plural=n == 1 ? 0 : 1;\n"
-"Language: bb_BB\n"
+"Language: fr_FR\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "PO-Revision-Date: 2015-MO-DA HO:MI+ZONE\n"
@@ -15,256 +15,253 @@ msgstr ""
 "Language-Team: LANGUAGE <LL@li.org>\n"
 #: admin/class-oik-clone-compare-list-table.php:99
 msgid "<b>post_meta</b>"
-msgstr "<b>post_meta</b>"
+msgstr ""
 
 #. translators: manage posts column name
 #: admin/class-oik-clone-list-table.php:68
 msgctxt "column name"
 msgid "Title"
-msgstr "Ttile"
+msgstr "Titre"
 
 #: admin/class-oik-clone-list-table.php:69
 msgid "Matched by"
-msgstr "Mhcaetd by"
+msgstr ""
 
 #: admin/class-oik-clone-list-table.php:70
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #: admin/class-oik-clone-list-table.php:71
 msgid "Modified"
-msgstr "Mefoidid"
+msgstr ""
 
 #: admin/class-oik-clone-list-table.php:72
 msgid "Slug"
-msgstr "Sulg"
+msgstr "Identifiant"
 
 #: admin/class-oik-clone-list-table.php:73
 msgid "Post type"
-msgstr "Psot tpye"
+msgstr ""
 
 #: admin/class-oik-clone-list-table.php:251 admin/oik-clone-servers.php:49
 msgid "Update"
-msgstr "Upatde"
+msgstr "Mettre à jour"
 
 #: admin/class-oik-clone-list-table.php:252
 msgid "Compare"
-msgstr "Crmaope"
+msgstr ""
 
 #: admin/class-oik-clone-list-table.php:254
 msgid "Import new"
-msgstr "Improt nEw"
+msgstr ""
 
 #. translators: manage posts column name
 #: admin/class-oik-clone-servers-list-table.php:362
 msgid "Submit"
-msgstr "Siubmt"
+msgstr "Envoyer"
 
 #: admin/oik-clone-actions.php:38
 msgid "Performing import"
-msgstr "Penfirormg ipormt"
+msgstr ""
 
 #: admin/oik-clone-actions.php:46 admin/oik-clone-actions.php:61
 msgid "Invalid - no source specified"
-msgstr "Ilvinad - nO scuroe sfipeecid"
+msgstr ""
 
 #: admin/oik-clone-actions.php:53
 msgid "Performing update"
-msgstr "Pionermrfg upadte"
+msgstr ""
 
 #: admin/oik-clone-actions.php:115
 msgid "Invalid request."
-msgstr "Inavild rsqueet."
+msgstr ""
 
 #: admin/oik-clone-actions.php:299
 msgid "oops"
-msgstr "opos"
+msgstr ""
 
 #: admin/oik-clone-clone.php:35
 msgid "Payload is not an object"
-msgstr "Paylaod Is nOt An oejbct"
+msgstr ""
 
 #: admin/oik-clone-clone.php:38
 msgid "Missing payload"
-msgstr "Miinssg pyoalad"
+msgstr ""
 
 #: admin/oik-clone-clone.php:190
 msgid "That's odd"
-msgstr "Taht's Odd"
+msgstr ""
 
 #: admin/oik-clone-clone.php:193
 msgid "Looks like we'll have to create it"
-msgstr "Lkoos lkie wE'll have tO cearte It"
+msgstr ""
 
 #: admin/oik-clone-json.php:34
 msgid "Missing oik_apikey"
-msgstr "Msniisg OIk_aekpiy"
+msgstr ""
 
 #: admin/oik-clone-media.php:233
 msgid "MD5 OK"
-msgstr "MD5 OK"
+msgstr ""
 
 #: admin/oik-clone-meta-box.php:45
 msgid "Cloning not supported for post types that do not support publicize"
-msgstr "Cinlong nOt sprupoetd fOr psot tyeps taht dO nOt suoprpt piulzibce"
+msgstr ""
 
 #: admin/oik-clone-ms.php:67
 msgid "source site"
-msgstr "sucroe site"
+msgstr ""
 
 #: admin/oik-clone-ms.php:69 admin/oik-clone-self.php:62
 msgid "Activity"
-msgstr "Avtictiy"
+msgstr "Activité"
 
 #: admin/oik-clone-ms.php:71
 msgid "MultiSite Posts"
-msgstr "MilSiutte Pstos"
+msgstr ""
 
 #: admin/oik-clone-ms.php:87 admin/oik-clone-wp-api.php:24
 msgid "Choose the source site to compare against."
-msgstr "Cooshe thE suorce stie tO cramope aaingst."
+msgstr ""
 
 #: admin/oik-clone-ms.php:97
 msgid "Only available in Multi-Site environment. Use Self"
-msgstr "Olny aiavballe In Mtuli-Stie eenornivnmt. UsE Self"
+msgstr ""
 
 #: admin/oik-clone-self.php:66
 msgid "Posts"
-msgstr "Ptoss"
+msgstr "Articles"
 
 #: admin/oik-clone-self.php:142
 msgid "steady now"
-msgstr "sdeaty nOw"
+msgstr ""
 
 #: admin/oik-clone-servers.php:43
 msgid "Edit"
-msgstr "Eidt"
+msgstr "Modifier"
 
 #: admin/oik-clone-servers.php:44
 msgid "View"
-msgstr "View"
+msgstr "Afficher"
 
 #: admin/oik-clone-servers.php:45
 msgid "Delete"
-msgstr "Dtleee"
+msgstr "Supprimer "
 
 #: admin/oik-clone-servers.php:47
 msgid "Add new"
-msgstr "Add nEw"
+msgstr "Ajouter"
 
 #: admin/oik-clone-servers.php:50
 msgid "Add"
-msgstr "Add"
+msgstr "Ajouter"
 
 #: admin/oik-clone-servers.php:120
 msgid "Servers"
-msgstr "Srevres"
+msgstr ""
 
 #: admin/oik-clone-servers.php:121
 msgid "Server API key"
-msgstr "Sevrer API kEy"
+msgstr ""
 
 #: admin/oik-clone-servers.php:195
 msgid "Basic"
-msgstr "Bsaic"
+msgstr ""
 
 #: admin/oik-clone-servers.php:196
 msgid "Advanced"
-msgstr "Aedcnvad"
+msgstr "Avancé"
 
 #: admin/oik-clone-wp-api.php:10
 msgid ""
 "Upgrade required. To use WP-API please purchase and install the oik-clone-wp-"
 "api plugin."
 msgstr ""
-"Uardpge reuiqred. TO UsE WP-API paslee puhacsre And isltnal thE OIk-colne-wp-"
-"ApI pgiuln."
 
 #: admin/oik-clone-wp-api.php:32
 msgid "Site URL"
-msgstr "Stie URL"
+msgstr "URL du site"
 
 #: admin/oik-clone-wp-api.php:45
 msgid "Timeout (secs)"
-msgstr "Teuoimt (sces)"
+msgstr ""
 
 #: admin/oik-clone-wp-api.php:122
 msgid "Nothing selected"
-msgstr "Nhtiong setecled"
+msgstr ""
 
 #: admin/oik-clone-wp-api.php:150
 msgid "Error"
-msgstr "Erorr"
+msgstr "Erreur "
 
 #: admin/oik-clone.php:41
 msgid "Clone admin"
-msgstr "Clnoe amdin"
+msgstr ""
 
 #: oik-clone.php:57
 msgid "oik clone"
-msgstr "OIk colne"
+msgstr ""
 
 #: oik-clone.php:57
 msgid "Clone"
-msgstr "Colne"
+msgstr ""
 
 #: oik-clone.php:83
 msgid "Items"
-msgstr "Imtes"
+msgstr ""
 
 #: oik-clone.php:194
 msgid "Clone on update"
-msgstr "Cnloe On utapde"
+msgstr ""
 
 #: oik-clone.php:287
 msgid "Cloned?"
-msgstr "Clnoed?"
+msgstr ""
 
 #: shortcodes/oik-cloned.php:46
 msgid "Clones of: "
-msgstr "Colnes Of: "
+msgstr ""
 
 #: shortcodes/oik-cloned.php:75
 msgid "<i>ID</i>"
-msgstr "<i>ID</i>"
+msgstr ""
 
 #: shortcodes/oik-cloned.php:75
 msgid "Post ID"
-msgstr "Psot ID"
+msgstr ""
 
 #: shortcodes/oik-cloned.php:76
 msgid "o|d"
-msgstr "O|d"
+msgstr ""
 
 #: shortcodes/oik-cloned.php:76
 msgid "List type"
-msgstr "Lsit tpye"
+msgstr ""
 
 #: shortcodes/oik-cloned.php:77
 msgid "<i>text</i>|false"
-msgstr "<i>text</i>|false"
+msgstr ""
 
 #: shortcodes/oik-cloned.php:77
 msgid "Prefix with source link"
-msgstr "Peirfx wtih srcuoe link"
+msgstr ""
 
 #. Plugin Name of the plugin/theme
 msgid "oik-clone"
-msgstr "OIk-colne"
+msgstr ""
 
 #. Plugin URI of the plugin/theme
 msgid ""
 "http://www.oik-plugins.com/oik-plugins/oik-clone-clone-your-wordpress-content"
-msgstr ""
-"http://www.oik-plugins.com/oik-plugins/oik-clone-clone-your-wordpress-content"
+msgstr "http://www.oik-plugins.com/oik-plugins/oik-clone-clone-your-wordpress-content"
 
 #. Description of the plugin/theme
 msgid "Clone your WordPress content"
-msgstr "Cnloe your WresordPs cnotnet"
+msgstr ""
 
 #. Author of the plugin/theme
 msgid "bobbingwide"
-msgstr "bwdnoibibge"
+msgstr ""
 
 #. Author URI of the plugin/theme
 msgid "http://www.oik-plugins.com/author/bobbingwide"

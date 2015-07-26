@@ -32,6 +32,8 @@ function oik_cloned( $atts=null, $content=null, $tag=null ) {
  * We don't care about the post type's publicize setting 
  * Just look at the post meta data
  * We don't even need to know the current slaves?
+ * 
+ * Displaying the "label" is optional. 
  *
  * @param ID $post_id - the ID of the post 
  * @param array $atts - shortcode attributes incl ['id'] matching $post_id
@@ -41,9 +43,12 @@ function oik_cloned_display_links( $post_id, $atts ) {
   $clones = get_post_meta( $post_id, "_oik_clone_ids", false );
   $cloned = oik_reduce_from_serialized(  $clones );
   if ( count( $cloned ) ) {
+		$label = bw_array_get_dcb( $atts, "label", "Clones of: ", "__", "oik-clone" );
+		if ( $label !== false ) {
+			e( $label );
+			alink( null, get_permalink( $post_id ),  get_the_title( $post_id ) );
+		}
     oik_require( "shortcodes/oik-list.php" );
-    //p( "Clones of:" );
-    alink( null, get_permalink( $post_id ), "Clones of: " . get_the_title( $post_id ) );
     $uo = bw_sl( $atts );
     foreach ( $cloned as $server => $post ) {
       $url = "$server/?p=$post";
@@ -69,6 +74,7 @@ function cloned__help( $shortcode="cloned" ) {
 function cloned__syntax( $shortcode="cloned" ) {
   $syntax = array( "ID,0" => bw_skv( null, "<i>ID</i>", "Post ID" )
                  , "uo" => bw_skv( "u", "o|d", "List type" ) 
+								 , "label" => bw_skv( __( "Clones of: ", "oik-clone" ), "<i>text</i>|false", "Prefix with source link" )
                  );
   return( $syntax );
 }

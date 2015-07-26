@@ -3,7 +3,7 @@ Contributors: bobbingwide
 Donate link: http://www.oik-plugins.com/oik/oik-donate/
 Tags: clone, compare, update, MultiSite
 Requires at least: 4.1
-Tested up to: 4.2.2
+Tested up to: 4.3-beta4
 Stable tag: 0.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -48,7 +48,7 @@ Install on both the client and server machines.
 
 = Is there a beta test version? =
 
-Beta versions for v1.0 are suffixed -beta.mmdd
+Beta versions for v1.0.0 are suffixed -beta.mmdd
 
 Yes. v0.8 was the first Beta test version.
 
@@ -138,6 +138,9 @@ Other methods will be implemented in future versions.
 3. Clone on update meta box - Previously cloned  
 
 == Upgrade Notice ==
+= 1.0.0-beta.0726 =
+Upgrade to use the cloned virtual field in shortcodes such as bw_table.
+
 = 1.0-beta.0601 =
 Improved discovery of target post using slug. 
 
@@ -177,12 +180,20 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 == Changelog ==
+= 1.0.0-beta.0726
+* Added: cloned virtual field for use in [bw_table] shortcode 
+* Changed: Responds to "oik_fields_loaded" to define the "cloned" virtual field
+* Changed: First pass Internationalization of the admin pages
+* Changed: Further development to allow servers to have different API keys, and Matched to post IDs for exact clones
+* Changed: Added "page_actions" and "option_field" 
+* Changed: oik-clone admin > Settings > Advanced now handles row actions and page actions
+* Changed: option field for advanced is now "bw_clone_servers"
+* TODO: Need to complete logic for Basic and Advanced servers
+
 = 1.0-beta.0611 =
 * Changed: Added logic to find target post by slug, when not found by GUID. See oik_clone_find_target_by_slug()
 * Added: Prototype logic for improved Servers settings
-* Added: 
 * Changed: Added sanitization when dealing with $_SERVER['REQUEST_URI']
- 
 
 = 1.0-beta.0511 =
 * Changed: Improved security using esc_url() around add_query_arg()

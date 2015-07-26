@@ -43,26 +43,33 @@ function oik_clone_nav_tab_load_advanced() {
 	$args['actions'] = array( "edit" => __( 'Edit', 'oik-clone' )
 													, "view" => __( 'View', 'oik-clone' )
 													, "delete" => __( 'Delete', 'oik-clone' )
-													, "add" => __( 'Add', 'oik-clone' )
 													); 
-													
-  $arg['submit_actions'] = array( "edit_update", __( 'Update', 'oik-clone' )
-                                , "add_entry", __( 'Add', 'oik-clone' )
+	$args['page_actions'] = array( "add" => __( 'Add new', 'oik-clone' ) );
+												
+  $args['submit_actions'] = array( "edit_update" => __( 'Update', 'oik-clone' )
+                                , "add_entry" => __( 'Add', 'oik-clone' )
  															 );
-	$args['object_type'] = 'bw_clone_server';													
+	$args['object_type'] = 'bw_clone_servers'; 
+	$args['option_field'] = 'servers'; 												
   $list_table = bw_get_list_table( "OIK_Clone_Servers_List_Table", $args );
 }
 
+/**
+ * Define the fields for oik-clone Servers Advanced
+ *
+ * Uses the oik-fields API to define the fields that are stored in the "bw_clone_servers" options
+ * Note: The oik-fields API should be implemented as a shared library. 
+ */
 function oik_clone_nav_tab_advanced_fields() {
 	bw_register_field( 'slave', 'URL', __( "Server", 'oik-clone' ) );
 	bw_register_field( 'apikey', 'text', __( "API key", 'oik-clone' ) );
 	bw_register_field( 'active', 'checkbox', __( "Active?", 'oik-clone' ) );
 	bw_register_field( 'matched', 'number', __( "Matched to", 'oik-clone' ) );
 	
-	bw_register_field_for_object_type( 'slave', 'bw_clone_server' );
-	bw_register_field_for_object_type( 'apikey', 'bw_clone_server' );
-	bw_register_field_for_object_type( 'active', 'bw_clone_server' );
-	bw_register_field_for_object_type( 'matched', 'bw_clone_server' );
+	bw_register_field_for_object_type( 'slave', 'bw_clone_servers' );
+	bw_register_field_for_object_type( 'apikey', 'bw_clone_servers' );
+	bw_register_field_for_object_type( 'active', 'bw_clone_servers' );
+	bw_register_field_for_object_type( 'matched', 'bw_clone_servers' );
 	
 }	
 
@@ -149,11 +156,20 @@ function oik_clone_server_options_advanced() {
 	
   global $list_table;
 	bw_trace2( $list_table, "LIST" );
-  $list_table->prepare_items();
-	
 	$list_table->perform_submit_action();
 	
+	
+	
 	$list_table->perform_action();
+	$list_table->display_page_actions();
+	
+  $list_table->prepare_items();
+	
+	/*
+	 * Now build the list if a submit action has been performed
+	 */
+	
+  //$list_table->prepare_items();
 	
 	
   bw_flush();
