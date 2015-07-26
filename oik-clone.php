@@ -3,12 +3,13 @@
 Plugin Name: oik-clone
 Plugin URI: http://www.oik-plugins.com/oik-plugins/oik-clone-clone-your-wordpress-content
 Description: Clone your WordPress content 
-Version: 1.0-beta.0601
+Version: 1.0.0-beta.0726
 Author: bobbingwide
 Author URI: http://www.oik-plugins.com/author/bobbingwide
-License: GPL2
 Text Domain: oik-clone
 Domain Path: /languages/
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
     Copyright 2014, 2015 Bobbing Wide (email : herb@bobbingwide.com )
 
@@ -40,6 +41,7 @@ function oik_clone_loaded() {
   add_filter( 'set-screen-option', "oik_clone_set_screen_option", 10, 3 );
   add_action( "oik_add_shortcodes", "oik_clone_oik_add_shortcodes" );
   add_filter( "heartbeat_settings", "oik_clone_heartbeat_settings" );
+	add_action( "oik_fields_loaded", "oik_clone_oik_fields_loaded" );
   
 }  
 
@@ -266,6 +268,24 @@ function oik_clone_heartbeat_settings( $settings ) {
  */
 function oik_clone_oik_add_shortcodes() {
   bw_add_shortcode( "cloned", "oik_cloned", oik_path( "shortcodes/oik-cloned.php", "oik-clone" ), false );
+}
+
+/**
+ * Implement "oik_fields_loaded" for oik-clone
+ *
+ * Used to register the "cloned" virtual field
+ *
+ */
+function oik_clone_oik_fields_loaded() {
+	$field_args = array( "#callback" => "oik_clone_cloned"
+                     , "#parms" => null 
+                     , "#plugin" => "oik-clone"
+                     , "#file" => "includes/oik-clone-virtual.php"
+                     , "#form" => false
+                     , "#hint" => "virtual field"
+                     ); 
+	bw_register_field( "cloned", "virtual", "Cloned?", $field_args );
+  
 }
   
 oik_clone_loaded();
