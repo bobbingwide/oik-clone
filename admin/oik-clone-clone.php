@@ -176,7 +176,9 @@ function oik_clone_attempt_import( $source, $target, $post ) {
   
   if ( $post->post_type == "attachment" ) {
     oik_require( "admin/oik-clone-media.php", "oik-clone" );
-    $media_file = oik_clone_save_media_file( $post->post_date );
+		bw_trace2();
+		$upload_date = oik_clone_get_upload_month( $post->post_meta->_wp_attached_file[0] );
+    $media_file = oik_clone_save_media_file( $upload_date ); //$post->post_date );
     $post->file = $media_file['file'];
   }
   

@@ -114,6 +114,22 @@ function oik_clone_determine_full_file( $file ) {
 }
 
 /**
+ * Return the upload month
+ *
+ * @param string $file attachment file name
+ * @return string 
+ *
+ */
+function oik_clone_get_upload_month( $file ) {
+	$yyyy = substr( $file, 0, 4 );
+	$mm = substr( $file, 5, 2 );
+	$date = bw_format_date( "$yyyy-$mm-01 01:01:01" );
+	bw_trace2( $date, "date" );
+	return( $date );  
+
+}
+
+/**
  * Return a base64 encoded version of the file
  *
  * @TODO This routine needs to cater for files which aren't really where we think they are.

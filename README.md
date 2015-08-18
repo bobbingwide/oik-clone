@@ -2,8 +2,8 @@
 * Contributors: bobbingwide
 * Donate link: http://www.oik-plugins.com/oik/oik-donate/
 * Tags: clone, compare, update, MultiSite
-* Requires at least: 4.1
-* Tested up to: 4.3-beta4
+* Requires at least: 4.2
+* Tested up to: 4.3-RC2
 * Stable tag: 0.9
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -25,6 +25,7 @@ Features:
 * - maintains informal relationships: e.g. in post_content
 - pull content from other sites in a MultiSite installation
 - compare and update or import from self or a MultiSite site
+- clone virtual field - to display clones of current content
 
 
 oik-clone is dependent on the oik base plugin; using the oik-plugin as a library of functions sitting on top of WordPress.
@@ -138,8 +139,11 @@ Other methods will be implemented in future versions.
 3. Clone on update meta box - Previously cloned
 
 ## Upgrade Notice 
+# 1.0.0-beta.0817 
+Upgrade to allow attachments to be saved in the original yyyy/mm uploads directory
+
 # 1.0.0-beta.0726 
-Upgrade to use the cloned virtual field in shortcodes such as bw_table.
+Upgrade to use the 'cloned' virtual field in shortcodes such as bw_table.
 
 # 1.0-beta.0601 
 Improved discovery of target post using slug.
@@ -180,6 +184,11 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 ## Changelog 
+# 1.0.0-beta.0817 
+* Fixed: https://github.com/bobbingwide/oik-clone/issues/2
+* Changed: oik_clone_attempt_import() determines the upload date from the _wp_attached_file post meta data
+* Changed: this is passed to oik_clone_save_media_file() in preference to the post_date.
+
 # 1.0.0-beta.0726
 * Added: cloned virtual field for use in [bw_table] shortcode
 * Changed: Responds to "oik_fields_loaded" to define the "cloned" virtual field
