@@ -1,6 +1,5 @@
 <?php // (C) Copyright Bobbing Wide 2015
 
-
 oik_require( "admin/class-oik-clone-informal-relationships.php", "oik-clone" );
 
 /**
@@ -13,8 +12,14 @@ oik_require( "admin/class-oik-clone-informal-relationships.php", "oik-clone" );
 class OIK_clone_informal_relationships_source extends OIK_clone_informal_relationships {
 
   public $source_ids;
-   
+	
+	/**
+	 * Set the source IDs on __construct
+	 *
+	 * @param array source IDs
+	 */
   function __construct( $source_ids ) {
+		bw_trace2( null, null, true, BW_TRACE_VERBOSE );
     parent::__construct();
     $this->source_ids = $source_ids;
   }
@@ -39,10 +44,7 @@ class OIK_clone_informal_relationships_source extends OIK_clone_informal_relatio
    */
   function add_id( $id ) {
     $this->source_ids[] = $id;
-    //echo $id;
-    //print_r( $this->source_ids );
   }
-  
   
 }
 
