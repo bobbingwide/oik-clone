@@ -52,11 +52,11 @@ abstract class OIK_clone_informal_relationships {
    * type | meaning | Notes
    * ---- | ------- | ----------
    *  1   | digit   | Digits 0 thru 9
-   *  2   | significant delimeter | 
+   *  2   | significant delimiter | 
    *  0   | anything else
    * 
    * Once we've started an 'anything else' string a digit won't end it.
-   * But a significant delimeter will.
+   * But a significant delimiter will.
    *  
    */
   function get_char_type() {
@@ -177,7 +177,7 @@ abstract class OIK_clone_informal_relationships {
    * The value of $this->current may be null
    * Each token consists of two fields
    * - token - the string value (may be null)
-   * - type - the same as character type ( 1-digits, 2-significant delimeter, 0-everything else 
+   * - type - the same as character type ( 1-digits, 2-significant delimiter, 0-everything else 
    */
   function write_token() {
     $this->tokens[] = array( "token" => $this->current, "type" => $this->state );
@@ -235,8 +235,8 @@ abstract class OIK_clone_informal_relationships {
    *
    * Find each post ID and think about handling it. 
    * 
-   * To cut a long story short, we're looking for an integer token ( type='1' ) which is enclosed by two delimeter tokens ( type='2' ).
-   * Anything else indicates the wrong type of delimeter.
+   * To cut a long story short, we're looking for an integer token ( type='1' ) which is enclosed by two delimiter tokens ( type='2' ).
+   * Anything else indicates the wrong type of delimiter.
    * 
    * Note: It shouldn't be possible to have adjacent tokens of the same type; except the first and last, which are edge cases
    */
