@@ -3,7 +3,7 @@ Contributors: bobbingwide
 Donate link: http://www.oik-plugins.com/oik/oik-donate/
 Tags: clone, compare, update, MultiSite
 Requires at least: 4.2
-Tested up to: 4.3-RC2
+Tested up to: 4.3
 Stable tag: 0.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -139,6 +139,10 @@ Other methods will be implemented in future versions.
 3. Clone on update meta box - Previously cloned  
 
 == Upgrade Notice ==
+= 1.0.0-beta.0919 =
+Upgrade to support the "cloned" date.	
+Note: Since there is an interface change you need to update both clients and servers.
+
 = 1.0.0-beta.0817 = 
 Upgrade to allow attachments to be saved in the original yyyy/mm uploads directory
 
@@ -184,6 +188,12 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 == Changelog ==
+= 1.0.0-beta.0919 =
+* Changed: Now supports additional information in _oik_clone_ids post meta ( Issue #4 )
+* Changed: Using trace level in some bw_trace2() calls
+* Changed: Updated docblocks 
+* Fixed: Correct spelling of delimiter 
+
 = 1.0.0-beta.0817 =
 * Fixed: https://github.com/bobbingwide/oik-clone/issues/2 
 * Changed: oik_clone_attempt_import() determines the upload date from the _wp_attached_file post meta data
