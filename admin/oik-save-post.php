@@ -161,9 +161,9 @@ function oik_clone_publicize( $id, $load_media=false ) {
       }  
       $result = oik_clone_update_slave( $id, $jpayload, $slave, $target, $jmapping, $jmedia );
       $slave_id = oik_clone_determine_slave_id( $target, $result );
-      if ( $slave_id != $target ) {
-        $post_meta = oik_clone_update_slave_target( $id, $slave, $slave_id );
-      }
+      //if ( $slave_id != $target ) {
+        $post_meta = oik_clone_update_slave_target( $id, $slave, $slave_id, $payload->post_modified_gmt );
+      //}
     }
   } else { 
     //p( "No slaves to which to clone" );
@@ -185,15 +185,16 @@ function oik_clone_publicize( $id, $load_media=false ) {
  * @return ID - the slave_id
  */
 function oik_clone_determine_slave_id( $target, $result ) {
-  bw_trace2();
-  //$slave_id = $target;
-  $result = json_decode( $result );
-  $slave_id = bw_array_get( $result, "slave", $target );
+	bw_trace2();
+	//$slave_id = $target;
+	$result = json_decode( $result );
+	$slave_id = bw_array_get( $result, "slave", $target );
 	bw_trace2( $slave_id, "slave id" );
 	if ( !$slave_id  ) {
-	  gobang();
+		bw_trace2( "Missing slave ID", null, true, BW_TRACE_ERROR );
 	}
-  return( $slave_id );
+	//  gobang();
+	return( $slave_id );
 }
 
 /**
@@ -202,28 +203,28 @@ function oik_clone_determine_slave_id( $target, $result ) {
  * @param ID $id - post ID of the post that's been saved
  * @param string $slave - the slave host 
  * @param ID $slave_id - the slave's post ID
+ * @param string $modified_gmt - the post modified GMT time
  *
  */
-function oik_clone_update_slave_target( $id, $slave, $slave_id ) {
-  $post_meta = get_post_meta( $id, "_oik_clone_ids", false );
-  //bw_trace2( $post_meta );
-  if ( $post_meta ) {
-    //e( "Time to add the update logic" );
-    //if ( isset( $post_meta[ $slave ] ) ) {
-      $post_meta[0][ $slave ] = $slave_id;
-    //} else {
-    //  $post_meta[] = array( $slave => $slave_id );
-    //
-    //}  
-  } else {
-    $post_meta = array();
-    $post_meta[] = array( $slave => $slave_id );
-  }
-  update_post_meta( $id, "_oik_clone_ids", $post_meta[0] ); 
-  
-  bw_trace2( $post_meta, "post_meta" );
-  return( $post_meta ); 
+function oik_clone_update_slave_target( $id, $slave, $slave_id, $modified_gmt ) {
+	$post_meta = get_post_meta( $id, "_oik_clone_ids", false );
+	bw_trace2( $post_meta, "post_meta", true, BW_TRACE_DEBUG );
+	if ( $post_meta ) {
+		$post_meta[0][ $slave ] = oik_clone_id_cloned( $slave_id, $modified_gmt );
+	} else {
+		$post_meta = array();
+		$post_meta[] = array( $slave => oik_clone_id_cloned( $slave_id, $modified_gmt ) );
+	}
+	update_post_meta( $id, "_oik_clone_ids", $post_meta[0] ); 
+	bw_trace2( $post_meta, "post_meta", false, BW_TRACE_DEBUG );
+	return( $post_meta ); 
 }
+
+function oik_clone_id_cloned( $slave_id, $modified_gmt ) {
+	$time = strtotime( $modified_gmt );
+	return( array( "id" => $slave_id, "cloned" => $time ) );
+}
+
  
 
 /**

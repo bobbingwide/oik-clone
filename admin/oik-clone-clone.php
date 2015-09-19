@@ -1,5 +1,22 @@
 <?php // (C) Copyright Bobbing Wide 2015
 
+/**
+ * Return the target ID 
+ *
+ * The target may either be an ID or an array of 'id' and 'cloned'
+ * It depends on whether or not the source was cloned before we added the 'cloned' date
+ * 
+ * @return integer the ID of the target post we hope to update
+ */
+function oik_clone_get_target_id() {
+  $target = bw_array_get( $_REQUEST, "target", null );
+	if ( is_array( $target ) ) {
+		$target_id = bw_array_get( $target, "id", null );
+	} else {
+		$target_id = $target;
+	}
+	return( $target_id );
+}
 
 /**
  * Clone the post identified by the "payload" and/or "target" fields in the AJAX body
@@ -13,7 +30,7 @@
  */
 function oik_clone_lazy_clone_post() {
   $payload = bw_array_get( $_REQUEST, "payload", null );
-  $target_id = bw_array_get( $_REQUEST, "target", null ); 
+	$target_id = oik_clone_get_target_id();
   bw_trace2( $payload, "payload", false );
   if ( $payload ) {
     $payload = stripslashes( $payload );
@@ -211,7 +228,7 @@ function oik_clone_attempt_import( $source, $target, $post ) {
   // Or get it from???
   oik_require( "admin/oik-save-post.php", "oik-clone" );
   $master = bw_array_get( $_REQUEST, "master", null );
-  oik_clone_update_slave_target( $target_id, $master, $source );
+  oik_clone_update_slave_target( $target_id, $master, $source, $post->post_modified_gmt );
   return( $target_id );
 }
 

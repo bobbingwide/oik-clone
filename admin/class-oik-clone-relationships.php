@@ -11,7 +11,7 @@
 class OIK_clone_relationships {
   public $source_IDs; // array of source IDs
   public $source_post_meta; // array of source post_meta data
-  public $target_relationships; // mapping array of source IDs to target IDs 
+  public $target_relationships; // mapping array of source IDs to target IDs, with cloned date 
   public $target ; // target host
    
   /**
@@ -66,7 +66,7 @@ class OIK_clone_relationships {
     $IDs = array_unique( $IDs );
     sort( $IDs );
     
-    bw_trace2( $IDs, "IDs", false );
+    bw_trace2( $IDs, "IDs", false, BW_TRACE_DEBUG );
     return( $IDs );
   }
   
@@ -108,6 +108,7 @@ class OIK_clone_relationships {
    * - Ignore post 0. 
    * - get_post_meta() may return an empty array 
    * - otherwise it should return an array like this
+	 * `
             [0] => Array
                 (
                     [http://qw/wordpress] => 29893
@@ -116,7 +117,12 @@ class OIK_clone_relationships {
                     [http://oik-plugins.uk] => 16319
                     [http://oik-plugins.com] => 16332
                 )
-
+	 * `
+	 * 
+	 * To become...
+	 * [http://qw/wordpress] => [id] => 29893 [cloned] => unixtime
+	 * a:1:{s:16:"http://qw/oikcom";a:2:{s:2:"id";i:19476;s:6:"cloned";i:1442659026;}}
+	 * 
    */
   function load_slave_ids() {
     $this->source_post_meta = array();
@@ -126,7 +132,7 @@ class OIK_clone_relationships {
         $this->source_post_meta[$id] = get_post_meta( $id, "_oik_clone_ids", false );
       }
     }
-    bw_trace2( $this->source_post_meta, "source_post_meta" );
+    bw_trace2( $this->source_post_meta, "source_post_meta", false, BW_TRACE_DEBUG );
   }
   
   /**
@@ -137,6 +143,22 @@ class OIK_clone_relationships {
    * For each post ID we determine the known mapping or return 0
    * This may produce a larger array but it could help in the future
    * if the server was to reply with the numbers it already knew
+	 
+	 * In the transition period adding the cloned date to _oik_clone_ids
+	 * the target_relationships structure may be a mishmash
+	 * `
+     [15966] => 29893
+     [19476] => Array
+         (
+             [id] => 31697
+             [cloned] => 1442659026
+         )
+		 
+     [31697] => 0
+     [19] => 0
+     [2015] => 0
+	 * `
+
    *
    *
    * @param string $target - the target server
@@ -154,7 +176,7 @@ class OIK_clone_relationships {
        $target_relationships[ $key ] = $target_id;
      }
      $this->target_relationships = $target_relationships;
-     bw_trace2( $this->target_relationships, "target relationships" );
+     bw_trace2( $this->target_relationships, "target relationships", true, BW_TRACE_DEBUG );
      return( $this->target_relationships );
    }
 }

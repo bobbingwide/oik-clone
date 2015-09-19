@@ -10,8 +10,8 @@
  * 
  * cb host - if slave post is set then we make it a simple link
  *
- * x http://qw/wordpress
- * x http://oik-plugins.com
+ * x http://qw/wordpress ( cloned )
+ * x http://oik-plugins.com ( cloned )
  *
  *
  * Messages that may be displayed to the user are:
@@ -71,19 +71,69 @@ function oik_clone_check_parent_cloned( $post, $slaves ) {
  * - create cb with link
  */                                                    
 function oik_clone_display_cbs( $slaves, $clones ) {
-  bw_trace2();
+  bw_trace2( null, null, true, BW_TRACE_DEBUG );
   $cloned = oik_reduce_from_serialized(  $clones );
   foreach ( $slaves as $key =>  $slave ) {
-    $cloned_id = bw_array_get( $cloned, $slave, null );
+		
+    //$cloned_id = bw_array_get( $cloned, $slave, null );
+		$cloned_id = oik_clone_get_slave_id( $cloned, $slave );
+		$cloned_date = oik_clone_get_slave_cloned( $cloned, $slave );
+		
     unset( $cloned[ $slave ] );
-    oik_clone_display_cb( $slave, $cloned_id );
+    oik_clone_display_cb( $slave, $cloned_id, $cloned_date );
   }
   if ( count( $cloned ) ) {
     echo "<br />Previously cloned" ;
-    foreach ( $cloned as $slave => $cloned_id ) {
-      oik_clone_display_cb( $slave, $cloned_id );
+    foreach ( $cloned as $slave => $cloned_item ) {
+			$cloned_id = oik_clone_get_slave_id( $cloned, $slave );
+			$cloned_date = oik_clone_get_slave_cloned( $cloned, $slave ); 
+      oik_clone_display_cb( $slave, $cloned_id, $cloned_date );
     }
   }
+}
+
+/**
+ * Return the slave id from the _oik_clone_ids post meta structure
+ * 
+ * We need to take into account the fact that for versions up to v1.0.0-beta.0817
+ * there was only a slave ID and no cloned date
+ *
+ */
+function oik_clone_get_slave_id( $cloned, $slave ) {
+	$target = bw_array_get( $cloned, $slave, null );
+	if ( is_array( $target ) ) {
+		$slave_id = bw_array_get( $target, "id", null );
+	} else {
+		$slave_id = $target;
+	}
+	return( $slave_id );
+}
+	
+/**
+ * Return the cloned date from the _oik_clone_ids post meta structure
+ * 
+ * We need to take into account the fact that for versions up to v1.0.0-beta.0817
+ * there was only a slave ID and no cloned date. We have to cater for a 0 date in other code.
+ *
+ */
+function oik_clone_get_slave_cloned( $cloned, $slave ) {
+	$target = bw_array_get( $cloned, $slave, null );
+	if ( is_array( $target ) ) {
+		$cloned = bw_array_get( $target, "cloned", null );
+	} else {
+		$cloned = 0 ;
+	}
+	return( $cloned );
+}
+
+function oik_clone_get_cloned_date( $cloned_date ) {
+	if ( $cloned_date ) {
+		$formatted = "<br />";
+		$formatted .= bw_format_date( $cloned_date, "M j, Y @ G:i" );
+	} else {
+		$formatted = null;
+	}
+	return( $formatted ); 
 }
   
 /**
@@ -93,16 +143,19 @@ function oik_clone_display_cbs( $slaves, $clones ) {
  * clone every time we perform an update.
  * 
  * When the $clone_id is known then we can create a link to the post
+ * When the $cloned_date is non-zero we can show this too
  * 
  * @param string $slave - the host URL
  * @param ID $clone_id - the ID of the target post, when known
+ * @param integer $cloned_date - the post modified date when last cloned
  * 
  */  
-function oik_clone_display_cb( $slave, $clone_id ) {
+function oik_clone_display_cb( $slave, $clone_id, $cloned_date=0 ) {
   bw_trace2();
   echo "<br />";
   $name = "slaves[$slave]";
   $text = oik_clone_get_label_or_link( $slave, $clone_id );
+	$text .= oik_clone_get_cloned_date( $cloned_date );
   $lab = label( $name, $text );
   $value = null;
   $icheckbox = icheckbox( $name, $value );
@@ -141,14 +194,14 @@ function oik_clone_get_label_or_link( $server, $clone_id ) {
  * 
  */
 function oik_reduce_from_serialized( $serialized ) {
-
+	bw_trace2();
   $reduced = array();
   foreach ( $serialized as $serial ) {
     foreach ( $serial as $key => $value ) {
       $reduced[ $key ] = $value;
     }
   }
-  bw_trace2( $reduced, "reduced" );
+  bw_trace2( $reduced, "reduced", true, BW_TRACE_DEBUG );
   return( $reduced );
 }   
     

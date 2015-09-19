@@ -57,7 +57,7 @@ class OIK_clone_mapping {
       $mapped = $this->get_mapping( $parent );
     }
     $post->post_parent = $mapped;
-    bw_trace2( $post, "post mapped", false );
+    bw_trace2( $post, "post mapped", false, BW_TRACE_DEBUG );
   }
   
   
@@ -71,6 +71,9 @@ class OIK_clone_mapping {
    */  
   function get_mapping( $id ) {
     $mapped = bw_array_get( $this->mapping, $id, 0 );
+		if ( is_array( $mapped ) ) {
+			$mapped = bw_array_get( $mapped, "id", null ); 
+		} 
     if ( $mapped ) {
       $post = get_post( $mapped );
       if ( !$post ) {
