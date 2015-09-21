@@ -185,15 +185,14 @@ function oik_clone_publicize( $id, $load_media=false ) {
  * @return ID - the slave_id
  */
 function oik_clone_determine_slave_id( $target, $result ) {
-	bw_trace2();
-	//$slave_id = $target;
-	$result = json_decode( $result );
+	bw_trace2( null, null, true, BW_TRACE_DEBUG );
+	$result = bw_json_decode( $result );
 	$slave_id = bw_array_get( $result, "slave", $target );
-	bw_trace2( $slave_id, "slave id" );
+	bw_trace2( $slave_id, "slave id", false, BW_TRACE_DEBUG );
 	if ( !$slave_id  ) {
 		bw_trace2( "Missing slave ID", null, true, BW_TRACE_ERROR );
+		//gobang();
 	}
-	//  gobang();
 	return( $slave_id );
 }
 
