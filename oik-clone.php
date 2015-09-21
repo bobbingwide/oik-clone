@@ -264,10 +264,14 @@ function oik_clone_heartbeat_settings( $settings ) {
 /**
  * Implement "oik_add_shortcodes" action for oik-clone
  *
- * We can probably get away with a single shortcode with multiple complex behaviours
+ * [cloned] - shows the current status of the the post
+ * [clone] - either show the status of the complete tree or a link to where cloning will take place
+ *
+ * @TODO - [cloned] to incorporate the link produced by [clone] 
  */
 function oik_clone_oik_add_shortcodes() {
   bw_add_shortcode( "cloned", "oik_cloned", oik_path( "shortcodes/oik-cloned.php", "oik-clone" ), false );
+	bw_add_shortcode( "clone", "oik_clone", oik_path( "shortcodes/oik-clone.php", "oik-clone" ), false );
 }
 
 /**
