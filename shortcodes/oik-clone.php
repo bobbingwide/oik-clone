@@ -6,8 +6,22 @@
  */
 function oik_clone_build_tree( $id, $atts ) {
 	oik_require( "admin/class-oik-clone-tree.php", "oik-clone" );
+	oik_clone_tree_filters( $atts );
+																																 
 	$tree = new OIK_clone_tree( $id, $atts );
 	return( $tree );
+}
+
+/**
+ * Add the filters we'll need
+ */
+
+function oik_clone_tree_filters( $atts ) {
+	static $add_filters = true;
+	if ( $add_filters ) {
+		add_filter( "oik_clone_build_list", "oik_clone_build_list_informal_relationships", 11, 2 );
+		$add_filters = false;
+	}
 }
 
 /**
@@ -15,9 +29,56 @@ function oik_clone_build_tree( $id, $atts ) {
  */
 function oik_clone_display_tree( $tree ) {
 	bw_trace2();
-	$tree->display();
-	$tree->display_ordered(); 
+	//$tree->display();
+}
+
+/**
+ * Perform cloning if it seems acceptable
+ *
+ * @param integer $id The post being displayed
+ * @param array $atts Shortcode atts
+ * 
+ */
+function oik_clone_maybe_perform_clones( $id, $atts ) {
+	$clone = bw_array_get( $_REQUEST, "_oik_clone_submit_$id", null );
+	if ( $clone ) {
+		oik_require( "bobbforms.inc" );
+		$clone = bw_verify_nonce( "_oik_clone_form", "_oik_clone_form$id" );
+		if ( $clone ) {
+			$clone = bw_array_get( $_REQUEST, "clone", array() );
+			$clone_ids = array_keys( $clone, "on" );
+			if ( count( $clone_ids ) ) {
+			  //p( "I should do some cloning now" );
+				//p( implode( $clone_ids ) );
+				bw_trace2( $clone_ids, "clone_ids", false, BW_TRACE_DEBUG );
+				$clone = oik_clone_build_tree( $id, $atts );
+				$clone->clone_these( $clone_ids );
+			}
+	
+		
+		}
+	}
+	return( $clone );
+	
 } 
+
+/**
+ * Display the clone form 
+ * 
+ * 
+ */
+function oik_clone_display_form( $tree, $id, $atts ) {
+  $class = bw_array_get( $atts, "class", "bw_clone_form" );
+  sdiv( $class );
+  oik_require( "bobbforms.inc" );
+	bw_form();
+	$tree->display_ordered(); 
+	e( wp_nonce_field( "_oik_clone_form", "_oik_clone_form$id", false, false ) );
+	br();
+	e( isubmit( "_oik_clone_submit_$id", "Clone" ) );
+	etag( "form" );
+	ediv();
+}
  
 
 /**
@@ -28,7 +89,10 @@ function oik_clone_display_tree( $tree ) {
  * I imagine it's going to be quite a big table
  * and will somehow need filtering to reduce it to the "status" of cloning 
  * to a particular server or to exclude the parents of "related" posts
- * including both formal and informal relationships.
+ * or to include or exclude formal and informal relationships.
+ *
+ * @TODO We also have to take into account the fact that some post types aren't clonable
+ *
  *
  *
  * @param array $atts shortcode parameters
@@ -37,14 +101,24 @@ function oik_clone_display_tree( $tree ) {
  * @return string information showing the "tree" for the given post
  */
 function oik_clone( $atts=null, $content=null, $tag=null ) {
+	$form = bw_array_get( $atts, "form", "y" );
+	$form = bw_validate_torf( $form );
 	$id = bw_array_get_from( $atts, "id,0", null );
   if ( null == $id ) {
     $id = bw_current_post_id();
   }
   if ( $id ) {
     $atts['id'] = $id;
-    $tree =oik_clone_build_tree( $id, $atts );
-		oik_clone_display_tree( $tree, $id, $atts );    
+		if ( $form ) {
+			oik_clone_maybe_perform_clones( $id, $atts );
+		}
+		
+    $tree = oik_clone_build_tree( $id, $atts );
+		if ( $form ) {
+			oik_clone_display_form( $tree, $id, $atts );   
+		} else {
+			oik_clone_display_tree( $tree, $id, $atts ); 
+		}
   } else {
     bw_trace2( "Missing post ID", null, true, BW_TRACE_WARNING );
   }
