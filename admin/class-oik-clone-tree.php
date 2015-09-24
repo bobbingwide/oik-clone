@@ -26,6 +26,7 @@ class OIK_clone_tree {
 	public $atts; // attributes
 	public $current_relative_position;
 	public $node_index;
+	static public $targets; // target servers ( aka slaves ) 
    
   /**
    * Initialise the class
@@ -41,13 +42,38 @@ class OIK_clone_tree {
 		$this->atts = $atts;
 		$this->current_relative_position = 0;
 		$this->node_index = 0;
+		self::$targets = null;
 		$node = new OIK_clone_tree_node( $id, $id );
 		$this->build_tree( $node );
 		$this->next_node( $node );
   }
 	
 	/**
+	 * Add required filters
+	 *
+	 * @TODO Decide when and where to add filters to help us build the tree
+	 *
+	 */
+	function add_filters() {
+		oik_clone_tree_filters( $this->atts );
+	}
+	
+	/**
 	 * Build the tree
+	 *
+	 * If we allow this tree to be built completely then we may have thousands of posts to consider for cloning
+	 * So, if we don't yet know anything about the clone date then we need to restrict the logic
+	 * 
+	 * Make a decision based on the node relationship
+	 * 
+	 * Relationship | Parent | Child  |Formal
+	 * ------------ | ------ | ------ | ------
+	 * SELF         |  Y     | Y      | Y
+	 * ANCESTOR    	|  N     | N      | Y
+	 * CHILD        |  N     | N      | N
+	 * FORMAL       |  N     | N      | N
+	 * 
+	 * 
 	 *
 	 *
 	 * @param ID $id the post ID to start from OR
@@ -58,13 +84,22 @@ class OIK_clone_tree {
 	function build_tree( $node ) {
 		$this->add_node( $node );
 		if ( !$this->is_handled_node( $node ) ) {
-			$this->build_parent_tree( $node );
-			$this->build_child_tree( $node );
-			//$this->build_formal_relationships( $node );
-			//$this->build_informal_relationships( $node );
+			switch ( $node->relationship ) {
+				case OIK_Clone_Tree_Node::CLONE_SELF:
+					$this->build_parent_tree( $node );
+					$this->build_child_tree( $node );
+					$this->build_formal_relationships( $node );
+					break;
+				
+				case OIK_Clone_Tree_Node::CLONE_ANCESTOR:
+					$this->build_formal_relationships( $node );
+					break;
+				
+ 				
+				default:
+					// Don't build a tree for CLONE_CHILD or CLONE_FORMAL
+			}
 		}
-		
-		
 	}
 	
 	/**
@@ -132,9 +167,18 @@ class OIK_clone_tree {
 		return( $handled );
 	}
 	
+	/**
+	 * Add a node to the reprocess list
+	 */
 	function add_reprocess_node( $node ) {
+		gobang();
 	}
+	
+	/** 
+	 * Check if the node is in the reprocess list
+	 */
 	function is_reprocess_node() {
+		gobang();
 	}
 	
 	/**
@@ -181,13 +225,45 @@ class OIK_clone_tree {
 			$this->add_node( $node );
 		}	
 	}
+	
+	/**
+	 * Build the formal relationships for this node
+	 *
+	 * @param object $node - the post we're currently processing
+	 */
+	function build_formal_relationships( $node ) {
+    if ( $node->post ) {		
+			$originator_id = $node->id;
+			$relative_position = $node->relative_position;
+			$relationship = $node->relationship;
+			oik_require( "admin/oik-clone-actions.php", "oik-clone" );
+			oik_require( "admin/oik-clone-relationships.php", "oik-clone" );
+			//echo "<br />Formal: $originator_id $relative_position $relationship ";
+ 
+			$post_meta = get_post_meta( $node->id );
+			$node->post->post_meta = $post_meta;
+			//$payload = oik_clone_load_post( $node->id );
+			//bw_trace2( $payload, "payload", false, BW_TRACE_DEBUG );
+			
+			$relationships = oik_clone_relationships( $node->post );
+			bw_trace2( $relationships, "relationships", false, BW_TRACE_DEBUG );
+			if ( $relationships && count( $relationships->source_IDs ) ) {
+				foreach ( $relationships->source_IDs as $value ) {
+					if ( $value ) {
+						$node = new OIK_clone_tree_node( $value, $originator_id, $relative_position, OIK_Clone_Tree_Node::CLONE_FORMAL );
+						$this->add_node( $node );
+					}
+				}
+			}	
+		}
+	}	
 		
-	/* Display the clone tree
+	/**
+	 *  Display the clone tree
 	 */
 	function display() {
-		e( "Clone:" );
-		e( $this->id );
-		p( count( $this->nodes ) );
+		e( "Posts:" );
+		e( count( $this->nodes ) );
 		foreach ( $this->nodes as $key => $node ) {
 			
 			$node->display( $node );
@@ -200,10 +276,9 @@ class OIK_clone_tree {
 	 */
 	function display_ordered() {
 	
-		e( "Clone order:" );
-		e( $this->id );
-		p( count( $this->ordered_nodes ) );
 		$this->order_nodes();
+		e( "Posts :" );
+		e( count( $this->ordered_nodes ) );
 		foreach ( $this->ordered_nodes as $key => $node ) {
 			$node->display( $node );
 		}
@@ -224,6 +299,65 @@ class OIK_clone_tree {
 		
 		//bw_trace2( $this->ordered_nodes, "ordered nodes after", false, BW_TRACE_DEBUG );
 	}
+	
+	/**
+	 * Determine the targets for cloning
+	 *
+	 * We might get this information from the shortcode or elsewhere
+	 * 
+	 * Could use an alias of `slaves` rather than `targets`
+	 *
+	 *
+	 * Slaves		|	List of slaves to use
+	 * -------- | -----------------------------
+	 * null     | same as current
+	 * http://example.com,http://example.org | Use this list of slaves
+	 * current | Use the current slaves from the node 
+	 * all 		|	Use the full list of slaves - from the admin options
+	 * 
+	 * @param object $node the node we're thinking of cloning
+	 * @return array target addresses
+	 */
+	static function get_targets( $node ) {
+		//$slaves = array();
+		switch ( self::$targets ) {
+			case 'current':
+				$slaves = $node->targets();
+				break;
+				
+			case null:
+			case 'all':
+				self::$targets = bw_get_option( "reclone", "bw_clone_servers" );
+				 
+			default:
+				if ( !is_array( self::$targets ) ) {
+					self::$targets = bw_as_array( self::$targets );
+				}
+				$slaves = self::$targets;
+		}
+		bw_trace2( $slaves, "slaves", false, BW_TRACE_DEBUG );
+		return( $slaves );
+	}
+	
+	/**
+	 * Clone the selected post IDs
+	 *
+	 * @param array $clone_ids 
+	 */
+	function clone_these( $clone_ids ) {
+		bw_trace2();
+		$this->order_nodes();
+		foreach ( $this->ordered_nodes as $node ) {
+			$clone_me = in_array( $node->id, $clone_ids ); 
+			if ( $clone_me ) {
+				$node->cloneme();
+			} else {
+				e( "Not cloning {$node->id}" );
+			}	
+		}
+	 
+	}
+	 
 	
 }	
 	
