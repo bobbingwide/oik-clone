@@ -118,6 +118,7 @@ function oik_clone_server_options() {
   $option = "bw_clone_servers";
   $options = bw_form_start( $option, "oik_clone" );
   bw_textfield_arr( $option, "Servers", $options, "slaves", 80 ); 
+	bw_textfield_arr( $option, "Reclone servers, for [clone] shortcode", $options, "reclone", 80 );
   bw_textfield_arr( $option, "Server API key", $options, "apikey", 32 );
   etag( "table" );       
   p( isubmit( "ok", "Save changes", "button-primary"  ) ); 

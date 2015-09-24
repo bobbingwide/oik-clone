@@ -137,39 +137,47 @@ function oik_clone_get_target_slaves() {
  *
  * @param ID $id - the post ID that's been updated
  * @param bool $load_media - true if we're going to process an attached media file
+ * @param array $slaves - null if we need to build the list ourselves
  */
-function oik_clone_publicize( $id, $load_media=false ) {
-  $slaves = oik_clone_get_target_slaves();
-  $jmedia = null;
-  if ( count( $slaves ) ) {
-    oik_require( "admin/oik-clone-actions.php", "oik-clone" );
-    oik_require( "admin/oik-clone-media.php", "oik-clone" );
-    oik_require( "includes/oik-remote.inc" );
-    $payload = oik_clone_load_post( $id );
-    $jpayload = json_encode( $payload );
-    oik_require( "admin/oik-clone-relationships.php", "oik-clone" );
-    $relationships = oik_clone_relationships( $payload );
-    foreach ( $slaves as $slave ) {
-      $target = oik_clone_query_slave_target( $slave, $payload ); 
-      $mapping = $relationships->mapping( $slave );
-      $jmapping = json_encode( $mapping ); 
-      if ( !$target ) {
-        $jmedia = oik_clone_load_media_file( $id, $payload ); 
-      } else {
-        // @TODO  Need to implement a force update or something
-        $jmedia = oik_clone_load_media_file( $id, $payload ); 
-      }  
-      $result = oik_clone_update_slave( $id, $jpayload, $slave, $target, $jmapping, $jmedia );
-      $slave_id = oik_clone_determine_slave_id( $target, $result );
-      //if ( $slave_id != $target ) {
-        $post_meta = oik_clone_update_slave_target( $id, $slave, $slave_id, $payload->post_modified_gmt );
-      //}
-    }
-  } else { 
-    //p( "No slaves to which to clone" );
-    bw_backtrace();
-    
-  }
+function oik_clone_publicize( $id, $load_media=false, $slaves=null ) {
+	if ( !$slaves ) {
+		$slaves = oik_clone_get_target_slaves();
+	}
+	if ( count( $slaves ) ) {
+		static $loading_necessary = true;
+		if ( $loading_necessary ) {
+			oik_require( "admin/oik-clone-actions.php", "oik-clone" );
+			oik_require( "admin/oik-clone-media.php", "oik-clone" );
+			oik_require( "includes/oik-remote.inc" );
+			oik_require( "admin/oik-clone-relationships.php", "oik-clone" );
+			// @TODO oik_clone_tree_filters();
+			add_filter( "oik_clone_build_list", "oik_clone_build_list_informal_relationships", 11, 2 );
+			$loading_necessary = false;
+		}
+		
+		$payload = oik_clone_load_post( $id );
+		$jpayload = json_encode( $payload );
+		$relationships = oik_clone_relationships( $payload );
+		
+		$jmedia = null;
+		foreach ( $slaves as $slave ) {
+			$target = oik_clone_query_slave_target( $slave, $payload ); 
+			$mapping = $relationships->mapping( $slave );
+			$jmapping = json_encode( $mapping ); 
+			if ( !$target ) {
+				$jmedia = oik_clone_load_media_file( $id, $payload ); 
+			} else {
+				// @TODO  Need to implement a force update or something
+				$jmedia = oik_clone_load_media_file( $id, $payload ); 
+			}  
+			$result = oik_clone_update_slave( $id, $jpayload, $slave, $target, $jmapping, $jmedia );
+			$slave_id = oik_clone_determine_slave_id( $target, $result );
+			$post_meta = oik_clone_update_slave_target( $id, $slave, $slave_id, $payload->post_modified_gmt );
+		}
+	} else { 
+		//p( "No slaves to which to clone" );
+		bw_backtrace();
+	}
 }
 
 /**
