@@ -34,12 +34,20 @@ class OIK_clone_relationships {
    * @param object $post - the 'complete' post object 
    */
   function build_list( $post ) { 
+		if ( !$post ) {
+			bw_backtrace();
+			gobang();
+		}
     $source_IDs = array();
     $source_IDs[] = $post->ID;
     if ( $post->post_parent ) {
       $source_IDs[] = $post->post_parent;
     }
-    add_filter( "oik_clone_build_list", array( $this, "filter_metadata"), 10, 2 );
+		static $add_filter = true;
+		if ( $add_filter ) {
+			add_filter( "oik_clone_build_list", array( $this, "filter_metadata"), 10, 2 );
+			$add_filter = false;
+		}
     $this->source_IDs = apply_filters( "oik_clone_build_list", $source_IDs, $post );
   }
   
