@@ -63,10 +63,7 @@
  *  
  */
 function oik_clone_relationships( $post ) {
-
-  add_filter( "oik_clone_build_list", "oik_clone_build_list_informal_relationships", 11, 2 );
   oik_require( "admin/class-oik-clone-relationships.php", "oik-clone" );
-  
   $relationships = new OIK_clone_relationships();
   $relationships->build_list( $post );
   $relationships->load_slave_ids();
