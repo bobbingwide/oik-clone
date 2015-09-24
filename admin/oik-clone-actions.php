@@ -327,23 +327,30 @@ function oik_clone_load_target( $target ) {
 function oik_clone_load_post( $post_id ) {  
   oik_require( "includes/bw_posts.inc" );
   $post = get_post( $post_id );
-  $post_meta = get_post_meta( $post_id );
-  bw_trace2( $post_meta, "post_meta" );
+	if ( $post ) {
+	
+		$post_meta = get_post_meta( $post_id );
+		bw_trace2( $post_meta, "post_meta" );
   
-  // We need to unset some of the post_meta since it causes problems
-  // if we pass this from master to server
-  //$post_meta = apply_filters( "oik_clone_post_meta", $post_meta );
+		// We need to unset some of the post_meta since it causes problems
+		// if we pass this from master to server
+		//$post_meta = apply_filters( "oik_clone_post_meta", $post_meta );
   
   
-  $post->post_meta = $post_meta;
-  oik_require( "admin/oik-clone-taxonomies.php", "oik-clone" );
+		$post->post_meta = $post_meta;
+		oik_require( "admin/oik-clone-taxonomies.php", "oik-clone" );
+		
+		$taxonomies = oik_clone_load_taxonomies( $post_id, $post );
+		// Should this be $post->terms - to be consistent with REST
   
-  $taxonomies = oik_clone_load_taxonomies( $post_id, $post );
-  // Should this be $post->terms - to be consistent with REST
+		$post->post_taxonomies = $taxonomies;
   
-  $post->post_taxonomies = $taxonomies;
-  
-  bw_trace2( $post, "post" );
+		bw_trace2( $post, "post" );
+	} else {
+		bw_trace2( null, null, true, BW_TRACE_ERROR );
+		bw_backtrace( BW_TRACE_ERROR );
+		gobang();
+	}
   return( $post );
 }
 
