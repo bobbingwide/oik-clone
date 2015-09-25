@@ -23,7 +23,7 @@ class OIK_clone_tree {
 	public $ordered_nodes; // nodes sorted by relative relationship ascending
 	public $reprocess_nodes; //
 	public $id; 
-	public $atts; // attributes
+	static public $atts; // attributes
 	public $current_relative_position;
 	public $node_index;
 	static public $targets; // target servers ( aka slaves ) 
@@ -39,7 +39,7 @@ class OIK_clone_tree {
 		$this->ordered_nodes = array();
 		$this->reprocess_nodes = array(); 
 		$this->id = $id;
-		$this->atts = $atts;
+		self::$atts = $atts;
 		$this->current_relative_position = 0;
 		$this->node_index = 0;
 		self::$targets = null;
@@ -55,7 +55,7 @@ class OIK_clone_tree {
 	 *
 	 */
 	function add_filters() {
-		oik_clone_tree_filters( $this->atts );
+		oik_clone_tree_filters( self::$atts );
 	}
 	
 	/**
@@ -193,7 +193,7 @@ class OIK_clone_tree {
 		$originator_id = $node->id;
 		$relative_position = $node->relative_position;
 		while ( $node->post && $node->post->post_parent )  { 
-			$relative_position--;
+			$relative_position -= 2;
 			$node = new OIK_clone_tree_node( $node->post->post_parent, $originator_id, $relative_position, OIK_Clone_Tree_Node::CLONE_ANCESTOR);
 			$this->add_node( $node );
 		}
@@ -211,7 +211,7 @@ class OIK_clone_tree {
 	function build_child_tree( $node ) {
 		$originator_id = $node->id;
 		$relative_position = $node->relative_position;
-		$relative_position++;
+		$relative_position += 2;
 		$atts = array( 'post_parent' => $node->id
 								 , 'number_posts' => -1
 								 , 'post_type' => 'any'
@@ -235,6 +235,7 @@ class OIK_clone_tree {
     if ( $node->post ) {		
 			$originator_id = $node->id;
 			$relative_position = $node->relative_position;
+			$relative_position++;
 			$relationship = $node->relationship;
 			oik_require( "admin/oik-clone-actions.php", "oik-clone" );
 			oik_require( "admin/oik-clone-relationships.php", "oik-clone" );
@@ -352,10 +353,20 @@ class OIK_clone_tree {
 			if ( $clone_me ) {
 				$node->cloneme();
 			} else {
-				e( "Not cloning {$node->id}" );
+				//e( "Not cloning {$node->id}" );
 			}	
 		}
 	 
+	}
+	
+	/**
+	 * Return the value of an atts field
+	 *
+	 * @param string $key
+	 * @return mixed $value
+	 */
+	static function get_atts( $key ) {
+		return( self::$atts[ $key ] );
 	}
 	 
 	

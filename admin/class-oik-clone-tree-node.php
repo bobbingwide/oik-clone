@@ -72,21 +72,25 @@ class OIK_clone_tree_node {
 	 */
 	function display() {
 		//print_r( $this );
-		$line = retlink( null, get_permalink( $this->id ), $this->id );
-		$line .= " ";
-		$line .= $this->originator;
-		$line .= " ";
-		$line .= $this->relative_position;
-		$line .= " ";
-		$line .= $this->relationship;
-		$line .= " ";
 		$this->get_post();
 		if ( $this->post ) {
+			if ( $this->post->post_type != 'revision' ) {
+				$line = retlink( null, get_permalink( $this->id ), $this->id );
+			} else {
+				$line = $this->post->id;
+			}
+			$line .= " ";
+			$line .= $this->originator;
+			$line .= " ";
+			$line .= $this->relative_position;
+			$line .= " ";
+			$line .= $this->relationship;
+			$line .= " ";
 			$line .= $this->post->post_type;
 			$line .= $this->clone_status();
+			br();
+			e( $line );
 		}
-		br();
-		e( $line );
 	}
 	
 	/**
@@ -106,11 +110,11 @@ class OIK_clone_tree_node {
 			$count_to_clone = count( $to_clone );
 			$count_servers = count( $servers );
 			$clone_status = " $count_to_clone / $count_servers"; 
-			if ( $count_to_clone ) { 
+			if ( $count_to_clone && OIK_clone_tree::get_atts( "form" ) ) { 
 				$clone_status .= $this->clone_link( $to_clone );
 			}
 		} else {
-			$clone_status = "?";
+			$clone_status = " ?";
 		}
 		return( $clone_status );
 
@@ -183,6 +187,7 @@ class OIK_clone_tree_node {
 	 * 
 	 * 
 	 * @TODO How do we remove these?
+	 * @TODO Eventually change the code back to cater for not having the last modified data set
 	 * 
 	 * @param array $servers
 	 * @param integer $modified_gmt
@@ -198,7 +203,7 @@ class OIK_clone_tree_node {
 				if ( is_array( $clone_info ) ) {
 					$cloned_date = $clone_info['cloned'];
         } else {
-					$cloned_date = 0;
+					$cloned_date = $modified_gmt; // Change back to 0 when enough updates have been done.
 				}
 				if ( $cloned_date < $modified_gmt ) {
 					$to_clone[ $server ] = $clone_info;
@@ -220,6 +225,7 @@ class OIK_clone_tree_node {
 	 */ 
 	function clone_link( $to_clone ) {
 		bw_trace2( );
+		
 		$clone_link = " ";
 		$clone_link .= icheckbox( "clone[{$this->id}]");
 		return( $clone_link );
@@ -232,9 +238,9 @@ class OIK_clone_tree_node {
 	 * these show up on the next display of the clone tree.  
 	 */ 
 	function cloneme() {
-		p( "Cloning: {$this->id} " );
 		$slaves = $this->get_targets();
 		if ( count( $slaves ) ) {
+			p( "Cloning: {$this->id} " );
 			oik_require( "admin/oik-save-post.php", "oik-clone" );
 			oik_clone_publicize( $this->id, false, $slaves );
 			
