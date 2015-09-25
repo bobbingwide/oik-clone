@@ -26,10 +26,11 @@ function oik_clone_tree_filters( $atts ) {
 
 /**
  * Display the node tree
+ * 
+ * @param object $tree - the tree of nodes to be displayed
  */
 function oik_clone_display_tree( $tree ) {
-	bw_trace2();
-	//$tree->display();
+	$tree->display();
 }
 
 /**
@@ -84,16 +85,16 @@ function oik_clone_display_form( $tree, $id, $atts ) {
 /**
  * Implement [clone] shortcode for oik-clone
  *
- * This shortcode displays the clone tree for a particular post
- * Its purpose is to enable the user to see what might need to be cloned
+ * This shortcode displays the clone tree for a particular post.
+ * Its purpose is to enable the user to see what might need to be cloned.
+ * 
  * I imagine it's going to be quite a big table
- * and will somehow need filtering to reduce it to the "status" of cloning 
- * to a particular server or to exclude the parents of "related" posts
- * or to include or exclude formal and informal relationships.
+ * and will somehow need filtering 
+ * - to reduce it to the "status" of cloning to a particular server 
+ * - or to exclude the parents of "related" posts
+ * - or to include or exclude formal and informal relationships.
  *
  * @TODO We also have to take into account the fact that some post types aren't clonable
- *
- *
  *
  * @param array $atts shortcode parameters
  * @param string $content optional content 
@@ -101,8 +102,13 @@ function oik_clone_display_form( $tree, $id, $atts ) {
  * @return string information showing the "tree" for the given post
  */
 function oik_clone( $atts=null, $content=null, $tag=null ) {
-	$form = bw_array_get( $atts, "form", "y" );
-	$form = bw_validate_torf( $form );
+	$form = current_user_can( "publish_pages" ); 
+	if ( $form ) {
+		$form = bw_array_get( $atts, "form", "y" );
+		$form = bw_validate_torf( $form );
+	}
+	$atts['form'] = $form;
+	
 	$id = bw_array_get_from( $atts, "id,0", null );
   if ( null == $id ) {
     $id = bw_current_post_id();
@@ -112,12 +118,11 @@ function oik_clone( $atts=null, $content=null, $tag=null ) {
 		if ( $form ) {
 			oik_clone_maybe_perform_clones( $id, $atts );
 		}
-		
     $tree = oik_clone_build_tree( $id, $atts );
 		if ( $form ) {
 			oik_clone_display_form( $tree, $id, $atts );   
 		} else {
-			oik_clone_display_tree( $tree, $id, $atts ); 
+			oik_clone_display_tree( $tree ); 
 		}
   } else {
     bw_trace2( "Missing post ID", null, true, BW_TRACE_WARNING );
@@ -130,7 +135,7 @@ function oik_clone( $atts=null, $content=null, $tag=null ) {
  * Help hook for [clone] shortcode 
  */
 function clone__help( $shortcode="clone" ) {
-  return( "Display the clone tree for a post" );
+  return( "Display the clone tree/form for a post" );
 }
 
 
@@ -140,6 +145,7 @@ function clone__help( $shortcode="clone" ) {
 function clone__syntax( $shortcode="clone" ) {
   $syntax = array( "ID,0" => bw_skv( null, "<i>ID</i>", "Post ID" )
                  , "uo" => bw_skv( "u", "o|d", "List type" ) 
+								 , "form" => bw_skv( "y", "n", "Display 'Clone' form if authorised" )
                  );
   return( $syntax );
 }
