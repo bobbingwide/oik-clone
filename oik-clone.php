@@ -3,7 +3,7 @@
 Plugin Name: oik-clone
 Plugin URI: http://www.oik-plugins.com/oik-plugins/oik-clone-clone-your-wordpress-content
 Description: Clone your WordPress content 
-Version: 1.0.0-beta.0919
+Version: 1.0.0-beta.0925
 Author: bobbingwide
 Author URI: http://www.oik-plugins.com/author/bobbingwide
 Text Domain: oik-clone
@@ -42,6 +42,7 @@ function oik_clone_loaded() {
   add_action( "oik_add_shortcodes", "oik_clone_oik_add_shortcodes" );
   add_filter( "heartbeat_settings", "oik_clone_heartbeat_settings" );
 	add_action( "oik_fields_loaded", "oik_clone_oik_fields_loaded" );
+	add_filter( "oik_post_type_supports", "oik_clone_post_type_supports" );
   
 }  
 
@@ -179,17 +180,17 @@ function oik_clone_save_post( $id, $post, $update ) {
 /**
  * Implement "add_meta_boxes" for oik-clone
  *
- * Only add the box for post_type's that support publicize.
+ * Only add the box for post_type's that support 'clone'.
  * 
- * Note: We can add_post_type_support( $post_type, "publicize" ) 
+ * Note: We can add_post_type_support( $post_type, "clone" ) 
  * using the oik-types plugin, or the logic can be in the theme/plugin
  * 
  * @param string $post_type - the post type for which the meta boxes are being created
  * @param object $post - the post object / comment / link
  */
 function oik_clone_add_meta_boxes( $post_type, $post) {
-  $publicize = post_type_supports( $post_type, "publicize" );
-  if ( $publicize ) {
+  $clone = post_type_supports( $post_type, "clone" );
+  if ( $clone ) {
     oik_require( "admin/oik-clone-meta-box.php", "oik-clone" );
     add_meta_box( 'oik_clone', __( "Clone on update", 'oik-clone' ), 'oik_clone_box', null, 'side', 'default'  );
   }  
@@ -214,17 +215,16 @@ function oik_clone_add_attachment( $post_ID ) {
 /**
  * Implement "edit_attachment" for oik-clone
  * 
- * If we're publicizing attachments, which is more likely than not if you
+ * If we're cloning attachments, which is more likely than not if you
  * want this thing to work nicely, then perform a lazy load to do the business
  *
  * @param ID $post_ID - the attachment post ID
  */
 function oik_clone_edit_attachment( $post_ID ) {
-  oik_require( "admin/oik-clone-media.php", "oik-clone" );
-  if ( post_type_supports( "attachment", "publicize" ) ) {
+  if ( post_type_supports( "attachment", "clone" ) ) {
+		oik_require( "admin/oik-clone-media.php", "oik-clone" );
     oik_clone_lazy_edit_attachment( $post_ID );
   }
-  //gobang();  
 } 
 
 /**
@@ -290,6 +290,17 @@ function oik_clone_oik_fields_loaded() {
                      ); 
 	bw_register_field( "cloned", "virtual", "Cloned?", $field_args );
   
+}
+
+/**
+ * Implement "oik_post_type_support" filter 
+ * 
+ * @param array $supports_options
+ * @return array with "clone" added
+ */															
+function oik_clone_post_type_supports( $supports_options ) {
+	$supports_options['clone'] = __( "Cloning", "oik-clone" );
+	return( $supports_options );
 }
   
 oik_clone_loaded();

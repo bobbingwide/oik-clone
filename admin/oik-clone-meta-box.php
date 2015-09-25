@@ -15,7 +15,7 @@
  *
  *
  * Messages that may be displayed to the user are:
- * - Enable publicize to enable cloning of this post type
+ * - Enable clone to enable cloning of this post type
  * - No slave servers defined
  * - Clone parent post first
  * 
@@ -33,8 +33,8 @@ function oik_clone_box( $post, $metabox ) {
   //bw_trace2();
   //bw_backtrace();
   oik_require( "admin/oik-save-post.php", "oik-clone" );
-  $publicize = post_type_supports( $post->post_type, "publicize" );
-  if ( $publicize ) {
+  $clone = post_type_supports( $post->post_type, "clone" );
+  if ( $clone ) {
     $slaves = oik_clone_get_slaves();
     $clones = get_post_meta( $post->ID, "_oik_clone_ids", false );
     //print_r( $clones );
@@ -42,7 +42,7 @@ function oik_clone_box( $post, $metabox ) {
     oik_clone_display_cbs( $slaves, $clones );
     oik_clone_check_parent_cloned( $post, $slaves );
   } else {
-    p( "Cloning not supported for post types that do not support publicize" );
+    p( "Cloning not supported for post types that do not support 'clone'" );
   }
 }
 

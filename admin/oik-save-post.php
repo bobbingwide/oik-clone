@@ -6,17 +6,16 @@
  * When a post is "published" with a special "clone now" flag set
  * ... somewhere then we attempt to push the information to the slave site(s).
  *
- * This function is supported for post types which support 'publicize'
+ * This function is supported for post types which support 'clone'
  * and which have the "clone to" post meta data set.
  * 
  * We need to ignore draft posts and newly created posts.
- 
+ *
  * Special logic may be required for "deleted" posts 
  * 
  * @param ID $id - the ID of the post being saved
  * @param post $post - the post object
  * @param bool $update - true for an update, probably never false.
- 
  */
 function oik_clone_lazy_save_post( $id, $post, $update ) {
   //bw_trace2();
@@ -29,36 +28,29 @@ function oik_clone_lazy_save_post( $id, $post, $update ) {
     break;
     
     case 'inherit':
-      // what do we do with attachments?
-      // Well, for one - we shouldn't see them being saved here! 
-      
-      //  if ( $post->post_type == "attachment" ) {
-      //    oik_clone_publicize_attachment( $id, $post, $update );
-      // } else {
-       //   e( $post->post_type );
-      //    gobang();
-      //  }
+			/** 
+			 * Attachments are dealt with separately with different filters. See 'edit_attachment'
+			 * We don't expect any other post type to have a post status of 'inherit'
+			 */
       break;
   
     case 'publish':
-      if ( post_type_supports( $post->post_type, "publicize" ) ) {
+      if ( post_type_supports( $post->post_type, "clone" ) ) {
          oik_clone_publicize( $id );
       } else {
-        // Post type does not support 'publicize' so we don't do anything
+        // Post type does not support 'clone' so we don't do anything
       }
-    break;
+			break;
     
     case 'trash':
       // One day we may also trash the slaves
-    break;
+			break;
     
     default: 
       bw_trace2( $post->post_status, "post_status" );
       //gobang();
       break;
-      
   }
-	
 }
 
 /**
