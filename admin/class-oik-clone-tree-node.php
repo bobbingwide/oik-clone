@@ -23,8 +23,8 @@ class OIK_clone_tree_node {
 	const CLONE_SELF = "self";
   const CLONE_ANCESTOR = "parent";
   const CLONE_CHILD = "child"; 
-	const CLONE_FORMAL = "formal";
-	//const CLONE_IR = "informal"; 
+	const CLONE_FORMAL = "related";
+	//const CLONE_INFORMAL = "informal"; 
 	
 	
 	/**
@@ -63,6 +63,7 @@ class OIK_clone_tree_node {
 		if ( !$this->post->post_meta ) {
 			$this->post->post_meta = get_post_meta( $this->id );
 		} 
+		return( $this->post->post_meta );
 	}
 	
 	/**
@@ -77,7 +78,7 @@ class OIK_clone_tree_node {
 			if ( $this->post->post_type != 'revision' ) {
 				$line = retlink( null, get_permalink( $this->id ), $this->id );
 			} else {
-				$line = $this->post->id;
+				$line = $this->id;
 			}
 			$line .= " ";
 			$line .= $this->originator;
@@ -102,19 +103,22 @@ class OIK_clone_tree_node {
 	 */ 
 	function clone_status() {
 		$clone_status = null;
-		$this->get_post_meta();
-		if ( $this->post->post_meta ) {
-			$modified_gmt = $this->get_post_modified_gmt();
-			$servers = $this->get_targets();
-			$to_clone = $this->to_clone( $servers, $modified_gmt );
-			$count_to_clone = count( $to_clone );
-			$count_servers = count( $servers );
-			$clone_status = " $count_to_clone / $count_servers"; 
-			if ( $count_to_clone && OIK_clone_tree::get_atts( "form" ) ) { 
-				$clone_status .= $this->clone_link( $to_clone );
+		if ( $this->valid_type() && $this->valid_status() && $this->get_post_meta() ) {
+			if ( $this->post->post_meta ) {
+				$modified_gmt = $this->get_post_modified_gmt();
+				$servers = $this->get_targets();
+				$to_clone = $this->to_clone( $servers, $modified_gmt );
+				$count_to_clone = count( $to_clone );
+				$count_servers = count( $servers );
+				$clone_status = " $count_to_clone / $count_servers"; 
+				if ( $count_to_clone && OIK_clone_tree::get_atts( "form" ) ) { 
+					$clone_status .= $this->clone_link( $to_clone );
+				}
+			} else {
+				$clone_status = " ?";
 			}
 		} else {
-			$clone_status = " ?";
+			$clone_status = " n/a";
 		}
 		return( $clone_status );
 
@@ -242,9 +246,74 @@ class OIK_clone_tree_node {
 		if ( count( $slaves ) ) {
 			p( "Cloning: {$this->id} " );
 			oik_require( "admin/oik-save-post.php", "oik-clone" );
-			oik_clone_publicize( $this->id, false, $slaves );
-			
+			oik_clone_clone( $this->id, false, $slaves );
 		}
+	}
+	
+	/**
+	 * Check if the post type is valid for cloning
+	 *
+	 * @return bool - true when valid for cloning, false when not
+	 */
+	function valid_type() {
+		$valid = true;
+		if ( $this->post ) {
+			switch ( $this->post->post_type ) {
+				case 'revision': 
+					$valid = false; 
+					break;
+					
+				default: 
+					$valid = post_type_supports( $this->post->post_type, "clone" );
+			}
+		} else {
+			$valid = false;
+		}
+		return( $valid );
+			
+	}
+	
+	/**
+	 * Check for valid node status
+	 *
+	 * We don't want to clone certain post statuses
+	 * But more often than not we handle this by not cloning certain post types
+	 * 
+	 * Status |  Valid?	| Explanation
+	 * ------ |  ------ | -----------
+	 * abandoned |  No - edd_payment
+	 * active | No | edd_discount
+	 * auto-draft | No | Should be published first
+	 * draft  | No | Should be published first
+	 * failed | No | edd_payment
+	 * inactive | No | edd_discount
+	 * inherit |  Yes | Attachments have this status	 
+	 * pending | No | Should be published first
+	 * private | Yes | We're happy to clone these
+	 * publish |  Yes | OK
+	 * trash | No | Trashed posts not supported by "Clone on update"
+	 * other? | Yes | We don't know so err towards Yes
+	 */
+	function valid_status() {
+		//bw_trace2( $this, "valid status?", false );
+		$valid = true;
+		if ( $this->post ) {
+			switch ( $this->post->post_status ) {
+				case 'auto-draft':
+				case 'draft':
+				case 'pending': 
+				case 'trash':
+					$valid = false;
+					break;
+					
+				default:
+					//
+			}
+		} else {
+			bw_trace2( $this, "Invalid post", false, BW_TRACE_WARNING );
+			$valid = false;
+		}
+		return( $valid );
 	}
 	
 } /* end class */

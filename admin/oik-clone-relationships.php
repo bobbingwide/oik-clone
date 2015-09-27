@@ -84,10 +84,14 @@ function oik_clone_relationships( $post ) {
  *
  */
 function oik_clone_build_list_informal_relationships( $source_ids, $post ) {
+	bw_backtrace();
+	bw_trace2();
   oik_require( "admin/class-oik-clone-informal-relationships-source.php", "oik-clone" );
   $content_informal_relationships = new OIK_clone_informal_relationships_source( $source_ids );
   $content_informal_relationships->find_ids( $post->post_content );
   $content_informal_relationships->find_ids( $post->post_excerpt );
+	
+	bw_trace2( $content_informal_relationships, "content_informal_relationships", false, BW_TRACE_VERBOSE );
   return( $content_informal_relationships->source_ids );
 }
 

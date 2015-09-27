@@ -84,26 +84,30 @@ class OIK_clone_tree {
 	function build_tree( $node ) {
 		$this->add_node( $node );
 		if ( !$this->is_handled_node( $node ) ) {
-			switch ( $node->relationship ) {
-				case OIK_Clone_Tree_Node::CLONE_SELF:
-					$this->build_parent_tree( $node );
-					$this->build_child_tree( $node );
-					$this->build_formal_relationships( $node );
-					break;
+			if ( $node->valid_status() ) {
+				switch ( $node->relationship ) {
+					case OIK_Clone_Tree_Node::CLONE_SELF:
+						$this->build_parent_tree( $node );
+						$this->build_child_tree( $node );
+						$this->build_formal_relationships( $node );
+						break;
 				
-				case OIK_Clone_Tree_Node::CLONE_ANCESTOR:
-					$this->build_formal_relationships( $node );
-					break;
+					case OIK_Clone_Tree_Node::CLONE_ANCESTOR:
+						$this->build_formal_relationships( $node );
+						break;
 				
  				
-				default:
-					// Don't build a tree for CLONE_CHILD or CLONE_FORMAL
+					default:
+						// Don't build a tree for CLONE_CHILD or CLONE_FORMAL
+				}
 			}
 		}
 	}
 	
 	/**
 	 * Add a node to the 'tree'
+	 *
+	 * 
 	 *
 	 */
 	function add_node( $node ) {
@@ -166,6 +170,7 @@ class OIK_clone_tree {
 		bw_trace2( $handled, "handled?", true, BW_TRACE_DEBUG );
 		return( $handled );
 	}
+	
 	
 	/**
 	 * Add a node to the reprocess list
@@ -257,12 +262,24 @@ class OIK_clone_tree {
 				}
 			}	
 		}
-	}	
+	}
+	
+	/**
+	 * Display the tree of nodes
+	 */
+  function display() {	
+    $order = bw_validate_torf( bw_array_get( self::$atts, "order", "y" ) );
+		if ( $order ) {
+			$this->display_ordered(); 
+		} else {
+			$this->display_nodes();
+		}
+	}
 		
 	/**
 	 *  Display the clone tree
 	 */
-	function display() {
+	function display_nodes() {
 		e( "Posts:" );
 		e( count( $this->nodes ) );
 		foreach ( $this->nodes as $key => $node ) {
