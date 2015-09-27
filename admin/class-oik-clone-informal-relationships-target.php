@@ -38,7 +38,7 @@ class OIK_clone_informal_relationships_target extends OIK_clone_informal_relatio
 	 * Implement OIK_clone_informal_relationships::handle_id
 	 *
 	 * In the target we handle the ID by replacing the source ID with the target ID.
-	* Using a wrapper function in case there's more logic to apply.
+   * Using a wrapper function in case there's more logic to apply.
 	 *
 	 * @param ID $id - the source ID
 	 * @param integer $token - index to the tokens array

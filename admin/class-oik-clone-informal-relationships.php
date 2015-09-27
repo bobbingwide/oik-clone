@@ -369,6 +369,9 @@ abstract class OIK_clone_informal_relationships {
   
   /**
    * Return true if the token is a valid context token
+	 *
+	 * @TODO Some of the valid_tokens are only valid when paired with another token
+	 * e.g. `meta_value=2` is only valid when the `meta_key` points to a relationship field	such as `_plugin_ref`
    * 
    * @return bool - true if it's a valid context, false otherwise
    */
