@@ -49,7 +49,7 @@
  */
 function oik_clone_lazy_edit_attachment( $id ) {
   oik_require( "admin/oik-save-post.php", "oik-clone" );
-  oik_clone_publicize( $id, true );
+  oik_clone_clone( $id, true );
 }
 
 /**

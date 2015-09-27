@@ -36,7 +36,7 @@ function oik_clone_lazy_save_post( $id, $post, $update ) {
   
     case 'publish':
       if ( post_type_supports( $post->post_type, "clone" ) ) {
-         oik_clone_publicize( $id );
+         oik_clone_clone( $id );
       } else {
         // Post type does not support 'clone' so we don't do anything
       }
@@ -115,7 +115,7 @@ function oik_clone_get_target_slaves() {
 }
 
 /**
- * Publicize the update to the slaves
+ * Clone the update to the slaves
  *
  * Determine the slaves to update
  * If there are any load the complete post and json encode it
@@ -131,7 +131,7 @@ function oik_clone_get_target_slaves() {
  * @param bool $load_media - true if we're going to process an attached media file
  * @param array $slaves - null if we need to build the list ourselves
  */
-function oik_clone_publicize( $id, $load_media=false, $slaves=null ) {
+function oik_clone_clone( $id, $load_media=false, $slaves=null ) {
 	if ( !$slaves ) {
 		$slaves = oik_clone_get_target_slaves();
 	}

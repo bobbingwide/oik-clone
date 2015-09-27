@@ -14,8 +14,17 @@ function oik_clone_build_tree( $id, $atts ) {
 
 /**
  * Add the filters we'll need
+ *
+ * @TODO At present we can't tell between formal and informal relationships
+ * so some of the informal relationships will be false positives
+ * We can either make this more obvious... by indicating how the relationship was determined
+ * or improve the informal relationship checking
+ * or just live with it 
+ *
+ * @TODO We could also make this an option on the tree building - using a value in $atts
+ * 
+ * @param array $atts - shortcode attributes
  */
-
 function oik_clone_tree_filters( $atts ) {
 	static $add_filters = true;
 	if ( $add_filters ) {
@@ -73,7 +82,7 @@ function oik_clone_display_form( $tree, $id, $atts ) {
   sdiv( $class );
   oik_require( "bobbforms.inc" );
 	bw_form();
-	$tree->display_ordered(); 
+	$tree->display();
 	e( wp_nonce_field( "_oik_clone_form", "_oik_clone_form$id", false, false ) );
 	br();
 	e( isubmit( "_oik_clone_submit_$id", "Clone" ) );
@@ -145,7 +154,8 @@ function clone__help( $shortcode="clone" ) {
 function clone__syntax( $shortcode="clone" ) {
   $syntax = array( "ID,0" => bw_skv( null, "<i>ID</i>", "Post ID" )
                  , "uo" => bw_skv( "u", "o|d", "List type" ) 
-								 , "form" => bw_skv( "y", "n", "Display 'Clone' form if authorised" )
+								 , "form" => bw_skv( "y", "n", "Display 'Clone' form if authorised" )	
+								 , "order" => bw_skv( "y", "n", "Display in suggested cloning order" )
                  );
   return( $syntax );
 }
