@@ -3,7 +3,7 @@
 * Donate link: http://www.oik-plugins.com/oik/oik-donate/
 * Tags: clone, compare, update, MultiSite
 * Requires at least: 4.2
-* Tested up to: 4.3
+* Tested up to: 4.3.1
 * Stable tag: 0.9
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -139,6 +139,9 @@ Other methods will be implemented in future versions.
 3. Clone on update meta box - Previously cloned
 
 ## Upgrade Notice 
+# 1.0.0-beta.1013 
+Upgrade for filtered cloning of post meta data
+
 # 1.0.0-beta.0919 
 Upgrade to support the "cloned" date.
 * Note: Since there is an interface change you need to update both clients and servers.
@@ -188,6 +191,22 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 ## Changelog 
+# 1.0.0-beta.1013 
+* Added: [clone] shortcode - Provide a method to determine what needs to be cloned  https://github.com/bobbingwide/oik-clone/issues/5
+* Changed: Add $slaves parameter to oik_clone_publicize
+* Changed: Add form= parameter to [clone] shortcode. default=y
+* Changed: Add logic to build the relationships for the posts to clone
+* Changed: Add some error detection in oik_clone_load_post
+* Changed: Fixes #6 - Provide a method to clone directly from the [clone] shortcode output
+* Changed: Fixes #7 - Change from checking post_type_supports 'publicize' to 'clone'
+* Changed: Move add_filter "oik_clone_build_list" from oik_clone_relationships
+* Changed: Only add filter "oik_clone_build_list" filter once
+* Changed: Rename oik_clone_publicize() to oik_clone_clone()
+* Changed: Update [cloned] to show the clone date
+* Changed: Updated language files
+* Changed: Use bw_json_decode() to protect from Warnings and Notices returned from the server
+* Fixed: https://github.com/bobbingwide/oik-clone/issues/3
+
 # 1.0.0-beta.0919 
 * Changed: Now supports additional information in _oik_clone_ids post meta ( Issue #4 )
 * Changed: Using trace level in some bw_trace2() calls
