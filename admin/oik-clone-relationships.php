@@ -201,9 +201,11 @@ function oik_clone_filter_all_post_meta( $post ) {
   global $oik_clone_mapping;
   $mapping = $oik_clone_mapping;
   $post_meta = (array) $post->post_meta;
-  bw_trace2( $post_meta, "post_meta", true );
+  bw_trace2( $post_meta, "post_meta", true, BW_TRACE_VERBOSE );
+  $post_meta = apply_filters( "oik_clone_filter_all_post_meta", $post_meta );
+  bw_trace2( $post_meta, "post_meta", false, BW_TRACE_VERBOSE );
+	
   foreach ( $post_meta as $key=> $meta ) {
-    //$meta = apply_filters( "
     
     bw_trace2( $meta, $key, false );
     if ( $mapping->is_relationship_field( $key, $meta ) ) {
