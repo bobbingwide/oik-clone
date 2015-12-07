@@ -378,7 +378,7 @@ class OIK_Clone_List_Table extends BW_List_Table {
     //$request_uri = $_SERVER['REQUEST_URI'];
     $request_uri = remove_query_arg( array( "action", "source", "target" ) );
     //$request_uri = add_query_arg( "_
-    $_SERVER['REQUEST_URI'] = esc_url( $request_uri );
+    $_SERVER['REQUEST_URI'] = $request_uri; // Don't esc_url() here ... too early.
     //$this->o();
   }  
   
