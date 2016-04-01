@@ -33,8 +33,16 @@ class OIK_clone_tree_node {
 	 * We shouldn't add the post until we've actually added the node to the list
 	 * Otherwise we end up getting posts too many times.
 	 * But other times we may already have the post to pass.
+	 *
+	 * @TODO oik-shortcode parser can't handle self::CLONE_SELF so default is hardcoded as "self"
+	 * 
+	 * @param ID $id 
+	 * @param string $originator
+	 * @param integer $relative_position
+	 * @param string $relationship Note: oik-shortcode parser can't handle self::CLONE_SELF so default
+	 * @param post $post
 	 */
-	function __construct( $id, $originator=null, $relative_position=0, $relationship=self::CLONE_SELF, $post=null ) {
+	function __construct( $id, $originator=null, $relative_position=0, $relationship="self", $post=null ) {
 		$this->id = $id;
 		$this->originator = $originator;
 		$this->relative_position = $relative_position;
