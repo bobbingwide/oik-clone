@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2015
+<?php // (C) Copyright Bobbing Wide 2015, 2016
 
 /**
  * Push media files from the master to the slaves
@@ -77,8 +77,8 @@ function oik_clone_lazy_edit_attachment( $id ) {
  * @return string - the JSON encoded media file
  */
 function oik_clone_load_media_file( $id, $payload ) {
-  static $jmedia; 
-  if ( empty( $jmedia ) ) {
+  //static $jmedia; 
+  //if ( empty( $jmedia ) ) {
     $media_file = array();
     if ( $payload->post_type == "attachment" ) {
       $media_file['url'] = bw_array_get( $_REQUEST, "attachment_url", null );
@@ -98,7 +98,7 @@ function oik_clone_load_media_file( $id, $payload ) {
       $media_file['data'] = $base64;
     }  
     $jmedia = json_encode( $media_file ); 
-  }
+  //}
   return( $jmedia );
 }
 
