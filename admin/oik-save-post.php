@@ -298,10 +298,11 @@ function oik_clone_query_slave_target( $slave, $payload ) {
  * @return mixed - the result of the AJAX call 
  */
 function oik_clone_update_slave( $id, $payload, $slave, $target, $mapping, $media_file=null ) {
+	$target_id = bw_array_get( $target, "id", $target );
   if ( "[]" == $media_file || defined( 'OIK_CLONE_FORCE_SIMPLE' ) ) {
-    $result = oik_clone_update_slave_simple( $id, $payload, $slave, $target, $mapping );
+    $result = oik_clone_update_slave_simple( $id, $payload, $slave, $target_id, $mapping );
   } else {
-    $result = oik_clone_update_slave_multipart( $id, $payload, $slave, $target, $mapping, $media_file );
+    $result = oik_clone_update_slave_multipart( $id, $payload, $slave, $target_id, $mapping, $media_file );
   }
   return( $result );
 }
