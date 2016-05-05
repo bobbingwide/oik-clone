@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2015
+<?php // (C) Copyright Bobbing Wide 2015, 2016
 
 /**
  * Return the target ID 
@@ -187,48 +187,49 @@ function oik_clone_find_target_by_slug( $source ) {
  * 
  */
 function oik_clone_attempt_import( $source, $target, $post ) { 
-  oik_require( "admin/oik-clone-actions.php", "oik-clone" );
-  oik_require( "admin/oik-clone-relationships.php", "oik-clone" );
-  $media_file = null;
+	oik_require( "admin/oik-clone-actions.php", "oik-clone" );
+	oik_require( "admin/oik-clone-relationships.php", "oik-clone" );
+	$media_file = null;
   
-  if ( $post->post_type == "attachment" ) {
-    oik_require( "admin/oik-clone-media.php", "oik-clone" );
+	if ( $post->post_type == "attachment" ) {
+		oik_require( "admin/oik-clone-media.php", "oik-clone" );
 		bw_trace2();
 		$upload_date = oik_clone_get_upload_month( $post->post_meta->_wp_attached_file[0] );
-    $media_file = oik_clone_save_media_file( $upload_date ); //$post->post_date );
-    $post->file = $media_file['file'];
-  }
+		$media_file = oik_clone_save_media_file( $upload_date ); //$post->post_date );
+		$post->file = $media_file['file'];
+	}
   
-  $target_id = oik_clone_determine_target_id( $source, $target, $post );
-  if ( $target_id ) {
-    $target_post = oik_clone_load_target( $target_id );
-    if ( $target_post ) {
-      $post = oik_clone_apply_mapping( $post );
-      oik_clone_update_target( $post, $target_id ); 
-    } else {
-      p( "That's odd" );
-    }  
-  } else {
-    p( "Looks like we'll have to create it" );
+	$target_id = oik_clone_determine_target_id( $source, $target, $post );
+	if ( $target_id ) {
+		$target_post = oik_clone_load_target( $target_id );
+		if ( $target_post ) {
+			$post = oik_clone_apply_mapping( $post );
+			oik_clone_update_target( $post, $target_id ); 
+		} else {
+			p( "That's odd" );
+		}  
+	} else {
+		p( "Looks like we'll have to create it" );
     
-    $post = oik_clone_apply_mapping( $post );
-    
-    $target_id = oik_clone_insert_post( $post );
-    if ( $target_id && $media_file ) {
-      oik_clone_update_attachment_metadata( $target_id, $media_file['file'] );
-    }
-    oik_clone_update_post_meta( $post, $target_id );
-    oik_clone_update_taxonomies( $post, $target_id );
-  }
+		$post = oik_clone_apply_mapping( $post );
+		
+		$target_id = oik_clone_insert_post( $post );
+	}
+	
+	oik_clone_update_post_meta( $post, $target_id );
+	
+	if ( $target_id && $media_file ) {
+		 oik_clone_update_attachment_metadata( $target_id, $media_file['file'] );
+	}
+	oik_clone_update_taxonomies( $post, $target_id );
   
-  
-  // update the post meta with the master post ID of the source ... regardless of the current source
-  // Can we trust [HTTP_USER_AGENT] => WordPress/4.1.1; http://qw/oikcom ?
-  // If not we'll have to pass it.
-  // Or get it from???
-  oik_require( "admin/oik-save-post.php", "oik-clone" );
-  $master = bw_array_get( $_REQUEST, "master", null );
-  oik_clone_update_slave_target( $target_id, $master, $source, $post->post_modified_gmt );
-  return( $target_id );
+	// update the post meta with the master post ID of the source ... regardless of the current source
+	// Can we trust [HTTP_USER_AGENT] => WordPress/4.1.1; http://qw/oikcom ?
+	// If not we'll have to pass it.
+	// Or get it from???
+	oik_require( "admin/oik-save-post.php", "oik-clone" );
+	$master = bw_array_get( $_REQUEST, "master", null );
+	oik_clone_update_slave_target( $target_id, $master, $source, $post->post_modified_gmt );
+	return( $target_id );
 }
 

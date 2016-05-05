@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2014, 2015
+<?php // (C) Copyright Bobbing Wide 2014-2016
 
 /**
  * Validate the action against the given parameters
@@ -126,22 +126,24 @@ function oik_clone_lazy_perform_actions() {
  * 
  * @TODO Apply mapping when the source and target hosts are different
  * 
+ * @param ID $source - source post ID 
+ * @param ID $target - target post ID, may be null
  * 
  */ 
 function oik_clone_perform_import( $source, $target ) {
-  $post = oik_clone_load_source( $source ); 
-  // $post = oik_clone_apply_mapping( $post );
-  if ( $post ) {
-    if ( $target ) {
-      oik_clone_update_target( $post, $target );
-    } else {
-      $new_post = oik_clone_insert_post( $post );
-      oik_clone_update_post_meta( $post, $new_post );
-      oik_clone_update_taxonomies( $post, $new_post );
-    }
-  } else {
-    p( "Failed to load $source" );
-  }
+	$post = oik_clone_load_source( $source ); 
+	// $post = oik_clone_apply_mapping( $post );
+	if ( $post ) {
+		if ( $target ) {
+			oik_clone_update_target( $post, $target );
+		} else {
+			$target = oik_clone_insert_post( $post );
+		}	
+		oik_clone_update_post_meta( $post, $target );
+		oik_clone_update_taxonomies( $post, $target );
+	} else {
+		p( "Failed to load $source" );
+	}
 }
 
 /** 
@@ -181,8 +183,8 @@ function oik_clone_update_target( $post, $target ) {
    
   } else {
     e( "Post modified" );
-    oik_clone_update_post_meta( $post, $target );
-    oik_clone_update_taxonomies( $post, $target );
+    //oik_clone_update_post_meta( $post, $target );
+    //oik_clone_update_taxonomies( $post, $target );
   } 
 }
 

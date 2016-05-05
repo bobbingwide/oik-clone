@@ -297,6 +297,9 @@ function oik_clone_write_media_file( $name, $type, $tmp_file, $time ) {
 /**
  * Create the attachment metadata
  *
+ * If this is a replacement file then we need to store the new file name in _wp_attached_file
+ * as wp_update_attachment_metadata() doesn't do it for us.
+ *
  * @param ID $target_id - the target attachment
  * @param string $media_file - the full file name of the attached file
  */
@@ -304,6 +307,7 @@ function oik_clone_update_attachment_metadata( $target_id, $media_file ) {
   $metadata = wp_generate_attachment_metadata( $target_id, $media_file );
   bw_trace2( $metadata, "attachment_metadata" );
   wp_update_attachment_metadata( $target_id, $metadata );
+	update_post_meta( $target_id, "_wp_attached_file" , $metadata['file'] );
 }
 
 
