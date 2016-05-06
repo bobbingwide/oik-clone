@@ -87,15 +87,17 @@ function oik_clone_load_media_file( $id, $payload ) {
       $media_file['name'] = basename( $file );
       $full_file = oik_clone_determine_full_file( $file );
       $media_file['file'] = $full_file;
-      
-      $contents = file_get_contents( $full_file );
-      
+			
+			$media_file = oik_clone_filter_media_file( $media_file, $payload );
+      $contents = file_get_contents( $media_file['file'] );
       $media_file['md5'] = md5( $contents ); 
       $base64 = oik_clone_load_media_file_base64( $contents );
       // $media_file['md5'] = md5( $base64 ); 
-      $media_file['size'] = filesize( $full_file );
-      bw_trace2( $media_file, "media_file" );
+      $media_file['size'] = filesize( $media_file['file'] );
       $media_file['data'] = $base64;
+			
+      $media_file['file'] = $full_file;
+      bw_trace2( $media_file, "media_file" );
     }  
     $jmedia = json_encode( $media_file ); 
   //}
@@ -105,12 +107,31 @@ function oik_clone_load_media_file( $id, $payload ) {
 /**
  * Determine full file name
  * 
+ * Determine the default full file name for a media file
+ *
+ * @param string $file
+ * @return string the full file name
  */
 function oik_clone_determine_full_file( $file ) {
   $upload_dir = wp_upload_dir();
   $basedir = $upload_dir['basedir'];
   $full_file = $basedir . "/". $file;
   return( $full_file );
+}
+
+/**
+ * Filter the media file array
+ *  
+ * We apply filters to see if any plugin wants to change things like the actual file name
+ * 
+ * @param array $media_file - current values of the media file
+ * @param object $payload - the attachment object
+ * @return array the updated media_file array
+ */
+function oik_clone_filter_media_file( $media_file, $payload ) {
+	bw_trace2();
+	$media_file = apply_filters( "oik_clone_filter_media_file", $media_file, $payload );
+	return( $media_file );
 }
 
 /**
@@ -307,7 +328,10 @@ function oik_clone_update_attachment_metadata( $target_id, $media_file ) {
   $metadata = wp_generate_attachment_metadata( $target_id, $media_file );
   bw_trace2( $metadata, "attachment_metadata" );
   wp_update_attachment_metadata( $target_id, $metadata );
-	update_post_meta( $target_id, "_wp_attached_file" , $metadata['file'] );
+	$attached_file = bw_array_get( $metadata, 'file', null );
+	if ( $attached_file ) {
+		update_post_meta( $target_id, "_wp_attached_file" , $attached_file );
+	}
 }
 
 
