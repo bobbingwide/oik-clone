@@ -191,13 +191,6 @@ function oik_clone_attempt_import( $source, $target, $post ) {
 	oik_require( "admin/oik-clone-relationships.php", "oik-clone" );
 	$media_file = null;
   
-	if ( $post->post_type == "attachment" ) {
-		oik_require( "admin/oik-clone-media.php", "oik-clone" );
-		bw_trace2();
-		$upload_date = oik_clone_get_upload_month( $post->post_meta->_wp_attached_file[0] );
-		$media_file = oik_clone_save_media_file( $upload_date ); //$post->post_date );
-		$post->file = $media_file['file'];
-	}
   
 	$target_id = oik_clone_determine_target_id( $source, $target, $post );
 	if ( $target_id ) {
@@ -214,6 +207,20 @@ function oik_clone_attempt_import( $source, $target, $post ) {
 		$post = oik_clone_apply_mapping( $post );
 		
 		$target_id = oik_clone_insert_post( $post );
+	}
+	
+	
+	if ( $post->post_type == "attachment" ) {
+		oik_require( "admin/oik-clone-media.php", "oik-clone" );
+		$saved_post_id = bw_array_get( $_REQUEST, 'post_id', null );
+		bw_trace2( $saved_post_id, "saved post_id", true );
+		$_REQUEST['post_id'] = $post->post_parent;
+		$upload_date = oik_clone_get_upload_month( $post->post_meta->_wp_attached_file[0] );
+		$media_file = oik_clone_save_media_file( $upload_date ); //$post->post_date );
+		$post->file = $media_file['file'];
+		if ( $saved_post_id ) {
+			$_REQUEST['post_id'] = $saved_post_id;
+		}
 	}
 	
 	oik_clone_update_post_meta( $post, $target_id );
