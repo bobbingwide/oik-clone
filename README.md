@@ -3,8 +3,8 @@
 * Donate link: http://www.oik-plugins.com/oik/oik-donate/
 * Tags: clone, compare, update, MultiSite
 * Requires at least: 4.2
-* Tested up to: 4.5-RC1
-* Stable tag: 0.9
+* Tested up to: 4.5.1
+* Stable tag: 1.0.0-RC2
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 * Text Domain: oik-clone
@@ -139,6 +139,9 @@ Other methods will be implemented in future versions.
 3. Clone on update meta box - Previously cloned
 
 ## Upgrade Notice 
+# 1.0.0-RC2 
+Contains fixes for Issues 9 and 10
+
 # 1.0.0-RC1 
 Contains a fix for Issue 8
 
@@ -194,6 +197,11 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 ## Changelog 
+# 1.0.0-RC2 
+* Fixed: Using [clone] failed to upload attached files [bobbingwide oik-clone issue 9]
+* Fixed: Using [clone] to clone attached media that's been relocated doesn't work correctly. [bobbingwide oik-clone issue 10]
+* Fixed: Notice: Array to string conversion [bobbingwide oik-clone issue 11]
+
 # 1.0.0-RC1 
 * Fixed: OIK_Clone_List_Table::reset_request_uri() should not call esc_url() [github bobbingwide oik-clone issue 8]
 * Fixed: Minor tweaks to allow oik-shortcodes to produce the API reference
