@@ -96,13 +96,32 @@ function oik_clone_display_cbs( $slaves, $clones ) {
  * Return the slave id from the _oik_clone_ids post meta structure
  * 
  * We need to take into account the fact that for versions up to v1.0.0-beta.0817
- * there was only a slave ID and no cloned date
- *
+ * there was only a slave ID and no cloned date.
+ * 
+ * We also take into account the situation where the data has become corrupted.
+ * `
+         [http://oik-plugins.co.uk] => Array
+            [id] => Array
+                [id] => (integer) 10119
+                [cloned] => (integer) 1470411259
+            [cloned] => (integer) 1470819881
+ * `
+ * 
+ * @param array $cloned { Nested array of cloned information keyed by slave
+ *   @type ID $id post ID of the target post 
+ *   @type integer $cloned timestamp last cloned
+ *   }   
+ * @param string $slave 
  */
 function oik_clone_get_slave_id( $cloned, $slave ) {
 	$target = bw_array_get( $cloned, $slave, null );
+	bw_trace2( $target, "target", true );
 	if ( is_array( $target ) ) {
 		$slave_id = bw_array_get( $target, "id", null );
+		
+		if ( is_array( $slave_id ) ) {
+			$slave_id = bw_array_get( $slave_id, "id", null );
+		}
 	} else {
 		$slave_id = $target;
 	}
