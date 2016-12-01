@@ -43,6 +43,8 @@ function oik_clone_loaded() {
   add_filter( "heartbeat_settings", "oik_clone_heartbeat_settings" );
 	add_action( "oik_fields_loaded", "oik_clone_oik_fields_loaded" );
 	add_filter( "oik_post_type_supports", "oik_clone_post_type_supports" );
+	
+	add_action( "run_class-oik-clone-reset-slave.php", "oik_clone_run_oik_reset_slave" );
   
 }  
 
@@ -302,6 +304,16 @@ function oik_clone_post_type_supports( $supports_options ) {
 	$supports_options['clone'] = __( "Cloning", "oik-clone" );
 	return( $supports_options );
 }
-  
+
+/**
+ * Load and run class-oik-clone-reset-slave.php
+ * 
+ */
+function oik_clone_run_oik_reset_slave() {
+	oik_require( "admin/class-oik-clone-reset-slave.php", "oik-clone" );
+	$oik_reset_slave = new OIK_clone_reset_slave();
+}
+	
+
 oik_clone_loaded();
 
