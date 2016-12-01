@@ -304,6 +304,7 @@ function oik_clone_update_slave( $id, $payload, $slave, $target, $mapping, $medi
   } else {
     $result = oik_clone_update_slave_multipart( $id, $payload, $slave, $target_id, $mapping, $media_file );
   }
+	bw_trace2( $result, "result" );
   return( $result );
 }
 

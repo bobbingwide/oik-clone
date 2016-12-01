@@ -51,9 +51,16 @@ function oik_cloned_display_links( $post_id, $atts ) {
     oik_require( "shortcodes/oik-list.php" );
     $uo = bw_sl( $atts );
     foreach ( $cloned as $server => $post ) {
+			bw_trace2( $post, "post", false );
 			if ( is_array( $post ) ) {
 				$cloned_date = bw_array_get( $post, "cloned", null );
 				$post = bw_array_get( $post, "id", null );
+				if ( is_array( $post ) ) {
+					$post = bw_array_get( $post, "id", null );
+					//if ( null == $post ) {
+					//	$cloned_date = null;
+					//}
+				}
 			} else {
 				$cloned_date = null;
 			}

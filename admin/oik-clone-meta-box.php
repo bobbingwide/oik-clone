@@ -210,7 +210,8 @@ function oik_clone_get_label_or_link( $server, $clone_id ) {
 /**
  * Reduce a serialised array to a simpler version
  * 
- * 
+ * @param array $serialized
+ * @return array reduced array
  */
 function oik_reduce_from_serialized( $serialized ) {
 	bw_trace2();
@@ -220,7 +221,7 @@ function oik_reduce_from_serialized( $serialized ) {
       $reduced[ $key ] = $value;
     }
   }
-  bw_trace2( $reduced, "reduced", true, BW_TRACE_DEBUG );
+  bw_trace2( $reduced, "reduced", true ); //, BW_TRACE_DEBUG );
   return( $reduced );
 }   
     
