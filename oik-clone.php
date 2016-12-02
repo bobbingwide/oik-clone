@@ -45,6 +45,7 @@ function oik_clone_loaded() {
 	add_filter( "oik_post_type_supports", "oik_clone_post_type_supports" );
 	
 	add_action( "run_class-oik-clone-reset-slave.php", "oik_clone_run_oik_reset_slave" );
+	add_action( "run_class-oik-clone-reset-ids.php", "oik_clone_run_oik_reset_ids" );
   
 }  
 
@@ -312,6 +313,17 @@ function oik_clone_post_type_supports( $supports_options ) {
 function oik_clone_run_oik_reset_slave() {
 	oik_require( "admin/class-oik-clone-reset-slave.php", "oik-clone" );
 	$oik_reset_slave = new OIK_clone_reset_slave();
+}
+
+/**
+ * Load and run class-oik-clone-reset-ids.php
+ * 
+ * To reset the cloned target IDs from a slave server
+ * 
+ */
+function oik_clone_run_oik_reset_ids() {
+	oik_require( "admin/class-oik-clone-reset-ids.php", "oik-clone" );
+	$oik_reset_slave = new OIK_clone_reset_ids();
 }
 	
 
