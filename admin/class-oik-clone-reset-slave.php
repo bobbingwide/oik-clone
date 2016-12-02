@@ -17,6 +17,9 @@ if ( PHP_SAPI !== "cli" ) {
  * cd \apache\htdocs\oikcom\wp-content\plugins\oik-clone\admin
  * oikwp oik-reset-slave.php http://oik-plugins.com
  * `
+ * 
+ * After running `reset-slave` you may also need to run `reset-ids` for each of the other slave servers
+ * 
  */
 class OIK_clone_reset_slave {
 
@@ -42,10 +45,11 @@ class OIK_clone_reset_slave {
 	 */
 	function get_slave() {
 		$slave = oik_batch_query_value_from_argv( 1, null );
-		if ( !$slave ) {																	
-			echo "Syntax oikwp oik-reset-slave.php slave" . PHP_EOL ;
-			echo "e.g. oikwp oik-reset-slave.php http://oik-plugins.com" . PHP_EOL;
-			die( "try again with the right parameters");
+		if ( !$slave ) { 
+			echo PHP_EOL;
+			echo "Syntax: oikwp oik-clone-reset-slave.php slave" . PHP_EOL ;
+			echo "e.g. oikwp oik-clone-reset-slave.php http://oik-plugins.com" . PHP_EOL;
+			die( "Try again with the right parameters");
 		}
 		$this->slave = $slave;
 	}
