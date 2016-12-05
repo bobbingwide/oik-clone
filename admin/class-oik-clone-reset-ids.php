@@ -17,6 +17,7 @@ if ( PHP_SAPI !== "cli" ) {
 class OIK_clone_reset_ids {
 
 	public $slave; 
+	public $slave_url;
 	public $apikey;
 	public $master = null;
 	public $post_type;
@@ -34,8 +35,8 @@ class OIK_clone_reset_ids {
 		$this->set_slave();
 		$this->set_apikey();
 		$this->set_master();
+		$this->sanity_check();
 		$this->process_post_types();
-		gob();
 	}
 	
 	/**
@@ -44,6 +45,8 @@ class OIK_clone_reset_ids {
 	 * If not specified then die.
 	 * If it is specified perhaps we should check it to be a valid URL
 	 * or maybe we can determine the slave as the first from the list of slaves
+	 * 
+	 * More importantly, we also need the slave's target URL - where we ask another server for the information that the real URL might tell us.
 	 */
 	function set_slave() {
 		$slave = oik_batch_query_value_from_argv( 1, null );
@@ -52,11 +55,11 @@ class OIK_clone_reset_ids {
 			echo "Syntax: oikwp class-oik-clone-reset-ids.php slave" . PHP_EOL ;
 			echo "e.g. oikwp class-oik-clone-reset-ids.php http://oik-plugins.co.uk" . PHP_EOL;
 			echo "or, to reset from a local copy of the slave at qw/oikcouk," . PHP_EOL;
-			echo "oikwp class-oik-clone-reset-ids.php http://qw/oikcouk " . PHP_EOL;
+			echo "oikwp class-oik-clone-reset-ids.php http://oik-plugins.co.uk http://qw/oikcouk " . PHP_EOL;
 			die( "Try again with the right parameters");
 		}
 		$this->slave = $slave;
-		
+		$this->slave_url = oik_batch_query_value_from_argv( 2, $slave );
 	}
 	
 	/** 
@@ -74,6 +77,12 @@ class OIK_clone_reset_ids {
 	function set_master() {
 		$this->master = get_site_url();
 		bw_trace2( $this->master, "master" );
+	}
+	
+	function sanity_check() {
+		if ( $this->slave_url == $this->master ) {
+			die( "Slave and master should not be the same: " . $this->slave_url );
+		} 
 	}
 	
 	
@@ -104,7 +113,8 @@ class OIK_clone_reset_ids {
 	 */
 	function process_post_type( $post_type ) {
 		$result = $this->request_mapping( $post_type );
-		$this->apply_mapping( $result );
+		$mappings = $this->extract_mappings( $result );
+		$this->apply_mappings( $mappings );
 	}
 	
 	/**
@@ -118,7 +128,7 @@ class OIK_clone_reset_ids {
 	 * @return array the result of the AJAX request
 	 */
 	function request_mapping( $post_type ) {
-		$url = $this->slave . "/wp-admin/admin-ajax.php" ;
+		$url = $this->slave_url . "/wp-admin/admin-ajax.php" ;
 		$body = array( "action" => "oik_clone_request_mapping" 
 								 , "master" => $this->master
 								 , "oik_apikey" => $this->apikey
@@ -133,13 +143,57 @@ class OIK_clone_reset_ids {
 	}
 	
 	/**
+	 * Extract the mappings from the JSON result
+	 */
+	function extract_mappings( $result ) {
+		bw_trace2( null, null, true, BW_TRACE_DEBUG );
+		$result = oik_remote::bw_json_decode( $result );
+		//bw_trace2( $result, "result", false );
+		$mappings = bw_array_get( $result, "slave", array() );
+		return( $mappings );
+	}	
+	
+	/**
 	 * Apply the mapping for each master ID
 	 */
-	function apply_mapping( $result ) {
-		bw_trace2();
-		gob();
+	function apply_mappings( $mappings ) {
+		foreach ( $mappings as $mapping ) {
+			$this->apply_mapping( $mapping );
+		}
 	}
 	
-	
+	/**
+	 * Apply the mapping to the master ID
+	 * 
+	 * We need to check the post type and post name ( slug ) before updating the clone IDs
+	 * as the post ID returned from the slave might not actually match.
+	 *
+	 * Get the ID the slave reckons it should be and check if it's a match.
+	 * If not found or not a match then try accessing the post by name, and if found, use the target ID returned locally.
+	 * 
+	 * @param object $mapping - mapping object for a cloned slave post
+	 */
+	function apply_mapping( $mapping ) {
+		$match = false;
+		$post = get_post( $mapping->id ); 
+		if ( $post ) {
+			$match = $post->post_type == $this->post_type;
+			$match &= $post->post_name == $mapping->name;
+		}
+		if ( !$match ) {
+			echo "Trying match by post name: " . $mapping->name . PHP_EOL;
+			$post = bw_get_post( $mapping->name, $this->post_type );
+			if( $post ) {
+				$mapping->id = $post->ID;
+				$match = true;
+			}
+		}
+		if ( !$match ) {
+			echo "Bad match on slave:" . $mapping->slave ." ". $mapping->name . PHP_EOL;
+		} else {
+			$post_meta = oik_clone_update_slave_target( $mapping->id, $this->slave, $mapping->slave, $mapping->cloned );
+		}
+	}
+
 
 }

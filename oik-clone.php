@@ -46,6 +46,9 @@ function oik_clone_loaded() {
 	
 	add_action( "run_class-oik-clone-reset-slave.php", "oik_clone_run_oik_reset_slave" );
 	add_action( "run_class-oik-clone-reset-ids.php", "oik_clone_run_oik_reset_ids" );
+	
+	add_action( "wp_ajax_oik_clone_request_mapping", "oik_clone_nopriv_oik_clone_request_mapping" );
+	add_action( "wp_ajax_nopriv_oik_clone_request_mapping", "oik_clone_nopriv_oik_clone_request_mapping" );
   
 }  
 
@@ -254,6 +257,28 @@ function oik_clone_nopriv_oik_clone_post() {
 }
 
 /**
+ * Implement AJAX oik_clone_request_mapping for oik-clone
+ *
+ * We use the same routine regardless of logged in status
+ * But we always validate the API key
+ */
+function oik_clone_nopriv_oik_clone_request_mapping() {
+  oik_require( "admin/oik-clone-json.php", "oik-clone" );
+  add_filter( 'oik_validate_apikey', 'oik_clone_oik_validate_apikey', 10, 2 );
+  $continue = oik_clone_validate_apikey();
+  if ( $continue ) {
+    oik_require( "admin/oik-clone-request-mapping.php", "oik-clone" );
+    $mapping = oik_clone_lazy_request_mapping();
+  } else {
+		bw_trace2( "Invalid API key" );
+	}	
+  oik_clone_reply_with_json( $mapping );
+  bw_backtrace();
+  bw_flush();
+  exit();
+}
+
+/**
  * Implement "heartbeat_settings" filter for oik-clone
  *
  * 
@@ -299,7 +324,7 @@ function oik_clone_oik_fields_loaded() {
  * Implement "oik_post_type_support" filter 
  * 
  * @param array $supports_options
- * @return array with "clone" added
+ * @return array with "clone" added	 
  */															
 function oik_clone_post_type_supports( $supports_options ) {
 	$supports_options['clone'] = __( "Cloning", "oik-clone" );
