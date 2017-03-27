@@ -210,6 +210,7 @@ function oik_clone_add_meta_boxes( $post_type, $post) {
  * 
  * Actually, we may not want to do this. 
  * add_attachment is called on initial upload - Media -> Add New
+ * and it's also called in media sideload
  * 
  */
 function oik_clone_add_attachment( $post_ID ) {
