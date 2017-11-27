@@ -119,7 +119,7 @@ function oik_clone_self_list_table() {
  */   
 function oik_clone_list_self_posts( $fields ) {
   gobang();
-  oik_require( "includes/bw_posts.inc" );
+  oik_require( "includes/bw_posts.php" );
   $atts = array( "post_type" => "any" 
                , "orderby" => "ID"
                , "order" => "DESC"

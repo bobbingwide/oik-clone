@@ -222,7 +222,7 @@ class OIK_clone_tree {
 								 , 'post_type' => 'any'
 								 , 'post_status' => 'any'
 								 );
-		oik_require( "includes/bw_posts.inc" );								 
+		oik_require( "includes/bw_posts.php" );								 
 		$posts = bw_get_posts( $atts );
 		//e( "Building children of {$node->id}, {$node->originator}" );
 		foreach ( $posts as $post ) {

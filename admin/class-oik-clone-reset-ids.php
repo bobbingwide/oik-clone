@@ -29,7 +29,7 @@ class OIK_clone_reset_ids {
 	 * Controls the resetting of the _oik_clone_id
 	 */
 	function __construct() {
-		oik_require( "includes/bw_posts.inc" );
+		oik_require( "includes/bw_posts.php" );
 		oik_require( "admin/oik-save-post.php", "oik-clone" );
 		oik_require_lib( "class-oik-remote" );
 		$this->set_slave();

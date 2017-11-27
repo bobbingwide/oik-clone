@@ -242,7 +242,7 @@ function bw_get_blog_urls( $blogs=null ) {
  * @return array - array of posts, keyed by ID with the selected fields only 
  */
 function oik_clone_list_ms_posts( $blog_id, $fields ) {
-  oik_require( "includes/bw_posts.inc" );
+  oik_require( "includes/bw_posts.php" );
   switch_to_blog( $blog_id );
   $atts = array( "post_type" => "any" 
                , "orderby" => "ID"

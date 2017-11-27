@@ -330,7 +330,7 @@ function oik_clone_load_target( $target ) {
  * @return object - the post object
  */  
 function oik_clone_load_post( $post_id ) {  
-  oik_require( "includes/bw_posts.inc" );
+  oik_require( "includes/bw_posts.php" );
   $post = get_post( $post_id );
 	if ( $post ) {
 	

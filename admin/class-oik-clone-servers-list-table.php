@@ -131,7 +131,7 @@ class OIK_Clone_Servers_List_Table extends BW_List_Table {
    *
    */
   function load_items() {
-    oik_require( "includes/bw_posts.inc" );
+    oik_require( "includes/bw_posts.php" );
 		$atts = array();
 		
     //$atts = $this->determine_pagination( $atts ); 

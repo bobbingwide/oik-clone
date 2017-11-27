@@ -160,7 +160,7 @@ function oik_clone_match_filter_where( $where = '' ) {
  * 
  */
 function oik_clone_match_post_by_GUID( $matched, $data ) {
-  oik_require( "includes/bw_posts.inc" );
+  oik_require( "includes/bw_posts.php" );
   //p( "Matching {$data->ID} by GUID" );
   $args = array( "numberposts" => -1 
                , "post_type" => "any" 

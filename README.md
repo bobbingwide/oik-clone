@@ -1,10 +1,11 @@
 # oik-clone 
+![banner](https://raw.githubusercontent.com/bobbingwide/oik-clone/master/assets/oik-clone-banner-772x250.jpg)
 * Contributors: bobbingwide
-* Donate link: http://www.oik-plugins.com/oik/oik-donate/
+* Donate link: https://www.oik-plugins.com/oik/oik-donate/
 * Tags: clone, compare, update, MultiSite
-* Requires at least: 4.2
-* Tested up to: 4.5.1
-* Stable tag: 1.0.0-RC2
+* Requires at least: 4.9
+* Tested up to: 4.9
+* Stable tag: 1.0.0
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 * Text Domain: oik-clone
@@ -139,8 +140,11 @@ Other methods will be implemented in future versions.
 3. Clone on update meta box - Previously cloned
 
 ## Upgrade Notice 
+# 1.0.0 
+Now depends on oik v3.2.1
+
 # 1.0.0-RC2 
-Contains fixes for Issues 9 and 10
+Contains fixes for Issues 9, 11 and 12
 
 # 1.0.0-RC1 
 Contains a fix for Issue 8
@@ -197,13 +201,21 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 ## Changelog 
+# 1.0.0 
+* Added: Batch facility to reload cloning information on an imported database  https://github.com/bobbingwide/oik-clone/issues/17
+* Changed: Attempt to cater for corrupt data, with some trace changes for problem determination https://github.com/bobbingwide/oik-clone/issues/14
+* Changed: Now depends on oik v3.2.1 https://github.com/bobbingwide/oik-clone/issues/21
+* Fixed: Some [bw_link] shortcodes are being mapped to Array https://github.com/bobbingwide/oik-clone/issues/13
+* Tested: With PHP 7.0 and 7.1
+* Tested: With WordPress 4.9 and WordPress Multisite
+
 # 1.0.0-RC2 
-* Fixed: Using [clone] failed to upload attached files [bobbingwide oik-clone issue 9]
-* Fixed: Using [clone] to clone attached media that's been relocated doesn't work correctly. [bobbingwide oik-clone issue 10]
-* Fixed: Notice: Array to string conversion [bobbingwide oik-clone issue 11]
+* Fixed: Using [clone] failed to upload attached files https://github.com/bobbingwide/oik-clone/issues/9
+* Fixed: Notice: Array to string conversion https://github.com/bobbingwide/oik-clone/issues/11
+* Fixed: Using [clone] to clone attached media that's been relocated doesn't work correctly. https://github.com/bobbingwide/oik-clone/issues/12
 
 # 1.0.0-RC1 
-* Fixed: OIK_Clone_List_Table::reset_request_uri() should not call esc_url() [github bobbingwide oik-clone issue 8]
+* Fixed: OIK_Clone_List_Table::reset_request_uri() should not call esc_url() https://github.com/bobbingwide/oik-clone/issues/8
 * Fixed: Minor tweaks to allow oik-shortcodes to produce the API reference
 * Tested: With WordPress 4.5-RC1
 

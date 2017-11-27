@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2015
+<?php // (C) Copyright Bobbing Wide 2015-2017
 
 /**
  * OIK_clone_relationships class
@@ -103,7 +103,7 @@ class OIK_clone_relationships {
         break;
         
       default:
-				oik_require( "includes/bw_fields.inc" );
+				oik_require_lib( "bw_fields" );
         $field_type = bw_query_field_type( $key );
         $is_relationship_field = ( $field_type == "noderef" );
     }

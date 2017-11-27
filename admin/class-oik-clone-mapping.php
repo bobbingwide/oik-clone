@@ -153,7 +153,7 @@ class OIK_clone_mapping {
       default:
 			//bw_trace2();
 				
-				oik_require( "includes/bw_fields.inc" );
+				oik_require_lib( "bw_fields" );
         $field_type = bw_query_field_type( $key );
         $is_relationship_field = ( $field_type == "noderef" );
     }

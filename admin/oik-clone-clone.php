@@ -120,7 +120,7 @@ function oik_clone_determine_target_id( $source_id, $target_id, $post ) {
  * @return integer - the ID of the 'best' matching post or null
  */
 function oik_clone_find_target_by_GUID( $source ) {
-  oik_require( "includes/bw_posts.inc" );
+  oik_require( "includes/bw_posts.php" );
   oik_require( "admin/oik-clone-match.php", "oik-clone" );
   $args = array( "numberposts" => -1 
                , "post_type" => $source->post_type
@@ -152,7 +152,7 @@ function oik_clone_find_target_by_GUID( $source ) {
  * @return integer - the ID of the matching post or null
  */
 function oik_clone_find_target_by_slug( $source ) {
-  oik_require( "includes/bw_posts.inc" );
+  oik_require( "includes/bw_posts.php" );
   //oik_require( "admin/oik-clone-match.php", "oik-clone" );
   $args = array( "numberposts" => -1 
                , "post_type" => $source->post_type

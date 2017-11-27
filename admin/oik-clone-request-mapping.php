@@ -24,7 +24,7 @@ function oik_clone_lazy_request_mapping() {
 							 , "numberposts" => -1
 							 , "meta_key" => "_oik_clone_ids"
 							 );
-	oik_require( "includes/bw_posts.inc" );							 
+	oik_require( "includes/bw_posts.php" );							 
 	$posts = bw_get_posts( $atts ); 
 	$mapping = array();
 	foreach ( $posts as $post ) {

@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2016
+<?php // (C) Copyright Bobbing Wide 2016, 2017
 if ( PHP_SAPI !== "cli" ) { 
 	die();
 }
@@ -20,10 +20,24 @@ if ( PHP_SAPI !== "cli" ) {
  * 
  * After running `reset-slave` you may also need to run `reset-ids` for each of the other slave servers
  * 
+ * When the slave site has also been cloned, by an import, then we may need to specify multiple target slave servers
+ * e.g. 
+ * `
+ * oikwp oik-reset-slave.php https://oik-plugins.com,http://oik-plugins.co.uk
+ * `
+ * 
+ * The code should cater for $slave being an array of URLs
+ * 
+ * Warning: Do not use this against a site which is not a recent clone. The IDs may be very wrong.
+ * 
  */
 class OIK_clone_reset_slave {
 
-	public $slave = null;
+	/**
+	 * Array of URLs, including protocol
+	 */
+
+	public $slaves = null;
 
 	/** 
 	 * Constructor for OIK_clone_reset_slave
@@ -31,27 +45,26 @@ class OIK_clone_reset_slave {
 	 * Get the slave URL and update all posts that are clonable
 	 */ 
 	function __construct() {
-		oik_require( "includes/bw_posts.inc" );
-		$this->get_slave();
+		oik_require( "includes/bw_posts.php" );
+		$this->get_slaves();
 		$this->process_post_types();
 	}
 
 	/**
-	 * Obtain the value for the slave
+	 * Obtain the value for the slaves
 	 * 
 	 * If not specified then die.
-	 * If it is specified perhaps we should check it to be a valid URL
-	 * or maybe we can determine the slave as the first from the list of slaves
+	 * Allow for multiple slaves, separated by commas
 	 */
-	function get_slave() {
-		$slave = oik_batch_query_value_from_argv( 1, null );
-		if ( !$slave ) { 
+	function get_slaves() {
+		$slaves = oik_batch_query_value_from_argv( 1, null );
+		if ( !$slaves ) { 
 			echo PHP_EOL;
-			echo "Syntax: oikwp oik-clone-reset-slave.php slave" . PHP_EOL ;
-			echo "e.g. oikwp oik-clone-reset-slave.php http://oik-plugins.com" . PHP_EOL;
-			die( "Try again with the right parameters");
+			echo "Syntax: oikwp oik-clone-reset-slave.php slaves" . PHP_EOL ;
+			echo "e.g. oikwp oik-clone-reset-slave.php https://oik-plugins.com" . PHP_EOL;
+			die( "Try again with the right parameters.");
 		}
-		$this->slave = $slave;
+		$this->slaves = bw_as_array( $slaves );
 	}
 
 	/**
@@ -79,7 +92,7 @@ class OIK_clone_reset_slave {
 	 * Convert all posts for the post type
 	 *
 	 * - fetch all posts for the post type
-	 * - for each post, update the _oik_clone_ids post meta for the selected slave
+	 * - for each post, update the _oik_clone_ids post meta for the selected slaves
 	 *
 	 * @param string $post_type
 	 */
@@ -87,6 +100,7 @@ class OIK_clone_reset_slave {
 		$atts = array( "post_type" => $post_type
 								 , "post_status" => "any"
 								 , "numberposts" => -1
+								 , "post_parent" => "."
 								 );
 		$posts = bw_get_posts( $atts );
 		if ( $posts ) {
@@ -97,7 +111,7 @@ class OIK_clone_reset_slave {
 	}
 
 	/**
-	 * Update the _oik_clone_ids for the primary slave
+	 * Update the _oik_clone_ids for the primary slaves
 	 *
 	 * @param object $post the post object
 	 */
@@ -106,7 +120,10 @@ class OIK_clone_reset_slave {
 		//delete_post_meta( $post->ID, "_oik_clone_ids" );
 		//echo "Inserting new slave";
 		$time = strtotime( $post->post_modified_gmt );
-		$post_meta = array( $this->slave => array( "id" => $post->ID, "cloned" => $time ) );
+		$post_meta = array();
+		foreach ( $this->slaves as $slave ) {
+			$post_meta[ $slave ] = array( "id" => $post->ID, "cloned" => $time );
+		}
 		update_post_meta( $post->ID, "_oik_clone_ids", $post_meta );
 	}
 
