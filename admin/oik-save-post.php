@@ -140,7 +140,8 @@ function oik_clone_clone( $id, $load_media=false, $slaves=null ) {
 		if ( $loading_necessary ) {
 			oik_require( "admin/oik-clone-actions.php", "oik-clone" );
 			oik_require( "admin/oik-clone-media.php", "oik-clone" );
-			oik_require( "includes/oik-remote.inc" );
+			//oik_require( "includes/oik-remote.inc" );
+			oik_require_lib( "class-oik-remote" );
 			oik_require( "admin/oik-clone-relationships.php", "oik-clone" );
 			// @TODO oik_clone_tree_filters();
 			add_filter( "oik_clone_build_list", "oik_clone_build_list_informal_relationships", 11, 2 );
@@ -186,7 +187,7 @@ function oik_clone_clone( $id, $load_media=false, $slaves=null ) {
  */
 function oik_clone_determine_slave_id( $target, $result ) {
 	bw_trace2( null, null, true, BW_TRACE_DEBUG );
-	$result = bw_json_decode( $result );
+	$result = oik_remote::bw_json_decode( $result );
 	$slave_id = bw_array_get( $result, "slave", $target );
 	bw_trace2( $slave_id, "slave id", false, BW_TRACE_DEBUG );
 	if ( !$slave_id  ) {
@@ -334,7 +335,7 @@ function oik_clone_update_slave_simple( $id, $payload, $slave, $target, $mapping
   $args = array( "body" => $body 
                , 'timeout' => 30
                ); 
-  $result = bw_remote_post( $url, $args );
+  $result = oik_remote::bw_remote_post( $url, $args );
   bw_trace2( $result );
   return( $result );
 }
