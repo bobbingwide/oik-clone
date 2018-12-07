@@ -284,18 +284,20 @@ function oik_clone_load_source( $source ) {
 }
 
 /**
- * Create a new post locally
+ * Creates a new post locally
+ *
+ * The fields need to be slashed, using wp_slash, to avoid losing backslashes.
+ * That's what's done on update, so why was it missing on insert?
  *
  * @TODO What should we do with the guid?
  *
  * @param $post - post object which needs to become an array
  * @return $post_id - the ID of the newly created post
- * 
  */ 
 function oik_clone_insert_post( $source_post ) {
   $post = (array) $source_post;
-
   unset( $post['ID'] );
+  $post = wp_slash( $post );
   p( "Inserting post: " . $post['post_title'] );
   bw_trace2( $post );
   $post_id = wp_insert_post( $post, true );
