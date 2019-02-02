@@ -190,6 +190,7 @@ function oik_clone_attempt_import( $source, $target, $post ) {
 	oik_require( "admin/oik-clone-actions.php", "oik-clone" );
 	oik_require( "admin/oik-clone-relationships.php", "oik-clone" );
 	$media_file = null;
+	kses_remove_filters();
   
   
 	$target_id = oik_clone_determine_target_id( $source, $target, $post );

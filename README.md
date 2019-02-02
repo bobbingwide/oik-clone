@@ -4,8 +4,8 @@
 * Donate link: https://www.oik-plugins.com/oik/oik-donate/
 * Tags: clone, compare, update, MultiSite
 * Requires at least: 4.9
-* Tested up to: 4.9
-* Stable tag: 1.0.0
+* Tested up to: 5.0.3
+* Stable tag: 1.0.1
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 * Text Domain: oik-clone
@@ -13,7 +13,6 @@
 
 ## Description 
 Clone content between sites
-
 
 oik-clone provides tools to merge and synchronise content between WordPress sites.
 
@@ -49,8 +48,9 @@ Install on both the client and server machines.
 ## Frequently Asked Questions 
 
 # Is there a beta test version? 
+Not any more; not since v1.0.0
 
-Beta versions for v1.0.0 are suffixed -beta.mmdd
+Beta versions for v1.0.0 were suffixed -beta.mmdd
 
 Yes. v0.8 was the first Beta test version.
 
@@ -79,18 +79,15 @@ It provides the same actions as the Multisite tab, but the source and target sit
 
 This'll be documented in the FAQs on the site
 
-
-
 # Is this suitable for pushing from Staging to Production? 
 
 It depends.
-If you have a complex content structure or a lot of new/changed content then the answer is "No, not yet"
-If you have a simple content structure - just posts and pages
-then you may find this useful.
+
+- If you have a complex content structure or a lot of new/changed content then the answer is "No, not yet"
+- If you have a simple content structure - just posts and pages - then you may find this useful.
 
 To support pushing from Staging to Production requires additional work to identify the network of posts to be cloned.
-
-
+This can be achieved using a shortcode.
 
 # Does this use the REST API? 
 Not yet, though that was the plan.
@@ -140,6 +137,9 @@ Other methods will be implemented in future versions.
 3. Clone on update meta box - Previously cloned
 
 ## Upgrade Notice 
+# 1.0.1 
+Contains a fix for Issue #22 and changes for Issue #24
+
 # 1.0.0 
 Now depends on oik v3.2.1
 
@@ -201,8 +201,15 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 ## Changelog 
+# 1.0.1 
+* Fixed: when creating new content call wp_slash to avoid losing backslashes, https://github.com/bobbingwide/oik-clone/issues/22
+* Changed: Use oik_remote class, replaces oik-remote.inc, https://github.com/bobbingwide/oik-clone/issues/24
+* Fixed: Enable cloning of Block icons by removing kses filters in the server https://github.com/bobbingwide/oik-clone/issues/24
+* Tested: With WordPress 5.0.3
+* Tested: With PHP 7.2
+
 # 1.0.0 
-* Added: Batch facility to reload cloning information on an imported database  https://github.com/bobbingwide/oik-clone/issues/17
+* Added: Batch facility to reload cloning information on an imported database, https://github.com/bobbingwide/oik-clone/issues/17
 * Changed: Attempt to cater for corrupt data, with some trace changes for problem determination https://github.com/bobbingwide/oik-clone/issues/14
 * Changed: Now depends on oik v3.2.1 https://github.com/bobbingwide/oik-clone/issues/21
 * Fixed: Some [bw_link] shortcodes are being mapped to Array https://github.com/bobbingwide/oik-clone/issues/13
@@ -377,14 +384,7 @@ Prototype for WordPress Multi Site cloned sites
 * Added: Classes inherit from BW_List_Table, forked from WP_List_Table
 * Depends: on oik v2.4 or higher
 
-
-
 ## Further reading 
 If you want to read more about the oik plugins then please visit the
-[oik plugin](http://www.oik-plugins.com/oik)
+[oik plugin](https://www.oik-plugins.com/oik)
 **"the oik plugin - oik information kit"**
-
-For other cloning plugins see:
-[oik-clone FAQs](http://www.oik-plugins.com/oik)
-
-
