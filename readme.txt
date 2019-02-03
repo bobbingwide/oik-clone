@@ -4,7 +4,7 @@ Donate link: https://www.oik-plugins.com/oik/oik-donate/
 Tags: clone, compare, update, MultiSite
 Requires at least: 4.9
 Tested up to: 5.0.3
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: oik-clone
@@ -136,6 +136,9 @@ Other methods will be implemented in future versions.
 3. Clone on update meta box - Previously cloned  
 
 == Upgrade Notice ==
+= 1.0.2 = 
+Contains a fix for Issue #26 - links being cloned incorrectly
+
 = 1.0.1 = 
 Contains a fix for Issue #22 and changes for Issue #24
 
@@ -200,6 +203,9 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 == Changelog ==
+= 1.0.2 = 
+* Fixed: Convert links correctly - don't lose the scheme, [github bobbingwide oik-clone issues 26] 
+
 = 1.0.1 = 
 * Fixed: when creating new content call wp_slash to avoid losing backslashes, [github bobbingwide oik-clone issues 22]
 * Changed: Use oik_remote class, replaces oik-remote.inc, [github bobbingwide oik-clone issues 24]
