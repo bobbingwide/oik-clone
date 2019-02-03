@@ -168,23 +168,37 @@ function oik_clone_apply_informal_relationship_mapping( $post, $target_ids ) {
  * [bw_link example.com/site ]
  * `
  * 
- * Do we need to care about delimeters?
+ * Do we need to care about delimiters?
  * 
  * @param object $post - the target post object
  * @param array $target_ids - which we ignore for this filter
  * @return object - the updated post object
- * 
- *
  */
 function oik_clone_apply_informal_relationship_mapping_urls( $post, $target_ids ) {
-  $master = bw_array_get( $_REQUEST, "master", null );
-  $source = str_replace( "http://", "",  $master );
-  $target = site_url('', 'http' );
-  $target = str_replace( "http://", "",  $target );
-  $post->post_content = str_replace( $source, $target, $post->post_content );
-  $post->post_excerpt = str_replace( $source, $target, $post->post_excerpt );
-  bw_trace2();
-  return( $post );
+  $master = oik_clone_get_master_schemeless();
+  $target = oik_clone_get_target_schemeless();
+  $post->post_content = str_replace( $master, $target, $post->post_content );
+  $post->post_excerpt = str_replace( $master, $target, $post->post_excerpt );
+  bw_trace2( $post, "post", false, BW_TRACE_VERBOSE );
+  return $post ;
+}
+
+function oik_clone_get_master_schemeless() {
+	$master = bw_array_get( $_REQUEST, "master", null );
+	$master = oik_clone_get_schemeless( $master );
+	return $master;
+}
+
+function oik_clone_get_target_schemeless() {
+	$target = site_url( '' );
+	$schemeless = oik_clone_get_schemeless( $target );
+	return $schemeless;
+}
+
+function oik_clone_get_schemeless( $url ) {
+	$scheme = parse_url( $url, PHP_URL_SCHEME );
+	$schemeless = str_replace( $scheme . "://", "", $url );
+	return $schemeless;
 }
 
 /**

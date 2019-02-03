@@ -1,0 +1,15 @@
+<phpunit
+	bootstrap="../../plugins/oik-batch/oik-wp.php"
+	backupGlobals="false"
+	colors="false"
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
+	>
+	<!-- for PHPUnit 5.7, 6.1, 6.2, 6.5-->
+	<testsuites>
+		<testsuite>
+			<directory prefix="test-" suffix=".php">tests/</directory>
+		</testsuite>
+	</testsuites>
+</phpunit>
