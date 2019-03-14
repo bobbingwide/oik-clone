@@ -136,10 +136,15 @@ function oik_clone_perform_import( $source, $target ) {
 	if ( $post ) {
 		if ( $target ) {
 			oik_clone_update_target( $post, $target );
+			oik_clone_update_post_meta( $post, $target );
 		} else {
 			$target = oik_clone_insert_post( $post );
+			oik_clone_update_post_meta( $post, $target );
+			if( $post->post_type === 'attachment') {
+				oik_clone_attachment_file( $post, $target );
+			}
 		}	
-		oik_clone_update_post_meta( $post, $target );
+
 		oik_clone_update_taxonomies( $post, $target );
 	} else {
 		p( "Failed to load $source" );
@@ -401,6 +406,35 @@ function oik_clone_perform_compare( $source, $target ) {
     e( esc_html( $tpost->post_content ) );
   }
   */
+}
+
+
+/**
+ * Clones the attachment file from the source folder to the target
+ * This respects the date/time of the source file
+ *
+ * @param object $source post object
+ * @param ID $target target post ID
+ */
+function oik_clone_attachment_file( $source, $target ) {
+	p( "Copying attachment file from {$source->ID} to $target " );
+	$oik_ms_source = oik_clone_ms_source();
+	switch_to_blog( $oik_ms_source );
+	$file = get_attached_file( $source->ID, true);
+	restore_current_blog();
+	p( "Source file to copy: " . $file );
+	$file_base = basename( $file );
+	$target_file = get_attached_file( $target );
+	p( "Target file: " . $target_file );
+	if ( file_exists( $file )) {
+		if ( ! file_exists( $target_file ) ) {
+			copy( $file, $target_file );
+		}
+		oik_require( "admin/oik-clone-media.php", "oik-clone" );
+		oik_clone_update_attachment_metadata( $target, $target_file );
+	} else {
+		p( "Missing attachment file to copy." );
+	}
 }
 
 
