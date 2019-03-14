@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="" tests="4" assertions="21" errors="0" failures="0" skipped="0" time="0.067942">
-    <testsuite name="Tests_issue_26" file="C:\apache\htdocs\wordpress\wp-content\plugins\oik-clone\tests\test-issue-26.php" tests="4" assertions="21" errors="0" failures="0" skipped="0" time="0.067942">
-      <testcase name="test_oik_clone_get_schemeless" class="Tests_issue_26" classname="Tests_issue_26" file="C:\apache\htdocs\wordpress\wp-content\plugins\oik-clone\tests\test-issue-26.php" line="32" assertions="2" time="0.026806"/>
-      <testcase name="test_oik_clone_get_master_schemeless" class="Tests_issue_26" classname="Tests_issue_26" file="C:\apache\htdocs\wordpress\wp-content\plugins\oik-clone\tests\test-issue-26.php" line="39" assertions="2" time="0.009875"/>
-      <testcase name="test_oik_clone_get_target_schemeless" class="Tests_issue_26" classname="Tests_issue_26" file="C:\apache\htdocs\wordpress\wp-content\plugins\oik-clone\tests\test-issue-26.php" line="52" assertions="1" time="0.016600"/>
-      <testcase name="test_oik_clone_apply_informal_relationship_mapping_urls" class="Tests_issue_26" classname="Tests_issue_26" file="C:\apache\htdocs\wordpress\wp-content\plugins\oik-clone\tests\test-issue-26.php" line="78" assertions="16" time="0.014662"/>
+  <testsuite name="" tests="4" assertions="21" errors="0" failures="0" skipped="0" time="0.068470">
+    <testsuite name="Tests_issue_26" file="C:\apache\htdocs\wordpress\wp-content\plugins\oik-clone\tests\test-issue-26.php" tests="4" assertions="21" errors="0" failures="0" skipped="0" time="0.068470">
+      <testcase name="test_oik_clone_get_schemeless" class="Tests_issue_26" classname="Tests_issue_26" file="C:\apache\htdocs\wordpress\wp-content\plugins\oik-clone\tests\test-issue-26.php" line="32" assertions="2" time="0.022925"/>
+      <testcase name="test_oik_clone_get_master_schemeless" class="Tests_issue_26" classname="Tests_issue_26" file="C:\apache\htdocs\wordpress\wp-content\plugins\oik-clone\tests\test-issue-26.php" line="39" assertions="2" time="0.012835"/>
+      <testcase name="test_oik_clone_get_target_schemeless" class="Tests_issue_26" classname="Tests_issue_26" file="C:\apache\htdocs\wordpress\wp-content\plugins\oik-clone\tests\test-issue-26.php" line="52" assertions="1" time="0.017837"/>
+      <testcase name="test_oik_clone_apply_informal_relationship_mapping_urls" class="Tests_issue_26" classname="Tests_issue_26" file="C:\apache\htdocs\wordpress\wp-content\plugins\oik-clone\tests\test-issue-26.php" line="78" assertions="16" time="0.014873"/>
     </testsuite>
   </testsuite>
 </testsuites>
