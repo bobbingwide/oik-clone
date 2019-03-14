@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2014, 2015
+<?php // (C) Copyright Bobbing Wide 2014, 2015, 2019
 
 
 /**
@@ -22,7 +22,13 @@ class OIK_Clone_List_Table extends BW_List_Table {
   /**
    * Store the name of the source field which identifies the "source" to be used
    */
-  public $source_field; 
+  public $source_field;
+
+	/**
+	 * Store the post type being displayed
+	 */
+	public $clone_post_type;
+
   
   /**
    * Construct an instance of OIK_Clone_List_Table
@@ -123,7 +129,7 @@ class OIK_Clone_List_Table extends BW_List_Table {
    */
   function load_items() {
     oik_require( "includes/bw_posts.php" );
-    $atts = array( "post_type" => "any" 
+    $atts = array( "post_type" => $this->get_clone_post_type()
                  , "orderby" => "ID"
                  , "order" => "DESC"
                  );
@@ -277,6 +283,7 @@ class OIK_Clone_List_Table extends BW_List_Table {
     if ( $this->source && $this->source_field ) {
       $args[ $this->source_field ] = $this->source;
     }
+    $args['clone_post_type'] = $this->clone_post_type;
     $flatargs = null;
     if ( count( $args ) ) {
       foreach ( $args as $key => $value ) {
@@ -392,6 +399,13 @@ class OIK_Clone_List_Table extends BW_List_Table {
     @ini_set('display_errors', true); //Ensure that Fatal errors are displayed.
     $this->vienna();
     bw_trace2();
+  }
+
+  function get_clone_post_type() {
+  	$clone_post_type = bw_array_get( $_REQUEST, "clone_post_type", "any" );
+  	$clone_post_type = bw_array_get( get_post_types(), $clone_post_type, "any");
+  	$this->clone_post_type = $clone_post_type;
+  	return $clone_post_type;
   }
   
     

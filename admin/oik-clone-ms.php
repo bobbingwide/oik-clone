@@ -89,6 +89,10 @@ function oik_clone_source_site_ms() {
     stag( "table" );
     $blog_urls = bw_get_blog_urls();
     bw_select( "_oik_ms_source", "Source site", $oik_ms_source, array( '#options' => $blog_urls, '#optional' => true ) );
+
+
+    oik_clone_post_type_select();
+
     
     etag( "table" );
     p( isubmit( "_oik_clone_list", "List content", null, "button-primary" ) );

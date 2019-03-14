@@ -288,6 +288,7 @@ function oik_clone_load_source( $source ) {
  *
  * The fields need to be slashed, using wp_slash, to avoid losing backslashes.
  * That's what's done on update, so why was it missing on insert?
+ * ... well in Multi Site clone it caused a problem with post_taxonomies
  *
  * @TODO What should we do with the guid?
  *
@@ -295,9 +296,13 @@ function oik_clone_load_source( $source ) {
  * @return $post_id - the ID of the newly created post
  */ 
 function oik_clone_insert_post( $source_post ) {
+	$post_taxonomies = $source_post->post_taxonomies;
+
   $post = (array) $source_post;
+  unset( $post['post_taxonomies'] );
   unset( $post['ID'] );
   $post = wp_slash( $post );
+  $post['post_taxonomies'] = $post_taxonomies;
   p( "Inserting post: " . $post['post_title'] );
   bw_trace2( $post );
   $post_id = wp_insert_post( $post, true );

@@ -239,5 +239,16 @@ function oik_clone_match_post( $ID, $data, $fields ) {
   return( $matched );
 }
 
+/**
+ *
+ */
+function oik_clone_post_type_select() {
+	$post_types = get_post_types();
+	//print_r( $post_types );
+	$post_type = bw_array_get( $_REQUEST, "clone_post_type", "any");
+	bw_select( "clone_post_type", "Post Type", $post_type, array( '#options' => $post_types ) );
+
+}
+
 
 
