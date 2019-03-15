@@ -57,13 +57,21 @@ function oik_cloned_display_links( $post_id, $atts ) {
 				$post = bw_array_get( $post, "id", null );
 				if ( is_array( $post ) ) {
 					$post = bw_array_get( $post, "id", null );
-					//if ( null == $post ) {
-					//	$cloned_date = null;
-					//}
+					if ( null == $post ) {
+						// Oh goog, only two levels of nesting.
+					} else {
+						// It could still be an array! we need to stop!
+						$post=0;
+					}
+				} else {
+					//print_r( $post );
+					//bw_trace2( $post, "post now?", false );
+
 				}
 			} else {
 				$cloned_date = null;
 			}
+	    //bw_trace2( $post, "post now?", false );
       $url = "$server/?p=$post";
       stag( "li" );
       alink( null, $url );
