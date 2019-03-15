@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2015
+<?php // (C) Copyright Bobbing Wide 2015, 2019
 
 /**
  * Implement [cloned] shortcode for oik-clone
@@ -51,16 +51,16 @@ function oik_cloned_display_links( $post_id, $atts ) {
     oik_require( "shortcodes/oik-list.php" );
     $uo = bw_sl( $atts );
     foreach ( $cloned as $server => $post ) {
-			bw_trace2( $post, "post", false );
+			bw_trace2( $post, "post", false, BW_TRACE_DEBUG );
 			if ( is_array( $post ) ) {
 				$cloned_date = bw_array_get( $post, "cloned", null );
 				$post = bw_array_get( $post, "id", null );
 				if ( is_array( $post ) ) {
 					$post = bw_array_get( $post, "id", null );
 					if ( null == $post ) {
-						// Oh goog, only two levels of nesting.
+						// Oh good, only two levels of nesting.
 					} else {
-						// It could still be an array! we need to stop!
+						// It could still be an array. We need to stop!
 						$post=0;
 					}
 				} else {

@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2015
+<?php // (C) Copyright Bobbing Wide 2015, 2019
 
 
 /**
@@ -106,6 +106,7 @@ function oik_clone_display_cbs( $slaves, $clones ) {
                 [cloned] => (integer) 1470411259
             [cloned] => (integer) 1470819881
  * `
+ * And again, where it's very corrupt with three levels of nesting!
  * 
  * @param array $cloned { Nested array of cloned information keyed by slave
  *   @type ID $id post ID of the target post 
@@ -121,6 +122,9 @@ function oik_clone_get_slave_id( $cloned, $slave ) {
 		
 		if ( is_array( $slave_id ) ) {
 			$slave_id = bw_array_get( $slave_id, "id", null );
+			if ( is_array( $slave_id ) ) {
+				$slave_id = 0;
+			}
 		}
 	} else {
 		$slave_id = $target;
