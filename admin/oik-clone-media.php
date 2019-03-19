@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2015, 2016
+<?php // (C) Copyright Bobbing Wide 2015, 2016, 2019
 
 /**
  * Push media files from the master to the slaves
@@ -325,6 +325,7 @@ function oik_clone_write_media_file( $name, $type, $tmp_file, $time ) {
  * @param string $media_file - the full file name of the attached file
  */
 function oik_clone_update_attachment_metadata( $target_id, $media_file ) {
+	require_once ABSPATH . 'wp-admin/includes/image.php';
   $metadata = wp_generate_attachment_metadata( $target_id, $media_file );
   bw_trace2( $metadata, "attachment_metadata" );
   wp_update_attachment_metadata( $target_id, $metadata );

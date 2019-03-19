@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2015
+<?php // (C) Copyright Bobbing Wide 2015, 2019
 
 /**
  * Support for cloning relationship information between sites
@@ -118,10 +118,12 @@ function oik_clone_apply_mapping( $post ) {
   $oik_clone_mapping =  $mapping;
   
   // Now apply filters to apply the informal relationship mapping to the post
-  
   add_filter( "oik_clone_apply_informal_mapping", "oik_clone_apply_informal_relationship_mapping", 10, 2 );
   add_filter( "oik_clone_apply_informal_mapping", "oik_clone_apply_informal_relationship_mapping_urls", 11, 2 );
   $post = apply_filters( "oik_clone_apply_informal_mapping", $post, $mapping->mapping );
+  remove_filter( "oik_clone_apply_informal_mapping", "oik_clone_apply_informal_relationship_mapping", 10 );
+  remove_filter( "oik_clone_apply_informal_mapping", "oik_clone_apply_informal_relationship_mapping_urls", 11 );
+
   return( $post );
 }
 

@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2014
+<?php // (C) Copyright Bobbing Wide 2014, 2019
 
 /**
  * Handle the MS tab for oik-clone
@@ -279,10 +279,20 @@ function oik_clone_load_ms_source( $post, $source ) {
  * @return $post - the loaded post
  */
 function oik_clone_load_ms_post( $blog_id, $post_id ) {
-  switch_to_blog( $blog_id );
-  $post = oik_clone_load_post( $post_id );
-  restore_current_blog();
-  return( $post );
+	$slave = site_url( '', "https");
+	switch_to_blog( $blog_id );
+	$post = oik_clone_load_post( $post_id );
+	oik_require( "admin/oik-clone-relationships.php", "oik-clone" );
+	$relationships = oik_clone_relationships( $post );
+	bw_trace2( $relationships, "relationships" );
+	$mapping = $relationships->mapping( $slave );
+	bw_trace2( $mapping, "mapping");
+	$mapping = json_encode( $mapping );
+	$_REQUEST[ 'mapping'] = $mapping;
+	$post = oik_clone_apply_mapping( $post );
+	//print_r( $post );
+	restore_current_blog();
+	return( $post );
 }
 
 

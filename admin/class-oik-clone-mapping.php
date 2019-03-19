@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2015
+<?php // (C) Copyright Bobbing Wide 2015, 2019
 
 
 /**
@@ -157,6 +157,7 @@ class OIK_clone_mapping {
         $field_type = bw_query_field_type( $key );
         $is_relationship_field = ( $field_type == "noderef" );
     }
+    bw_trace2( $is_relationship_field, "is_relationship_field", true, BW_TRACE_DEBUG );
     return( $is_relationship_field );
   }
    

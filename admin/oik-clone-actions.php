@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2014-2016
+<?php // (C) Copyright Bobbing Wide 2014-2016, 2019
 
 /**
  * Validate the action against the given parameters
@@ -123,18 +123,17 @@ function oik_clone_lazy_perform_actions() {
  * So we can use the same logic for both Import and Update.
  *
  * We need to import the post and the post meta data and the taxonomies
- * 
- * @TODO Apply mapping when the source and target hosts are different
+ * and apply the appropriate mapping for relationships.
  * 
  * @param ID $source - source post ID 
  * @param ID $target - target post ID, may be null
  * 
  */ 
 function oik_clone_perform_import( $source, $target ) {
-	$post = oik_clone_load_source( $source ); 
-	// $post = oik_clone_apply_mapping( $post );
+	$post = oik_clone_load_source( $source );
 	if ( $post ) {
 		if ( $target ) {
+			//$post = oik_clone_apply_mapping( $post );
 			oik_clone_update_target( $post, $target );
 			oik_clone_update_post_meta( $post, $target );
 		} else {
@@ -146,10 +145,29 @@ function oik_clone_perform_import( $source, $target ) {
 		}	
 
 		oik_clone_update_taxonomies( $post, $target );
+		oik_clone_update_source_slave_target( $post, $target );
+
 	} else {
 		p( "Failed to load $source" );
 	}
+	return $target;
 }
+
+/**
+ * Updates the source post to show that cloning has been done
+ *
+ * @param object $post the source post
+ * @param ID $target the post ID of the target post
+ */
+function oik_clone_update_source_slave_target( $post, $target ) {
+	oik_require( "admin/oik-save-post.php", "oik-clone" );
+	$slave = site_url( '', 'https');
+	switch_to_blog( oik_clone_ms_source() );
+	$post_meta = oik_clone_update_slave_target( $post->ID, $slave, $target, $post->post_modified_gmt );
+	//print_r( $post_meta );
+	restore_current_blog();
+}
+
 
 /** 
  * Perform the update into the specified target
@@ -361,8 +379,10 @@ function oik_clone_load_post( $post_id ) {
 		// Should this be $post->terms - to be consistent with REST
   
 		$post->post_taxonomies = $taxonomies;
-  
+
+
 		bw_trace2( $post, "post" );
+
 	} else {
 		bw_trace2( null, null, true, BW_TRACE_ERROR );
 		bw_backtrace( BW_TRACE_ERROR );
@@ -428,6 +448,9 @@ function oik_clone_attachment_file( $source, $target ) {
 	p( "Target file: " . $target_file );
 	if ( file_exists( $file )) {
 		if ( ! file_exists( $target_file ) ) {
+			if ( !file_exists( dirname( $target_file ))) {
+				mkdir( dirname( $target_file ) );
+			}
 			copy( $file, $target_file );
 		}
 		oik_require( "admin/oik-clone-media.php", "oik-clone" );
