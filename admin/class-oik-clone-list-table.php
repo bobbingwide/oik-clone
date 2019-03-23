@@ -132,6 +132,7 @@ class OIK_Clone_List_Table extends BW_List_Table {
     $atts = array( "post_type" => $this->get_clone_post_type()
                  , "orderby" => "ID"
                  , "order" => "DESC"
+	            , "post_parent" => '.'
                  );
     $atts = $this->determine_pagination( $atts );             
     $posts = bw_get_posts( $atts ); 
