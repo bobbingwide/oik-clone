@@ -50,7 +50,7 @@ function oik_clone_loaded() {
 	
 	add_action( "wp_ajax_oik_clone_request_mapping", "oik_clone_nopriv_oik_clone_request_mapping" );
 	add_action( "wp_ajax_nopriv_oik_clone_request_mapping", "oik_clone_nopriv_oik_clone_request_mapping" );
-  
+	add_filter( "http_request_args", "oik_clone_http_request_args", 10, 2 );
 }  
 
 /**
@@ -361,6 +361,30 @@ function oik_clone_run_oik_clone_pull() {
 	oik_require( "admin/class-oik-clone-pull.php", "oik-clone" );
 	$oik_clone_pull = new OIK_clone_pull();
 }
+
+/**
+ * Implements http_request_args filter to enable local push cloning in WordPress Multi Site
+ *
+ * With a bit of luck we can use oik_remote::bw_adjust_args
+ * but first let's just fiddle it to see how health-check behaves
+ * Okay - returning sslverify => false resolves the issue with health-check REST API availability
+ *
+ * @param $args
+ * @param $url
+ */
+function oik_clone_http_request_args( $args, $url ) {
+
+	if ( ! class_exists( "oik_remote" ) ) {
+		oik_require_lib( "class-oik-remote" );
+	}
+	if ( class_exists( "oik_remote" ) ) {
+		$args = oik_remote::bw_adjust_args( $args, $url );
+	} else {
+		$args['sslverify'] = false;
+	}
+	return $args;
+}
+
 	
 
 oik_clone_loaded();
