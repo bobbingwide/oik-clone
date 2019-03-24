@@ -107,10 +107,12 @@ class OIK_clone_tree_node {
 	 * 
 	 * Build the clone status from the information in $this->post->post_meta
 	 * for "_oik_clone_ids" 
-	 * 
+	 *
+	 * @param bool $just_count - true if we just need the count of slaves to clone to
 	 */ 
-	function clone_status() {
+	function clone_status( $just_count=false) {
 		$clone_status = null;
+		$count_to_clone = 0;
 		if ( $this->valid_type() && $this->valid_status() && $this->get_post_meta() ) {
 			if ( $this->post->post_meta ) {
 				$modified_gmt = $this->get_post_modified_gmt();
@@ -118,15 +120,21 @@ class OIK_clone_tree_node {
 				$to_clone = $this->to_clone( $servers, $modified_gmt );
 				$count_to_clone = count( $to_clone );
 				$count_servers = count( $servers );
-				$clone_status = " $count_to_clone / $count_servers"; 
-				if ( $count_to_clone && OIK_clone_tree::get_atts( "form" ) ) { 
-					$clone_status .= $this->clone_link( $to_clone );
+				$clone_status = " $count_to_clone / $count_servers";
+				if ( $count_to_clone ) {
+					$form = OIK_clone_tree::get_atts( "form" );
+					if ( $form ) {
+						$clone_status .= $this->clone_link( $to_clone );
+					}
 				}
 			} else {
 				$clone_status = " ?";
 			}
 		} else {
 			$clone_status = " n/a";
+		}
+		if ( $just_count ) {
+			$clone_status = $count_to_clone;
 		}
 		return( $clone_status );
 

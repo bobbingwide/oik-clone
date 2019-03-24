@@ -3,7 +3,7 @@
 Plugin Name: oik-clone
 Plugin URI: https://www.oik-plugins.com/oik-plugins/oik-clone-clone-your-wordpress-content
 Description: Clone your WordPress content 
-Version: 1.1.0
+Version: 1.2.0
 Author: bobbingwide
 Author URI: https://www.oik-plugins.com/author/bobbingwide
 Text Domain: oik-clone
@@ -47,6 +47,7 @@ function oik_clone_loaded() {
 	add_action( "run_class-oik-clone-reset-slave.php", "oik_clone_run_oik_reset_slave" );
 	add_action( "run_class-oik-clone-reset-ids.php", "oik_clone_run_oik_reset_ids" );
 	add_action( "run_class-oik-clone-pull.php", "oik_clone_run_oik_clone_pull" );
+	add_action( "run_class-oik-clone-push.php", "oik_clone_run_oik_clone_push" );
 	
 	add_action( "wp_ajax_oik_clone_request_mapping", "oik_clone_nopriv_oik_clone_request_mapping" );
 	add_action( "wp_ajax_nopriv_oik_clone_request_mapping", "oik_clone_nopriv_oik_clone_request_mapping" );
@@ -361,6 +362,17 @@ function oik_clone_run_oik_clone_pull() {
 	oik_require( "admin/class-oik-clone-pull.php", "oik-clone" );
 	$oik_clone_pull = new OIK_clone_pull();
 }
+
+/**
+ * Load and run class-oik-clone-push.php
+ *
+ */
+function oik_clone_run_oik_clone_push() {
+	oik_require( "admin/class-oik-clone-push.php", "oik-clone" );
+	$oik_clone_push = new OIK_clone_push();
+}
+
+
 
 /**
  * Implements http_request_args filter to enable local push cloning in WordPress Multi Site

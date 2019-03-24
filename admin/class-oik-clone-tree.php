@@ -375,6 +375,26 @@ class OIK_clone_tree {
 		}
 	 
 	}
+
+	/**
+	 * Clones a post if it needs cloning
+	 *
+	 * If it needs cloning ( $status > 0 ) then
+	 * @TODO then we might want to check that the slave hasn't been changed since it was cloned and if it hasn't
+	 * then cloneit.
+
+	 */
+
+	function maybe_clone() {
+		$this->order_nodes();
+		foreach ( $this->ordered_nodes as $node ) {
+			$status = $node->clone_status( true );
+			echo $status. PHP_EOL;
+			if ( $status > 0 ) {
+				$node->cloneme();
+			}
+		}
+	}
 	
 	/**
 	 * Return the value of an atts field
