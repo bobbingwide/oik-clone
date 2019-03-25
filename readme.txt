@@ -211,7 +211,7 @@ Prototype for WordPress Multi Site cloned sites
 == Changelog ==
 = 1.2.0 =
 * Added: Add batch clone pull for MultiSite., [github bobbingwide oik-clone issues 31]
-* Added: Add batch clone push: clone new/changed posts in a selected post type, [github bobbingwide oik-clone issues 31]
+* Added: Add batch clone push: clone new/changed posts in a selected post type., [github bobbingwide oik-clone issues 31]
 * Changed: Improve MS pull logic to perform mapping and create target folder for attachments., [github bobbingwide oik-clone issues 29]
 * Fixed: Avoid messages for corrupted cloning data. Doesn't prevent / fix the corrupted data., [github bobbingwide oik-clone issues 14]
 * Fixed: Support listing of all posts in hierarchical/inherited post types in oik-clone admin MultiSite tab
