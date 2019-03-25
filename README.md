@@ -5,7 +5,7 @@
 * Tags: clone, compare, update, MultiSite
 * Requires at least: 5.0.3
 * Tested up to: 5.1.1
-* Stable tag: 1.1.0
+* Stable tag: 1.2.0
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 * Text Domain: oik-clone
@@ -137,6 +137,9 @@ Other methods will be implemented in future versions.
 3. Clone on update meta box - Previously cloned
 
 ## Upgrade Notice 
+# 1.2.0 
+Update for batch pull between sites in a WordPress Multi Site network. Update for batch push or new/changed posts in a selected post type.
+
 # 1.1.0 
 Update for improved support of pull cloning on WordPress Multi Site.
 
@@ -207,6 +210,15 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 ## Changelog 
+# 1.2.0 
+* Added: Add batch clone pull for MultiSite., https://github.com/bobbingwide/oik-clone/issues/31
+* Added: Add batch clone push: clone new/changed posts in a selected post type, https://github.com/bobbingwide/oik-clone/issues/31
+* Changed: Improve MS pull logic to perform mapping and create target folder for attachments., https://github.com/bobbingwide/oik-clone/issues/29
+* Fixed: Avoid messages for corrupted cloning data. Doesn't prevent / fix the corrupted data., https://github.com/bobbingwide/oik-clone/issues/14
+* Fixed: Support listing of all posts in hierarchical/inherited post types in oik-clone admin MultiSite tab
+* Fixed: cURL error 60 in local WPMS., https://github.com/bobbingwide/oik-clone/issues/30
+* Tested: With Gutenberg 5.3.0
+
 # 1.1.0 
 * Changed: Update oik-clone admin MultiSite tab https://github.com/bobbingwide/oik-clone/issues/28
 * Changed: Update MultiSite pull logic for attachments https://github.com/bobbingwide/oik-clone/issues/29

@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2015
+<?php // (C) Copyright Bobbing Wide 2015, 2019
 
 oik_require( "admin/class-oik-clone-tree-node.php", "oik-clone" );
 
@@ -386,13 +386,19 @@ class OIK_clone_tree {
 	 */
 
 	function maybe_clone() {
+		$dry_run = $this->get_atts( "dry-run" );
 		$this->order_nodes();
 		foreach ( $this->ordered_nodes as $node ) {
 			$status = $node->clone_status( true );
-			echo $status. PHP_EOL;
+			echo $status;
 			if ( $status > 0 ) {
-				$node->cloneme();
+				if ( $dry_run ) {
+					echo " - Not cloned this time";
+				} else {
+					$node->cloneme();
+				}
 			}
+			echo PHP_EOL;
 		}
 	}
 	

@@ -21,7 +21,7 @@ if ( PHP_SAPI !== "cli" ) {
 
  * Syntax
  * cd \apache\htdocs\wp-a2z\wp-content\plugins\oik-clone\admin
- * oikwp class-oik-clone-push.php target.domain post_type url=source.domain
+ * oikwp class-oik-clone-push.php post_type url=source.domain
  *
  * e.g.
  * oikwp class-oik-clone-push.php blocks.wp-a2z.org block url=blocks.wp.a2z
@@ -29,13 +29,6 @@ if ( PHP_SAPI !== "cli" ) {
  */
 
 class OIK_clone_push {
-	/**
-	 * Target domain
-	 *
-	 */
-	public $target_domain = null;
-
-
 
 	/**
 	 * Post type
@@ -43,52 +36,35 @@ class OIK_clone_push {
 	public $post_type = null;
 
 	public $force_update = false;
+
+	public $dry_run = false;
 	/**
-	 * Constructor for OIK_clone_pull
-	 *
-	 * Determine the source site and clone the selected post type
-	 * @TODO Only clone the posts that need updating.
+	 * Constructor for OIK_clone_push
 	 *
 	 */
 	function __construct() {
 		oik_require( "includes/bw_posts.php" );
-		//oik_require( "admin/oik-clone-clone.php", "oik-clone" );
-		//oik_require( "admin/oik-clone-actions.php", "oik-clone" );
-		//oik_require( "admin/oik-clone-ms.php", "oik-clone" );
-		//oik_require( "admin/oik-clone-relationships.php", "oik-clone" );
-
-		$this->get_target_domain();
-
+		oik_require( "admin/class-oik-clone-tree.php", "oik-clone");
 		$this->get_post_type();
-		//add_filter( "oik_clone_load_source", [ $this, "load_ms_source" ], 10, 2 );
-		//kses_remove_filters();
-
+		$this->get_dry_run();
 		$this->force_update( false );
 		$this->process_all_posts( $this->post_type );
 	}
 
-	/**
-	 * Obtain the value for the source domain
-	 *
-	 * If not specified then die.
-	 */
-	function get_target_domain() {
-		$target_domain = oik_batch_query_value_from_argv( 1, null );
-		if ( !$target_domain ) {
+	function get_post_type() {
+		$post_type = oik_batch_query_value_from_argv( 1, null );
+		if ( ! $post_type ) {
 			echo PHP_EOL;
-			echo "Syntax: oikwp class-oik-clone-push.php target.domain posttype url=source.domain" . PHP_EOL ;
-			echo "e.g. oikwp class-oik-clone-push.php blocks.wp-a2z.org block url=blocks.wp.a2z" . PHP_EOL;
+			echo "Syntax: oikwp class-oik-clone-push.php posttype url=source.domain" . PHP_EOL ;
+			echo "e.g. oikwp class-oik-clone-push.php block url=blocks.wp.a2z" . PHP_EOL;
 			die( "Try again with the right parameters.");
 		}
-		$this->target_domain = $target_domain;
+		$this->post_type = $post_type;
 	}
 
-	function get_post_type() {
-		$post_type = oik_batch_query_value_from_argv( 2, null );
-		if ( ! $post_type ) {
-			die( "Try again" );
-		}
-		$this->post_type = $post_type;
+	function get_dry_run() {
+		$dry_run = oik_batch_query_value_from_argv( "dry-run", "n");
+		$this->dry_run = bw_validate_torf( $dry_run );
 	}
 
 	function force_update( $force = null ) {
@@ -99,10 +75,10 @@ class OIK_clone_push {
 	}
 
 	/**
-	 * Process all clonable post types
+	 * Process all cloneable post types
 	 *
 	 * foreach post type
-	 *  if clonable
+	 *  if cloneable
 	 *  	push all posts for the post type
 	 */
 	function process_post_types() {
@@ -125,7 +101,7 @@ class OIK_clone_push {
 	 *
 	 * - fetch all posts for the post type. Note: "any" includes draft!
 	 *
-	 * - for each post clone from source to target if it needs it.
+	 * - for each post clone from source to slaves if it's needed.
 	 *
 	 *
 	 * @param string $post_type
@@ -150,67 +126,20 @@ class OIK_clone_push {
 	}
 
 	/**
-	 * push the post from source to target
+	 * Maybe push the post from source to slaves
+	 *
 	 * oik_clone_perform_import has the basic logic but this already knows the target id
 	 * we need to determine the target ID in the same way a remote slave does... when the passed target_id is 0.
 	 * And we have to ensure that the source post is correctly loaded from the source site.
 	 * So we have to reuse the post loading logic!
 	 *
-	 *
-	 *
-	 *
 	 * @param object $post the post object
 	 */
 	function process_post( $post ) {
-		//echo $this->source_domain;
-		//echo $this->source_blog_id ;
-		echo "Considering: {$post->ID}: {$post->post_title} - {$post->post_name} ";
-
-		$this->check_if_cloning_necessary( $post );
-		bw_flush();
-
-
-
-	}
-
-	/**
-	 * Checks if cloning of the post from master to the selected slave is necessary
-	 *
-	 * There is logic in the "cloned" shortcode that does this.
-	 *
-	 * @param $post
-	 * @return bool true if cloning is necessary
-	 */
-	function check_if_cloning_necessary( $post ) {
-		oik_require( "admin/class-oik-clone-tree.php", "oik-clone");
-		$tree = new OIK_clone_tree( $post->ID, [ "form" => false ] );
-
+		$prefix = $this->dry_run ? "Dry run:" : "Considering";
+		echo "$prefix {$post->ID}: {$post->post_title} - {$post->post_name} ";
+		$tree = new OIK_clone_tree( $post->ID, [ "form" => false, "dry-run" => $this->dry_run ] );
 		$tree->maybe_clone();
-		//$tree->display_nodes();
-		//$node = new OIK_clone_tree_node( $post->ID );
-		//$node->get_post();
-		//$status = $node->clone_status();
-		//echo $status . PHP_EOL;
-		return false;
+		bw_flush();
 	}
-
-	/**
-	 * Checks that the slave has not been changed
-	 *
-	 * @param $post
-	 * @return bool true if the slave has not been changed
-	 */
-
-	function check_slave_has_not_been_changed( $post ) {
-		return true; // slave has not been changed
-	}
-
-	function clone_post( $post ) {
-		echo "Cloning $post to {$this->target_domain}" . PHP_EOL;
-
-	}
-
-
-
-
 }
