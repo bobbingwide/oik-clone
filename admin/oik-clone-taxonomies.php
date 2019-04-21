@@ -270,11 +270,13 @@ function oik_clone_lazy_update_taxonomies2( $post, $target ) {
   $taxonomy_class = new OIK_clone_taxonomies();
   foreach ( $source_taxonomies as $taxonomy => $value ) {
     $taxonomy_class->init();
-    $taxonomy_class->set_taxonomy( $taxonomy );
-    $taxonomy_class->receive_source_tree( $post );
-    $taxonomy_class->get_target_terms( $target );
-    $taxonomy_class->get_target_tree();
-    $taxonomy_class->update_target_tree();
+    $taxonomy_exists = $taxonomy_class->set_taxonomy( $taxonomy );
+    if ( $taxonomy_exists ) {
+	    $taxonomy_class->receive_source_tree( $post );
+	    $taxonomy_class->get_target_terms( $target );
+	    $taxonomy_class->get_target_tree();
+	    $taxonomy_class->update_target_tree();
+    }
   }
 }
 
