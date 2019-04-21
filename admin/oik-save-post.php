@@ -164,8 +164,16 @@ function oik_clone_clone( $id, $load_media=false, $slaves=null ) {
 				$jmedia = oik_clone_load_media_file( $id, $payload ); 
 			}  
 			$result = oik_clone_update_slave( $id, $jpayload, $slave, $target, $jmapping, $jmedia );
-			$slave_id = oik_clone_determine_slave_id( $target, $result );
-			$post_meta = oik_clone_update_slave_target( $id, $slave, $slave_id, $payload->post_modified_gmt );
+			if ( $result ) {
+				$slave_id  = oik_clone_determine_slave_id( $target, $result );
+				$post_meta = oik_clone_update_slave_target( $id, $slave, $slave_id, $payload->post_modified_gmt );
+			} else {
+				if ( method_exists( 'oik_remote', 'bw_retrieve_response_code' )) {
+					$response_code    = oik_remote::bw_retrieve_response_code();
+					$response_message = oik_remote::bw_retrieve_response_message();
+					BW_::p( sprintf( 'Cloning failure. Code: %1$s. Message: %2$s.', $response_code, $response_message ) );
+				}
+			}
 		}
 	} else { 
 		//p( "No slaves to which to clone" );
