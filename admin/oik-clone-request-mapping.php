@@ -13,6 +13,7 @@
  * slave  | post ID of the slave post
  * cloned | UNIX timestamp of the most recently cloned master 
  * name   | post name of the slave post	- to check we've got the right master ID
+ * modified | post modified gmt of the slave post
  *  
  * @return array of mapping 
  */
@@ -45,7 +46,12 @@ function oik_clone_lazy_request_mapping() {
 				$id = $data;
 			}
 			if ( $id ) {
-				$mapping[] = array( "id" => $id, "slave" => $post->ID, "cloned" => $cloned, "name" => $post->post_name );
+				$mapping[] = array( "id" => $id,
+				                    "slave" => $post->ID,
+				                    "cloned" => $cloned,
+				                    "name" => $post->post_name,
+									"modified" => $post->post_modified_gmt
+									);
 			}
 		}
 	}
