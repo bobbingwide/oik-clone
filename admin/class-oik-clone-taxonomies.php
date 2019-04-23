@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2015
+<?php // (C) Copyright Bobbing Wide 2015, 2019
 
 /**
  * OIK_clone_taxonomies class 
@@ -103,8 +103,14 @@ class OIK_clone_taxonomies {
    */
   function set_taxonomy( $taxonomy ) {
     //$this->init();
-    $this->taxonomy = $taxonomy;
-    return( $taxonomy );
+	$taxonomy_exists = taxonomy_exists( $taxonomy );
+	if ( $taxonomy_exists ) {
+		$this->taxonomy = $taxonomy;
+	} else {
+		// Leave it as it is.
+
+	}
+    return $taxonomy_exists;
   } 
   
   /**
@@ -137,7 +143,7 @@ class OIK_clone_taxonomies {
    * Build the source tree for the selected terms
    * 
    * When you want to tell another system about your taxonomies
-   * then if it's a hieararchical taxonomy you will need to provide some information about the hierarchy,
+   * then if it's a hierarchical taxonomy you will need to provide some information about the hierarchy,
    * so that it can be reproduced on the server.
    * 
    *  x | Slug / Name  |
@@ -289,6 +295,7 @@ We really only need
    *
    */
   function update_target_tree() {
+  	//bw_trace2();
     wp_delete_object_term_relationships( $this->id, $this->taxonomy );
     $source_tree = $this->get_keyed_array( $this->source_tree, "term_id" );
     $targets = array();
@@ -348,8 +355,9 @@ We really only need
    *
    */
   function find_term_in_parent( $term, $current_parent ) {
+  	//bw_trace2( $this->target_tree, "Target tree" );
     $args = array( "parent" => $current_parent 
-                 , "name" => $term->name
+                 , "slug" => $term->slug
                  );
     $list = wp_list_filter( $this->target_tree, $args );
     bw_trace2( $list, "List");
