@@ -260,6 +260,7 @@ class OIK_clone_reconcile{
 		} elseif ( $post->post_modified_gmt < $mapping->modified ) {
 			if ( $slave_changed_since_clone ) {
 				$this->echo( " Pull:", $mapping->id );
+				$this->pull( $post, $mapping );
 			} else {
 				$this->echo( " Wacky:", "Master reverted perhaps?");
 			}
@@ -309,6 +310,13 @@ class OIK_clone_reconcile{
 		return $changed;
 	}
 
+	function pull( $post, $mapping ) {
+		oik_require( "admin/oik-clone-pull.php", "oik-clone");
+		$target_id = oik_clone_master_pull( $this->slave_url, $post, $mapping );
+		if ( $target_id === $post->ID ) {
+			$this->echo( "Pulled:", $this->slave_url );
+		}
+	}
 
 	function echo( $prefix=null, $value=null ) {
 		echo "$prefix $value";
