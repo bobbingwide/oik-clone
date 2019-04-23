@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2016
+<?php // (C) Copyright Bobbing Wide 2016-2019
 
 /**
  * Return oik-clone mapping of selected post type

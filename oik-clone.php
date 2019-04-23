@@ -48,6 +48,7 @@ function oik_clone_loaded() {
 	add_action( "run_class-oik-clone-reset-ids.php", "oik_clone_run_oik_reset_ids" );
 	add_action( "run_class-oik-clone-pull.php", "oik_clone_run_oik_clone_pull" );
 	add_action( "run_class-oik-clone-push.php", "oik_clone_run_oik_clone_push" );
+	add_action( "run_class-oik-clone-reconcile.php", "oik_clone_run_oik_clone_reconcile" );
 	
 	add_action( "wp_ajax_oik_clone_request_mapping", "oik_clone_nopriv_oik_clone_request_mapping" );
 	add_action( "wp_ajax_nopriv_oik_clone_request_mapping", "oik_clone_nopriv_oik_clone_request_mapping" );
@@ -370,6 +371,15 @@ function oik_clone_run_oik_clone_pull() {
 function oik_clone_run_oik_clone_push() {
 	oik_require( "admin/class-oik-clone-push.php", "oik-clone" );
 	$oik_clone_push = new OIK_clone_push();
+}
+
+/**
+ * Load and run class-oik-clone-reconcile.php
+ *
+ */
+function oik_clone_run_oik_clone_reconcile() {
+	oik_require( "admin/class-oik-clone-reconcile.php", "oik-clone");
+	$oik_clone_reconcile = new OIK_clone_reconcile();
 }
 
 
