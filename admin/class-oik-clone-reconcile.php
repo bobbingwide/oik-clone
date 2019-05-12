@@ -142,9 +142,22 @@ class OIK_clone_reconcile{
 								 ); 
 		$result = oik_remote::bw_remote_post( $url, $args );
 		bw_trace2( $result );
-		echo $result;
+		if ( !is_wp_error( $result ) ) {
+			echo $result;
+		} else {
+			$this->report_wp_error( $result );
+			$result = null;
+		}
 
 		return $result;
+	}
+
+	function report_wp_error( $result ) {
+		//print_r( $result );
+		$error = $result->get_error_message();
+		$code = $result->get_error_code();
+		$this->echo( "WP Error: $code", $error );
+
 	}
 	
 	/**
