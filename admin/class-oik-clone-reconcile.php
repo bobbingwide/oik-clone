@@ -195,14 +195,14 @@ class OIK_clone_reconcile{
 		$match = false;
 		$post = get_post( $mapping->id ); 
 		if ( $post ) {
-			echo $this->post_type;
+			$this->echo( "Post type:", $this->post_type );
 			$match = $post->post_type == $this->post_type;
-			echo $post->post_name;
-			echo $mapping->name;
+			$this->echo( "Name:", $post->post_name );
+			$this->echo( "Mapping:", $mapping->name );
 			$match &= $post->post_name === $mapping->name;
 		}
 		if ( !$match ) {
-			echo "Trying match by post name: " . $mapping->name . PHP_EOL;
+			$this->echo("Trying match by post name:" , $mapping->name );
 			$post = bw_get_post( $mapping->name, $this->post_type );
 			if( $post ) {
 				$mapping->id = $post->ID;
@@ -210,7 +210,7 @@ class OIK_clone_reconcile{
 			}
 		}
 		if ( !$match ) {
-			echo "Bad match on slave:" . $mapping->slave ." ". $mapping->name . PHP_EOL;
+			$this->echo( "Bad match on slave:", $mapping->slave ." ". $mapping->name );
 		} else {
 			$this->reconcile( $post, $mapping );
 			//$post_meta = oik_clone_update_slave_target( $mapping->id, $this->slave, $mapping->slave, $mapping->cloned );
@@ -239,7 +239,7 @@ class OIK_clone_reconcile{
 	 */
 	function reconcile( $post, $mapping ) {
 		$date_master_cloned = $this->get_date_master_cloned( $post, $mapping );
-		echo PHP_EOL;
+		//echo PHP_EOL;
 		$this->echo( "Reconciling:", $post->ID );
 		$this->echo( "Cloned:", $date_master_cloned );
 		$this->echo( "Modified:", $post->post_modified_gmt );
@@ -267,6 +267,7 @@ class OIK_clone_reconcile{
 		if ( $post->post_modified_gmt > $mapping->modified ) {
 			if( $master_changed_since_clone ) {
 				$this->echo( "Push:", $post->ID );
+				// @TODO Write push
 			} else {
 				$this->echo( "Slave changed?", $slave_changed_since_clone );
 			}
