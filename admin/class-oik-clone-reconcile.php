@@ -268,6 +268,7 @@ class OIK_clone_reconcile{
 			if( $master_changed_since_clone ) {
 				$this->echo( "Push:", $post->ID );
 				// @TODO Write push
+				$this->push( $post, $mapping );
 			} else {
 				$this->echo( "Slave changed?", $slave_changed_since_clone );
 			}
@@ -293,19 +294,22 @@ class OIK_clone_reconcile{
 		}
 		*/
 
+
 	}
 
 	function get_date_master_cloned( $post, $mapping ) {
 		$master_cloned = null;
 		$post_meta = get_post_meta( $post->ID, "_oik_clone_ids", false );
-		$slaves = $post_meta[0];
+		if ( $post_meta ) {
+			$slaves = $post_meta[0];
 
-		$slave_info = bw_array_get( $slaves, $this->slave_url, null);
-		if ( $slave_info['id'] !== $mapping->slave ) {
-			$this->echo( "Error:", "Clone mismatch");
-		} else {
-			$master_cloned = $slave_info['cloned'];
-			$master_cloned = date( "Y-m-d H:i:s", $master_cloned );
+			$slave_info = bw_array_get( $slaves, $this->slave_url, null );
+			if ( $slave_info['id'] !== $mapping->slave ) {
+				$this->echo( "Error:", "Clone mismatch" );
+			} else {
+				$master_cloned = $slave_info['cloned'];
+				$master_cloned = date( "Y-m-d H:i:s", $master_cloned );
+			}
 		}
 
 		return $master_cloned;
@@ -329,7 +333,20 @@ class OIK_clone_reconcile{
 		$target_id = oik_clone_master_pull( $this->slave_url, $post, $mapping );
 		if ( $target_id === $post->ID ) {
 			$this->echo( "Pulled:", $this->slave_url );
+			print_r( $mapping );
 		}
+
+	}
+
+	function push( $post, $mapping ) {
+		$this->echo( "Pushing:", $post->ID );
+		$this->echo( "Slave:", $this->slave_url );
+		$this->echo( "Mapping:", $mapping->id );
+
+		//oik_require( "admin/oik-save-post.php", "oik-clone" );
+		$slaves = [ $this->slave_url ];
+		oik_clone_clone( $post->ID, false, $slaves );
+		$this->echo( "Pushed:", $post->post_name );
 	}
 
 	function echo( $prefix=null, $value=null ) {
