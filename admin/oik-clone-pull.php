@@ -9,7 +9,7 @@
  * Performs a clone by pulling into the master from the selected slave.
  *
  * @param string $slave_url of the slave server
- * @param object $master_post - tne post being updated
+ * @param object $master_post - the post being updated
  * @param object $mapping - the slave mapping
  */
 function oik_clone_master_pull( $slave_url, $master_post, $mapping ) {
@@ -29,21 +29,30 @@ function oik_clone_master_pull( $slave_url, $master_post, $mapping ) {
 	//print_r( $result );
 
 	$post = $result->payload;
+	//print_r( $post );
+
 	$_REQUEST['mapping'] = $result->mapping;
 	$_REQUEST['master'] = $slave_url;
 	if ( is_object( $post )) {
 		oik_require( "admin/oik-clone-clone.php", "oik-clone" );
 		//print_r( $mapping );
 		$target_id = oik_clone_attempt_import( $mapping->slave, $master_post->ID, $post );
+		// If the import worked the clone date becomes the modified time which which will be different from the slave'd clone date.
+		// So we reset it. Next reconciliation will push the change back again.
+		// @TODO Update the server's clone date rather than fiddle the date back to the original $master_post->post_modified_gmt ?
+		if ( $target_id ) {
+			oik_clone_update_slave_target( $target_id, $slave_url, $mapping->slave, $master_post->post_modified_gmt );
+		}
 	} else {
 		$target_id = null;
+		gob();
 	}
 
 	/** So now we need to update the slave to reflect the fact that the master has been reconciled with it.
 	 * This is getting to be a lot harder than I first envisaged.
 	 *
 	 */
-	
+
 	return $target_id;
 }
 
