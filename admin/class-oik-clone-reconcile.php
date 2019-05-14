@@ -195,6 +195,7 @@ class OIK_clone_reconcile{
 		$match = false;
 		$post = get_post( $mapping->id ); 
 		if ( $post ) {
+			$this->echo( "Title:", $post->post_title );
 			$this->echo( "Post type:", $this->post_type );
 			$match = $post->post_type == $this->post_type;
 			$this->echo( "Name:", $post->post_name );
@@ -281,7 +282,7 @@ class OIK_clone_reconcile{
 			}
 
 		} else {
-			$this->echo( "Match:" );
+			$this->echo( "Match:", 'Yes' );
 		}
 		$this->echo();
 
