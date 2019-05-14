@@ -57,6 +57,9 @@ function oik_clone_loaded() {
 	add_action( "wp_ajax_oik_clone_pull", "oik_clone_nopriv_oik_clone_pull" );
 	add_action( "wp_ajax_nopriv_oik_clone_pull", "oik_clone_nopriv_oik_clone_pull" );
 	add_filter( 'wp_insert_post_data', 'oik_clone_wp_insert_post_data', 10, 2 );
+	add_filter( 'wp_insert_attachment_data', 'oik_clone_wp_insert_post_data', 10, 2 );
+
+
 }  
 
 /**
