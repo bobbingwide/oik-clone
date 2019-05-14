@@ -56,6 +56,7 @@ function oik_clone_loaded() {
 
 	add_action( "wp_ajax_oik_clone_pull", "oik_clone_nopriv_oik_clone_pull" );
 	add_action( "wp_ajax_nopriv_oik_clone_pull", "oik_clone_nopriv_oik_clone_pull" );
+	add_filter( 'wp_insert_post_data', 'oik_clone_wp_insert_post_data', 10, 2 );
 }  
 
 /**
@@ -305,6 +306,40 @@ function oik_clone_nopriv_oik_clone_pull() {
 	bw_backtrace();
 	bw_flush();
 	exit();
+}
+
+function oik_clone_wp_insert_post_data( $data, $postarr ) {
+	bw_trace2();
+	//bw_backtrace();
+	//bw_trace2( $_REQUEST, '$_REQUEST' );
+	/**
+	 * Reset post modified dates to postarr version, if cloning!
+	 * Will post_modified_gmt ever be '0000-00-00 00:00:00' for a published post that's being cloned?
+	 */
+	//$action = bw_array_get( $_REQUEST, 'action', null );
+	if ( oik_clone_cloning_in_progress() ) {
+		if ( isset( $postarr['post_modified_gmt'])) {
+			if ( $data['post_modified_gmt'] !== $postarr['post_modified_gmt'] ) {
+				$data['post_modified_gmt'] = $postarr['post_modified_gmt'];
+				$data['post_modified']     = $postarr['post_modified'];
+			}
+		}
+	}
+	return $data;
+}
+
+/**
+ * Returns the cloning status.
+ *
+ * @param null|bool $cloning
+ * @return null|bool
+ */
+function oik_clone_cloning_in_progress( $cloning=null) {
+	static $cloning_in_progress;
+	if ( $cloning !== null  ) {
+		$cloning_in_progress = $cloning;
+	}
+	return $cloning_in_progress;
 }
 
 /**

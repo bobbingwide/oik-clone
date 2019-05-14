@@ -186,11 +186,14 @@ function oik_clone_find_target_by_slug( $source ) {
  * @param array $post - the post to clone
  * 
  */
-function oik_clone_attempt_import( $source, $target, $post ) { 
+function oik_clone_attempt_import( $source, $target, $post ) {
+
 	oik_require( "admin/oik-clone-actions.php", "oik-clone" );
 	oik_require( "admin/oik-clone-relationships.php", "oik-clone" );
 	$media_file = null;
 	kses_remove_filters();
+
+	oik_clone_cloning_in_progress( true );
   
   
 	$target_id = oik_clone_determine_target_id( $source, $target, $post );
@@ -238,6 +241,7 @@ function oik_clone_attempt_import( $source, $target, $post ) {
 	oik_require( "admin/oik-save-post.php", "oik-clone" );
 	$master = bw_array_get( $_REQUEST, "master", null );
 	oik_clone_update_slave_target( $target_id, $master, $source, $post->post_modified_gmt );
+	oik_clone_cloning_in_progress( false );
 	return( $target_id );
 }
 
