@@ -3,8 +3,8 @@ Contributors: bobbingwide
 Donate link: https://www.oik-plugins.com/oik/oik-donate/
 Tags: clone, compare, update, MultiSite
 Requires at least: 5.0.3
-Tested up to: 5.1.1
-Stable tag: 1.2.0
+Tested up to: 5.2.0
+Stable tag: 2.0.0-alpha-20190515
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: oik-clone
@@ -25,6 +25,10 @@ Features:
 - pull content from other sites in a MultiSite installation
 - compare and update or import from self or a MultiSite site
 - clone virtual field - to display clones of current content
+
+New for version 2.0.0
+- 
+- Batch reconciliation
 
 
 oik-clone is dependent on the oik base plugin; using the oik-plugin as a library of functions sitting on top of WordPress.
@@ -47,15 +51,9 @@ Install on both the client and server machines.
 == Frequently Asked Questions ==
 
 = Is there a beta test version? =
-Not any more; not since v1.0.0
+There's a new alpha test version for 2.0.0
+This new version supports batch reconciliation of posts that have been updated in the slave.
 
-Beta versions for v1.0.0 were suffixed -beta.mmdd
-
-Yes. v0.8 was the first Beta test version.
-
-Beta testing of v0.8 was performed on the oik-plugins servers and WP-a2z sites.
-
-Previously v0.7 was Alpha tested on the oik-plugins servers.
 
 = What does the Multi-Site tab do? =
 
@@ -136,6 +134,9 @@ Other methods will be implemented in future versions.
 3. Clone on update meta box - Previously cloned  
 
 == Upgrade Notice ==
+= 2.0.0-alpha-20190515 = 
+Upgrade to support the batch pull capability.
+
 = 1.2.0 = 
 Update for batch pull between sites in a WordPress Multi Site network. Update for batch push or new/changed posts in a selected post type.
 
@@ -209,6 +210,11 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 == Changelog ==
+= 2.0.0-alpha-20190515 = 
+* Added: Batch reconciliation of modified posts with a selected slave server - push and pull,[github bobbingwide oik-clone issues 34]
+* Changed: Implement wp_insert_post_data and wp_insert_attachment_data filters to set required post_modified and post_modified_gmt 
+* Fixes: Avoid Fatal errors cloning taxonomy terms by matching terms by slug not name, [github bobbingwide oik-clone issues 33]
+
 = 1.2.0 =
 * Added: Add batch clone pull for MultiSite., [github bobbingwide oik-clone issues 31]
 * Added: Add batch clone push: clone new/changed posts in a selected post type., [github bobbingwide oik-clone issues 31]
