@@ -3,7 +3,7 @@
 Plugin Name: oik-clone
 Plugin URI: https://www.oik-plugins.com/oik-plugins/oik-clone-clone-your-wordpress-content
 Description: Clone your WordPress content 
-Version: 1.2.0
+Version: 2.0.0-alpha-20190515
 Author: bobbingwide
 Author URI: https://www.oik-plugins.com/author/bobbingwide
 Text Domain: oik-clone
@@ -59,7 +59,8 @@ function oik_clone_loaded() {
 	add_filter( 'wp_insert_post_data', 'oik_clone_wp_insert_post_data', 10, 2 );
 	add_filter( 'wp_insert_attachment_data', 'oik_clone_wp_insert_post_data', 10, 2 );
 
-
+	add_action( 'wp_ajax_oik_clone_update_slave_target', 'oik_clone_nopriv_oik_clone_update_slave_target' );
+	add_action( 'wp_ajax_nopriv_oik_clone_update_slave_target', 'oik_clone_nopriv_oik_clone_update_slave_target' );
 }  
 
 /**
@@ -280,10 +281,11 @@ function oik_clone_nopriv_oik_clone_request_mapping() {
   if ( $continue ) {
     oik_require( "admin/oik-clone-request-mapping.php", "oik-clone" );
     $mapping = oik_clone_lazy_request_mapping();
+    oik_clone_reply_with_json( $mapping );
   } else {
 		bw_trace2( "Invalid API key" );
 	}	
-  oik_clone_reply_with_json( $mapping );
+
   bw_backtrace();
   bw_flush();
   exit();
@@ -306,6 +308,29 @@ function oik_clone_nopriv_oik_clone_pull() {
 		bw_trace2( "Invalid API key" );
 	}
 	oik_clone_return_payload_with_json( $payload_relationships );
+	bw_backtrace();
+	bw_flush();
+	exit();
+}
+
+/**
+ * Implement AJAX oik_clone_update_slave_target after successful oik_clone_pull and import
+ *
+ * We use the same routine regardless of logged in status
+ * But we always validate the API key
+ */
+function oik_clone_nopriv_oik_clone_update_slave_target() {
+	oik_require( "admin/oik-clone-json.php", "oik-clone" );
+	add_filter( 'oik_validate_apikey', 'oik_clone_oik_validate_apikey', 10, 2 );
+	$continue = oik_clone_validate_apikey();
+	if ( $continue ) {
+		oik_require( "admin/oik-clone-update-slave-target-date.php", "oik-clone" );
+		$target_id = oik_clone_lazy_update_slave_target_date();
+	} else {
+		bw_trace2( "Invalid API key" );
+	}
+	//oik_clone_re
+	oik_clone_reply_with_json( $target_id );
 	bw_backtrace();
 	bw_flush();
 	exit();

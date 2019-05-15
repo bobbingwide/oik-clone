@@ -41,7 +41,9 @@ function oik_clone_master_pull( $slave_url, $master_post, $mapping ) {
 		// So we reset it. Next reconciliation will push the change back again.
 		// @TODO Update the server's clone date rather than fiddle the date back to the original $master_post->post_modified_gmt ?
 		if ( $target_id ) {
-			oik_clone_update_slave_target( $target_id, $slave_url, $mapping->slave, $master_post->post_modified_gmt );
+			//oik_clone_update_slave_target( $target_id, $slave_url, $mapping->slave, $master_post->post_modified_gmt );
+			oik_require( "admin/oik-clone-update-slave-target-date.php", "oik-clone" );
+			oik_clone_update_slave_target_date( $target_id, $slave_url, $mapping->slave, $post->post_modified_gmt );
 		}
 	} else {
 		$target_id = null;
