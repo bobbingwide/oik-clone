@@ -25,6 +25,8 @@ class OIK_clone_reconcile{
 	public $post_type;
 	public $mapping;
 	public $dry_run;
+	public $verbose;
+	public $action;
 
 	/**
 	 * Constructor for OIK_clone_reconcile
@@ -39,6 +41,7 @@ class OIK_clone_reconcile{
 		$this->set_apikey();
 		$this->set_master();
 		$this->get_dry_run();
+		$this->get_verbose();
 		$this->sanity_check();
 		$this->process_post_types();
 	}
@@ -84,7 +87,7 @@ class OIK_clone_reconcile{
 	}
 
 	function get_dry_run() {
-		$dry_run = oik_batch_query_value_from_argv( "dry-run", "n");
+		$dry_run = oik_batch_query_value_from_argv( "dry-run", "y");
 		$this->dry_run = bw_validate_torf( $dry_run );
 		if ( $this->dry_run ) {
 			$this->echo( "Dry run:", 'Yes');
@@ -92,11 +95,33 @@ class OIK_clone_reconcile{
 			$this->echo( "Dry run:", 'No');
 		}
 	}
+
+	function get_verbose() {
+		$verbose = oik_batch_query_value_from_argv( "verbose", "n");
+		$this->verbose = bw_validate_torf( $verbose );
+		if ( $this->verbose ) {
+			$this->echo( "Verbose:", 'Yes');
+
+		} else {
+			$this->echo( "Verbose", 'No');
+		}
+	}
 	
 	function sanity_check() {
 		if ( $this->slave_url == $this->master ) {
 			die( "Slave and master should not be the same: " . $this->slave_url );
 		} 
+	}
+
+	function get_post_types() {
+		$post_type = oik_batch_query_value_from_argv( "post-type", null );
+		if ( null !== $post_type ) {
+			$post_types = explode( ',' , $post_type );
+		} else {
+			$post_types = get_post_types();
+		}
+		return $post_types;
+
 	}
 	
 	
@@ -109,16 +134,16 @@ class OIK_clone_reconcile{
 	 *  	
 	 */
 	function process_post_types() {
-		$post_types = get_post_types();
+		$post_types = $this->get_post_types();
 		//print_r( $post_types );
 		foreach ( $post_types as $post_type ) {
 			$supports = post_type_supports( $post_type, "clone" );
 			if ( $supports ) {
-				echo "Processing: $post_type" . PHP_EOL;
+				$this->echo( "Processing:", $post_type );
 				$this->post_type = $post_type;
 				$this->process_post_type( $post_type );
 			}	else {
-				echo "Skipping: $post_type" . PHP_EOL;
+				$this->echo( "Skipping:", $post_type );
 			}
 		}
 	}
@@ -155,7 +180,7 @@ class OIK_clone_reconcile{
 		$result = oik_remote::bw_remote_post( $url, $args );
 		bw_trace2( $result );
 		if ( !is_wp_error( $result ) ) {
-			echo $result;
+			$this->echo( "Result:", $result );
 		} else {
 			$this->report_wp_error( $result );
 			$result = null;
@@ -188,6 +213,7 @@ class OIK_clone_reconcile{
 	 */
 	function apply_mappings( $mappings ) {
 		foreach ( $mappings as $mapping ) {
+			$this->set_action();
 			$this->apply_mapping( $mapping );
 		}
 	}
@@ -228,6 +254,11 @@ class OIK_clone_reconcile{
 			$this->reconcile( $post, $mapping );
 			//$post_meta = oik_clone_update_slave_target( $mapping->id, $this->slave, $mapping->slave, $mapping->cloned );
 		}
+		$this->summarise( $post, $mapping, $match );
+	}
+
+	function set_action( $action=null ) {
+		$this->action = $action;
 	}
 
 
@@ -283,6 +314,7 @@ class OIK_clone_reconcile{
 				$this->push( $post, $mapping );
 			} else {
 				$this->echo( "Slave changed?", $slave_changed_since_clone );
+				$this->set_action( "????");
 			}
 		} elseif ( $post->post_modified_gmt < $mapping->modified ) {
 			if ( $slave_changed_since_clone ) {
@@ -290,10 +322,13 @@ class OIK_clone_reconcile{
 				$this->pull( $post, $mapping );
 			} else {
 				$this->echo( " Wacky:", "Master reverted perhaps?");
+				$this->push( $post, $mapping );
+				$this->set_action( "Wack");
 			}
 
 		} else {
 			$this->echo( "Match:", 'Yes' );
+			$this->set_action( "None");
 		}
 		$this->echo();
 
@@ -341,6 +376,7 @@ class OIK_clone_reconcile{
 	}
 
 	function pull( $post, $mapping ) {
+		$this->set_action( "Pull");
 		oik_require( "admin/oik-clone-pull.php", "oik-clone");
 		if ( $this->dry_run ) {
 			$this->echo( "Dry pull:", $post->ID );
@@ -349,12 +385,14 @@ class OIK_clone_reconcile{
 			if ( $target_id === $post->ID ) {
 				$this->echo( "Pulled:", $this->slave_url );
 				print_r( $mapping );
+				echo PHP_EOL;
 			}
 		}
 
 	}
 
 	function push( $post, $mapping ) {
+		$this->set_action( "Push");
 		$this->echo( "Pushing:", $post->ID );
 		$this->echo( "Slave:", $this->slave_url );
 		$this->echo( "Mapping:", $mapping->slave );
@@ -370,7 +408,41 @@ class OIK_clone_reconcile{
 	}
 
 	function echo( $prefix=null, $value=null ) {
-		echo "$prefix $value";
+		if ( $this->verbose ) {
+			echo "$prefix $value";
+			echo PHP_EOL;
+		}
+	}
+
+
+	/**
+	 * Summarise the actions taken or to be taken.
+	 *
+	 * Primarily for a dry-run
+	 *
+	 * @param $post
+	 * @param $mapping
+	 * @param $match
+	 */
+
+	function summarise( $post, $mapping, $match ) {
+
+		$summary   = [];
+		$summary[] = $this->action;
+		$summary[] = $mapping->slave;
+		$summary[] = date( "Y-m-d H:i:s", $mapping->cloned );
+		$summary[] = $mapping->modified;
+		if ( $match ) {
+			$summary[] = $post->post_modified_gmt;
+			$summary[] = $post->post_type;
+			$summary[] = $post->ID;
+			$summary[] = $post->post_name;
+
+		}
+
+		$summarised = implode( ',', $summary );
+
+		echo $summarised;
 		echo PHP_EOL;
 	}
 
