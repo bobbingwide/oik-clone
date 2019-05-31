@@ -23,36 +23,52 @@ function oik_clone_lazy_request_mapping() {
 	$master = bw_array_get( $_REQUEST, "master" );
 	$atts = array( "post_type" => $post_type
 							 , "numberposts" => -1
-							 , "meta_key" => "_oik_clone_ids"
+							 //, "meta_key" => "_oik_clone_ids"
 							 );
 	oik_require( "includes/bw_posts.php" );							 
 	$posts = bw_get_posts( $atts ); 
 	$mapping = array();
 	foreach ( $posts as $post ) {
-		$clones = get_post_meta( $post->ID, "_oik_clone_ids", false );
-		$clones = bw_array_get( $clones, 0, array() );
-		bw_trace2( $clones, "clones" );
-		$data = bw_array_get( $clones, $master, null );
+		$id = null;
 		$cloned = 0;
-		if ( $data ) {
-			bw_trace2( $data, "data", false );
-			if ( is_array( $data ) ) {
-				$id = bw_array_get( $data, "id", null );
-				if ( is_array( $id ) ) {
-					$id = bw_array_get( $id, "id", null );
+		$clones = get_post_meta( $post->ID, "_oik_clone_ids", false );
+		bw_trace2( $clones, "clones" );
+		if ( $clones ) {
+			$clones = bw_array_get( $clones, 0, array() );
+			bw_trace2( $clones, "clones" );
+			$data   = bw_array_get( $clones, $master, null );
+			$cloned = 0;
+			if ( $data ) {
+				bw_trace2( $data, "data", false );
+				if ( is_array( $data ) ) {
+					$id = bw_array_get( $data, "id", null );
+					if ( is_array( $id ) ) {
+						$id = bw_array_get( $id, "id", null );
+					}
+					$cloned = bw_array_get( $data, "cloned", 0 );
+				} else {
+					$id = $data;
 				}
-				$cloned = bw_array_get( $data, "cloned", 0 );
-			} else {
-				$id = $data;
+
 			}
-			if ( $id ) {
-				$mapping[] = array( "id" => $id,
-				                    "slave" => $post->ID,
-				                    "cloned" => $cloned,
-				                    "name" => $post->post_name,
-									"modified" => $post->post_modified_gmt
-									);
-			}
+		}
+		if ( $id ) {
+			$mapping[] = array(
+				"id"       => $id,
+				"slave"    => $post->ID,
+				"cloned"   => $cloned,
+				"name"     => $post->post_name,
+				"modified" => $post->post_modified_gmt
+			);
+		} else {
+			$mapping[] = array(
+				'id' => null,
+				'slave' => $post->ID,
+				'cloned' => $cloned,
+				'name' => $post->post_name,
+				'modified' => $post->post_modified_gmt
+
+			);
 		}
 	}
 	return( $mapping );
