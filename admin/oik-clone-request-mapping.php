@@ -23,7 +23,7 @@ function oik_clone_lazy_request_mapping() {
 	$master = bw_array_get( $_REQUEST, "master" );
 	$atts = array( "post_type" => $post_type
 							 , "numberposts" => -1
-							 //, "meta_key" => "_oik_clone_ids"
+							 , 'post_parent' => 'ignore'
 							 );
 	oik_require( "includes/bw_posts.php" );							 
 	$posts = bw_get_posts( $atts ); 

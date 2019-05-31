@@ -231,7 +231,14 @@ class OIK_clone_reconcile{
 	 */
 	function apply_mapping( $mapping ) {
 		$match = false;
-		$post = get_post( $mapping->id ); 
+
+		//print_r( $mapping );
+		$post = null;
+		if ( null === $mapping->id ) {
+			$this->echo( "Not cloned:", $mapping->slave );
+		} else {
+			$post = get_post( $mapping->id );
+		}
 		if ( $post ) {
 			$this->echo( "Title:", $post->post_title );
 			$this->echo( "Post type:", $this->post_type );
@@ -250,6 +257,7 @@ class OIK_clone_reconcile{
 		}
 		if ( !$match ) {
 			$this->echo( "Bad match on slave:", $mapping->slave ." ". $mapping->name );
+			$this->perform_import( $mapping );
 		} else {
 			$this->reconcile( $post, $mapping );
 			//$post_meta = oik_clone_update_slave_target( $mapping->id, $this->slave, $mapping->slave, $mapping->cloned );
@@ -384,8 +392,9 @@ class OIK_clone_reconcile{
 			$target_id = oik_clone_master_pull( $this->slave_url, $post, $mapping );
 			if ( $target_id === $post->ID ) {
 				$this->echo( "Pulled:", $this->slave_url );
-				print_r( $mapping );
-				echo PHP_EOL;
+				$this->echo( "ID:", $target_id );
+				//print_r( $mapping );
+				//echo PHP_EOL;
 			}
 		}
 
@@ -405,6 +414,58 @@ class OIK_clone_reconcile{
 			oik_clone_clone( $post->ID, false, $slaves );
 			$this->echo( "Pushed:", $post->post_name );
 		}
+	}
+
+	/**
+	 * Performs the import of the slave post to the master
+	 *
+	 * Creates a dummy post of the right type then performs the pull action.
+	 * Hopefully the pull action updates all the fields that it should do.
+	 * Interesting to see what happens for an attachment!
+	 *
+	 * @param $mapping
+	 */
+
+	function perform_import( $mapping ) {
+		$post = null;
+		if ( $this->dry_run ) {
+			$this->set_action( "Dry import");
+		} else {
+			$post = $this->insert_post( $mapping );
+			$this->pull( $post, $mapping );
+			$this->set_action( "Import" );
+		}
+		return $post;
+	}
+
+	/**
+	 * Creates a post into which content can be imported.
+	 *
+	 * @param $mapping
+	 *
+	 * @return array|WP_Post|null
+	 */
+	function insert_post( $mapping ) {
+		$post = array( 'post_type' => $this->post_type
+		    , 'post_title' => $mapping->name
+			, 'post_name' => $mapping->name
+			, 'post_content' => $mapping->name
+			, 'post_date' => $mapping->modified
+			, 'post_date_gmt' => $mapping->modified
+			, 'post_modified' => $mapping->modified
+			, 'post_modified_gmt' => $mapping->modified
+			, 'post_status' => 'published'
+		);
+
+		$post_id = wp_insert_post( $post, true );
+        if ( is_wp_error( $post_id ) ) {
+            p( "oops" );
+            bw_trace2( $post_id, "wperror", false );
+        } else {
+	        p( "Post created: " . $post_id );
+	        $post = get_post( $post_id );
+        }
+        return $post;
 	}
 
 	function echo( $prefix=null, $value=null ) {
@@ -430,7 +491,11 @@ class OIK_clone_reconcile{
 		$summary   = [];
 		$summary[] = $this->action;
 		$summary[] = $mapping->slave;
-		$summary[] = date( "Y-m-d H:i:s", $mapping->cloned );
+		if ( $mapping->cloned ) {
+			$summary[] = date( "Y-m-d H:i:s", $mapping->cloned );
+		} else {
+			$summary[] = null;
+		}
 		$summary[] = $mapping->modified;
 		if ( $match ) {
 			$summary[] = $post->post_modified_gmt;
@@ -438,6 +503,11 @@ class OIK_clone_reconcile{
 			$summary[] = $post->ID;
 			$summary[] = $post->post_name;
 
+		} else {
+			$summary[] = null;
+			$summary[] = $this->post_type;
+			$summary[] = null;
+			$summary[] = $mapping->name;
 		}
 
 		$summarised = implode( ',', $summary );
