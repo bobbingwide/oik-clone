@@ -33,6 +33,7 @@ function oik_clone_master_pull( $slave_url, $master_post, $mapping ) {
 
 	$_REQUEST['mapping'] = $result->mapping;
 	$_REQUEST['master'] = $slave_url;
+	$_REQUEST['upload_dir'] = $result->upload_dir;
 	if ( is_object( $post )) {
 		oik_require( "admin/oik-clone-clone.php", "oik-clone" );
 		//print_r( $mapping );
@@ -62,6 +63,8 @@ function oik_clone_master_pull( $slave_url, $master_post, $mapping ) {
  * Return the post to be pulled as the payload to import
  *
  * The request contains the ID of the server post to be pulled
+ * In case they're pulling attachments we need to let them know the WordPress upload dir.
+ * This is required for pulling from WordPress Multi Site.
  *
  * @return  array object $payload and object j
  */
@@ -72,6 +75,7 @@ function oik_clone_lazy_pull() {
 	p( "Master: $master");
 	$payload = null;
 	$jmapping = null;
+	$upload_dir = null;
 
 	oik_require( "admin/oik-clone-actions.php", "oik-clone" );
 	oik_require( "admin/oik-clone-relationships.php", "oik-clone" );
@@ -83,8 +87,12 @@ function oik_clone_lazy_pull() {
 	$mapping = $relationships->mapping( $master );
 	$jmapping = json_encode( $mapping );
 
+	if ( $payload->post_type === 'attachment') {
+		$upload_dir = wp_upload_dir();
+	}
 
-	return ["payload" => $payload, "mapping" => $jmapping ] ;
+
+	return ["payload" => $payload, "mapping" => $jmapping, "upload_dir" => $upload_dir ] ;
 }
 
 
@@ -104,6 +112,7 @@ function oik_clone_return_payload_with_json( $payload_relationships ) {
 	$result = array( "narrative" => $narrative
 					, "payload" => $payload_relationships['payload']
 					, "mapping" => $payload_relationships['mapping']
+					, "upload_dir" => $payload_relationships['upload_dir']
 					);
 	$json = json_encode( $result );
 	e( $json );

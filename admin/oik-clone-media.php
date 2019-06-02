@@ -188,7 +188,7 @@ function oik_clone_load_media_file_base64( $contents ) {
  * @return array - the file array defining the temporary file created from the media or null 
  * 
  */
-function oik_clone_save_media_file( $time ) {
+function oik_clone_save_media_file( $time, $post=null ) {
   $media_file = null;
   $jmedia = bw_array_get( $_REQUEST, "media", null ); 
   if ( $jmedia ) {
@@ -211,8 +211,11 @@ function oik_clone_save_media_file( $time ) {
     }
   } else {
     $media_file = oik_clone_load_media_from_files( $time );
-  } 
-      
+    if ( null === $media_file ) {
+    	$media_file = oik_clone_pull_media_file( $time, $post );
+    }
+  }
+  bw_trace2( $media_file, "media_file", false );
   return( $media_file );
 }
 
@@ -333,6 +336,88 @@ function oik_clone_update_attachment_metadata( $target_id, $media_file ) {
 	if ( $attached_file ) {
 		update_post_meta( $target_id, "_wp_attached_file" , $attached_file );
 	}
+}
+
+/**
+ * Pulls the media file from the slave site
+ *
+ * @TODO Only pull the file if we don't already have it.
+ *
+ * @param $time
+ * @param $post - post object
+ */
+function oik_clone_pull_media_file( $time, $post ) {
+	bw_trace2();
+	include( ABSPATH . 'wp-admin/includes/file.php' );
+	$media_file = null;
+	$slave_file = oik_clone_get_slave_attachment_url( $post );
+
+	$name = basename( $slave_file );
+	//echo $slave_file;
+	$master_file = wp_upload_dir( $time);
+	if ( oik_clone_attachment_file_exists( $name, $time )) {
+		bw_trace2( $slave_file, "Already downloaded" );
+	} else {
+		$contents = file_get_contents( $slave_file );
+		if ( $contents ) {
+			$tmp_file = oik_clone_write_tmp_file( $name, $contents );
+			if ( $tmp_file ) {
+				$type       = mime_content_type( $tmp_file );
+				$media_file = oik_clone_write_media_file( $name, $type, $tmp_file, $time );
+			}
+		} else {
+			bw_trace2( $slave_file, "Download failed");
+		}
+	}
+
+	//$media_file = null;
+	//gob();
+	return $media_file;
+}
+
+/**
+ * Retrieves the slave file's attachment URL
+ *
+ * This needs to cater for WordPress Multi Site.
+ * We need to know the upload directory for the slave site.
+ * e.g. https://blocks.wp-a2z.org/wp-content/uploads/sites/10/2019/02/atomic-blocks-ab-accordion-block-initial.jpg
+ *
+ * @param $post
+ *
+ * @return string
+ */
+
+function oik_clone_get_slave_attachment_url( $post ) {
+	//$slave_file = $_REQUEST['master'];
+	//print_r( $_REQUEST['upload_dir']);
+	//$slave_file .= '/wp-content/uploads/';  // How can we be sure this is the right folder?
+
+	$slave_file = $_REQUEST['upload_dir']->baseurl;
+	$slave_file .= '/';
+	$slave_file .= $post->post_meta->_wp_attached_file[0];
+	bw_trace2( $slave_file, "Slave URL");
+	return $slave_file;
+}
+
+/**
+ * Determines if the attachment file is already present
+ *
+ * There should be no need to download the file if it's already present.
+ * Unless someone's changed it directly rather than through WordPress.
+ *
+ * @param $name
+ * @param $time
+ *
+ * @return bool
+ */
+function oik_clone_attachment_file_exists( $name, $time ) {
+	$upload_dir = wp_upload_dir( $time );
+	//print_r( $upload_dir );
+	$master_file = $upload_dir['path'];
+	$master_file .= '/';
+	$master_file .= $name;
+	$file_exists = file_exists( $master_file );
+	return $file_exists;
 }
 
 
