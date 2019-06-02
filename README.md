@@ -5,7 +5,7 @@
 * Tags: clone, compare, update, MultiSite
 * Requires at least: 5.0.3
 * Tested up to: 5.2.0
-* Stable tag: 2.0.0-alpha-20190515
+* Stable tag: 2.0.0-alpha-20190602
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 * Text Domain: oik-clone
@@ -28,8 +28,9 @@ Features:
 - clone virtual field - to display clones of current content
 
 New for version 2.0.0
--
-- Batch reconciliation
+
+* - Batch reconciliation: push and pull between the local installation and a selected slave site.
+
 
 
 oik-clone is dependent on the oik base plugin; using the oik-plugin as a library of functions sitting on top of WordPress.
@@ -135,6 +136,9 @@ Other methods will be implemented in future versions.
 3. Clone on update meta box - Previously cloned
 
 ## Upgrade Notice 
+# 2.0.0-alpha-20190602 
+Upgrade for batch reconciliation ( push or pull) including attachments
+
 # 2.0.0-alpha-20190515 
 Upgrade to support the batch pull capability.
 
@@ -211,6 +215,10 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 ## Changelog 
+# 2.0.0-alpha-20190602 
+* Added: Add logic to pull (new) posts from the slave that haven't been cloned from the master, https://github.com/bobbingwide/oik-clone/issues/34
+* Changed:For reconciliation: add verbose and post-type parameters. Add summarise() method.
+
 # 2.0.0-alpha-20190515 
 * Added: Batch reconciliation of modified posts with a selected slave server - push and pull,https://github.com/bobbingwide/oik-clone/issues/34
 * Changed: Implement wp_insert_post_data and wp_insert_attachment_data filters to set required post_modified and post_modified_gmt
