@@ -356,9 +356,12 @@ We really only need
    */
   function find_term_in_parent( $term, $current_parent ) {
   	//bw_trace2( $this->target_tree, "Target tree" );
-    $args = array( "parent" => $current_parent 
-                 , "slug" => $term->slug
-                 );
+    $args = array( "parent" => $current_parent );
+    if ( $term->term_id === $term->slug ) {
+    	$args['name'] = $term->name;
+    } else {
+	    $args['slug'] = $term->slug;
+    }
     $list = wp_list_filter( $this->target_tree, $args );
     bw_trace2( $list, "List");
     $found = current( $list );
