@@ -348,7 +348,7 @@ function oik_clone_update_attachment_metadata( $target_id, $media_file ) {
  */
 function oik_clone_pull_media_file( $time, $post ) {
 	bw_trace2();
-	include( ABSPATH . 'wp-admin/includes/file.php' );
+	include_once( ABSPATH . 'wp-admin/includes/file.php' );
 	$media_file = null;
 	$slave_file = oik_clone_get_slave_attachment_url( $post );
 
