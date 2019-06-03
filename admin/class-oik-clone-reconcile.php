@@ -322,6 +322,7 @@ class OIK_clone_reconcile{
 				$this->push( $post, $mapping );
 			} else {
 				$this->echo( "Slave changed?", $slave_changed_since_clone );
+				$this->pull( $post, $mapping );
 				$this->set_action( "????");
 			}
 		} elseif ( $post->post_modified_gmt < $mapping->modified ) {
