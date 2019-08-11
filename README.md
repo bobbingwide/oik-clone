@@ -4,8 +4,8 @@
 * Donate link: https://www.oik-plugins.com/oik/oik-donate/
 * Tags: clone, compare, update, MultiSite
 * Requires at least: 5.0.3
-* Tested up to: 5.2.0
-* Stable tag: 2.0.0-alpha-20190602
+* Tested up to: 5.2.2
+* Stable tag: 2.0.0-beta-20190811
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 * Text Domain: oik-clone
@@ -136,6 +136,9 @@ Other methods will be implemented in future versions.
 3. Clone on update meta box - Previously cloned
 
 ## Upgrade Notice 
+# 2.0.0-beta-20190811 
+Upgrade for improved logic when pulling content during batch reconciliation
+
 # 2.0.0-alpha-20190602 
 Upgrade for batch reconciliation ( push or pull) including attachments
 
@@ -215,9 +218,15 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 ## Changelog 
+# 2.0.0-beta-20190811 
+* Changed: Add support for productID parameter in shortcodes,https://github.com/bobbingwide/oik-clone/issues/38
+* Fix: In oik_clone_pull_media_file use include_once for file.php
+* Changed: Perform pull when the action is '????'. This should correct the differences in the post_modified_gmt
+* Fixed: Allow for terms where the slug matches the term_id. e.g. when name is &amp;,https://github.com/bobbingwide/oik-clone/issues/33
+
 # 2.0.0-alpha-20190602 
 * Added: Add logic to pull (new) posts from the slave that haven't been cloned from the master, https://github.com/bobbingwide/oik-clone/issues/34
-* Changed:For reconciliation: add verbose and post-type parameters. Add summarise() method.
+* Changed: For reconciliation: add verbose and post-type parameters. Add summarise() method.
 
 # 2.0.0-alpha-20190515 
 * Added: Batch reconciliation of modified posts with a selected slave server - push and pull,https://github.com/bobbingwide/oik-clone/issues/34
