@@ -153,6 +153,7 @@ abstract class OIK_clone_informal_relationships {
                                , "post__not_in"
                                , "meta_value"
                                , "meta_value_num"
+	                            , 'productID'
                                );
     // $this->valid_tokens = apply_filters( "oik_clone_valid_tokens", $this->valid_tokens );
     $this->valid_tokens = array_flip( $this->valid_tokens );                           

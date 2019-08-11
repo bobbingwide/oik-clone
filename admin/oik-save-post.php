@@ -215,7 +215,7 @@ function oik_clone_determine_slave_id( $target, $result ) {
  *
  */
 function oik_clone_update_slave_target( $id, $slave, $slave_id, $modified_gmt ) {
-	$post_meta = get_post_meta( $id, "_oik_clone_ids", false );
+	$post_meta = get_post_meta( $id, "_oik_clone_ids", false);
 	bw_trace2( $post_meta, "post_meta", true, BW_TRACE_DEBUG );
 	if ( $post_meta ) {
 		$post_meta[0][ $slave ] = oik_clone_id_cloned( $slave_id, $modified_gmt );
