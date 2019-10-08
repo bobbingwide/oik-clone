@@ -39,10 +39,18 @@ function oik_cloned( $atts=null, $content=null, $tag=null ) {
  * @param array $atts - shortcode attributes incl ['id'] matching $post_id
  */
 function oik_cloned_display_links( $post_id, $atts ) {
-  oik_require( "admin/oik-clone-meta-box.php", "oik-clone" );
-  $clones = get_post_meta( $post_id, "_oik_clone_ids", false );
-  $cloned = oik_reduce_from_serialized(  $clones );
-  if ( count( $cloned ) ) {
+	oik_require( "admin/class-oik-clone-meta-clone-ids.php", "oik-clone" );
+	$clone_meta = new OIK_clone_meta_clone_ids();
+	$cloned = $clone_meta->get_clone_info( $post_id );
+
+  //$clones = get_post_meta( $post_id, "_oik_clone_ids", false );
+  //$cloned = oik_reduce_from_serialized(  $clones );
+
+
+
+
+
+	if ( count( $cloned ) ) {
 		$label = bw_array_get_dcb( $atts, "label", "Clones of: ", "__", "oik-clone" );
 		if ( $label !== false ) {
 			e( $label );
@@ -79,10 +87,30 @@ function oik_cloned_display_links( $post_id, $atts ) {
 				br();
 				e( bw_format_date( $cloned_date, "M j, Y @ G:i" ) );
 			}
+			oik_cloned_display_dnc(  $post_id, $server );
       etag( "li" );
     }
     bw_el( $uo );
   }
+}
+
+/**
+ * @param string $shortcode
+ *
+ * @return string
+ */
+function oik_cloned_display_dnc( $post_id, $server ) {
+	static $clone_meta_dnc = null;
+	if ( null === $clone_meta_dnc ) {
+		oik_require( "admin/class-oik-clone-meta-clone-dnc.php", "oik-clone" );
+		$clone_meta_dnc = new OIK_clone_meta_clone_dnc();
+		$clone_meta_dnc->get_dnc_info( $post_id );
+	}
+	if ( $clone_meta_dnc->is_slave_dnc( $server ) ) {
+		
+		e( ' - Do Not Clone');
+	}
+
 }
 
 /*

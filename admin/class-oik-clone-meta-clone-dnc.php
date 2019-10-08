@@ -24,7 +24,7 @@
 class OIK_clone_meta_clone_dnc {
 
 	public $post_id = null;
-	//public $clones;
+	public $dncs; // Do Not Clones array for selected post
 
 	function __construct() {
 		$this->set_post_id( null );
@@ -59,6 +59,7 @@ class OIK_clone_meta_clone_dnc {
 		$oik_clone_dnc = $this->get_post_meta( $ID );
 		//print_r( $oik_clone_dnc );
 		$oik_clone_dnc = $this->reduce_from_serialized( $oik_clone_dnc );
+		$this->dncs = $oik_clone_dnc;
 		return $oik_clone_dnc;
 
 	}
@@ -93,21 +94,29 @@ class OIK_clone_meta_clone_dnc {
 	 * - create cb with link
 	 */
 	function display_cbs( $ID, $slaves ) {
-		$dncs = $this->get_dnc_info( $this->post_id );
+		//$dncs = $this->get_dnc_info( $this->post_id );
 		//gob();
 		//$cloned = $this->reduce_from_serialized( $clones );
 		//bw_trace2( null, null, true, BW_TRACE_DEBUG );
 		//$cloned = oik_reduce_from_serialized(  $clones );
 		foreach ( $slaves as $key =>  $slave ) {
-			$cloned_dnc = $this->is_slave_dnc( $dncs, $slave );
+			$cloned_dnc = $this->is_slave_dnc( $slave );
 			oik_clone_display_dnc( $slave, $cloned_dnc );
 		}
 
 
 	}
 
-	function is_slave_dnc( $dncs, $slave ) {
 
+	/**
+	 * @param $dncs
+	 * @param $slave
+	 *
+	 * @return bool
+	 */
+
+	function is_slave_dnc( $slave ) {
+		$dncs = $this->dncs;
 		//print_r( $dncs );
 		//echo $slave;
 		$flipped = array_flip( $dncs );
@@ -115,6 +124,8 @@ class OIK_clone_meta_clone_dnc {
 
 		return $dnc;
 	}
+
+
 
 
 	/**
