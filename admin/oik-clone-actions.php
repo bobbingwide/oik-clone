@@ -245,6 +245,7 @@ function oik_clone_delete_all_post_meta( $target ) {
   $post_meta = get_post_meta( $target );
   unset( $post_meta['_oik_clone_ids'] );
   unset( $post_meta['_wp_attachment_metadata'] );
+  unset( $post_meta['_oik_clone_dnc'] );
 	
   $post_meta = apply_filters( "oik_clone_filter_all_post_meta", $post_meta );
   bw_trace2( $post_meta, "post_meta", true );
@@ -267,6 +268,7 @@ function oik_clone_insert_all_post_meta( $post, $target ) {
   $post_meta = (array) $post->post_meta;
   unset( $post_meta['_oik_clone_ids'] );
   unset( $post_meta['_wp_attachment_metadata'] );
+  unset( $post_meta['_oik_clone_dnc'] );
   bw_trace2( $post_meta, "post_meta", true );
   foreach ( $post_meta as $key=> $meta ) {
     bw_trace2( $meta, $key, false );
