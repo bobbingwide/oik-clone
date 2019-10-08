@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2015
+<?php // (C) Copyright Bobbing Wide 2015-2019
 
 /**
  * Class OIK_clone_tree_node 
@@ -200,11 +200,11 @@ class OIK_clone_tree_node {
 	 * $to_clone shows the current status of cloning
 	 * which may include servers to which we no longer want to clone
 	 * 
-	 * We match this against the $servers array
-	 * 
-	 * We decide if we need to clone based on $modified_gmt
+	 * We match this against the $servers array,
+	 * having taken into account those servers marked as Do Not Clone.
+	 *
+	 * We then decide if we need to clone based on $modified_gmt
 	 * which we assume to be 0 if it's not set.
-	 * 
 	 * 
 	 * @TODO How do we remove these?
 	 * @TODO Eventually change the code back to cater for not having the last modified data set
@@ -212,29 +212,51 @@ class OIK_clone_tree_node {
 	 * @param array $servers
 	 * @param integer $modified_gmt
 	 * @return array targets to which the post should be cloned
-	 *
 	 */
 	function to_clone( $servers, $modified_gmt ) {
 		$cloned = $this->get_cloned();
 		$to_clone = array();
 		foreach ( $servers as $server ) {
-			$clone_info = bw_array_get( $cloned, $server, null ); 
-			if ( $clone_info ) {
-				if ( is_array( $clone_info ) ) {
-					$cloned_date = $clone_info['cloned'];
-        } else {
-					$cloned_date = $modified_gmt; // Change back to 0 when enough updates have been done.
-				}
-				if ( $cloned_date < $modified_gmt ) {
-					$to_clone[ $server ] = $clone_info;
-        }
+
+			$is_dnc = $this->is_slave_dnc( $server );
+			if ( $is_dnc ) {
+				// Don't add it to the array of servers to clone.
 			} else {
-				$to_clone[$server] = null;
+				$clone_info = bw_array_get( $cloned, $server, null );
+				if ( $clone_info ) {
+					if ( is_array( $clone_info ) ) {
+						$cloned_date = $clone_info['cloned'];
+					} else {
+						$cloned_date = $modified_gmt; // Change back to 0 when enough updates have been done.
+					}
+					if ( $cloned_date < $modified_gmt ) {
+						$to_clone[ $server ] = $clone_info;
+					}
+				} else {
+					$to_clone[ $server ] = null;
+				}
 			}
 			  
 		}
 		bw_trace2( $to_clone, "to_clone", true, BW_TRACE_DEBUG );
 		return( $to_clone );
+	}
+
+	/**
+	 * Determine if the slave is marked as Do Not Clone
+	 *
+	 * @param string $server
+	 * @return bool - true if the slave is Do Not Clone
+	 */
+	function is_slave_dnc( $server ) {
+		static $clone_meta_dnc = null;
+		if ( null === $clone_meta_dnc ) {
+			oik_require( "admin/class-oik-clone-meta-clone-dnc.php", "oik-clone" );
+			$clone_meta_dnc = new OIK_clone_meta_clone_dnc();
+		}
+		$clone_meta_dnc->get_dnc_info( $this->id );
+		$is_dnc = $clone_meta_dnc->is_slave_dnc( $server );
+		return $is_dnc;
 	}
 	
 	/**
@@ -259,11 +281,29 @@ class OIK_clone_tree_node {
 	 */ 
 	function cloneme() {
 		$slaves = $this->get_targets();
+		$slaves = $this->remove_dncs( $slaves );
 		if ( count( $slaves ) ) {
 			p( "Cloning: {$this->id} " );
 			oik_require( "admin/oik-save-post.php", "oik-clone" );
 			oik_clone_clone( $this->id, false, $slaves );
 		}
+	}
+
+	/**
+	 * Remove Do Not Clone slaves from the array of targets
+	 *
+	 * @param $slaves
+	 * @return array
+	 */
+	function remove_dncs( $slaves ) {
+		$to_be_cloned = array();
+		foreach ( $slaves as $server ) {
+			$is_dnc = $this->is_slave_dnc( $server );
+			if ( !$is_dnc ) {
+				$to_be_cloned[] = $server;
+			}
+		}
+		return $to_be_cloned;
 	}
 	
 	/**
