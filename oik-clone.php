@@ -3,9 +3,9 @@
 Plugin Name: oik-clone
 Plugin URI: https://www.oik-plugins.com/oik-plugins/oik-clone-clone-your-wordpress-content
 Description: Clone your WordPress content 
-Version: 2.0.0-beta-20190811
+Version: 2.0.0-beta-20191008
 Author: bobbingwide
-Author URI: https://www.oik-plugins.com/author/bobbingwide
+Author URI: https://bobbingwide.com/about-bobbing-wide
 Text Domain: oik-clone
 Domain Path: /languages/
 License: GPLv2 or later
@@ -77,6 +77,7 @@ function oik_clone_oik_admin_menu() {
   add_action( "admin_head-$hook", "oik_clone_admin_head" );
   
   if ( !defined('DOING_AJAX') ) {
+  	add_action( 'save_post', 'oik_clone_save_post_dnc', 10, 3 );
     add_action( "save_post", "oik_clone_save_post", 10, 3 );
     add_action( 'add_meta_boxes', 'oik_clone_add_meta_boxes', 10, 2 );
     add_action( "edit_attachment", "oik_clone_edit_attachment", 10, 1 );
@@ -195,6 +196,26 @@ function oik_clone_save_post( $id, $post, $update ) {
 }
 
 /**
+ * Save Do Not Clone values
+ *
+ * Invoke as a lazy function performed before any cloning.
+ *
+ * @param ID $id - the ID of the post being updated
+ * @param post $post - the post object
+ * @param bool $update - true more often than not
+ */
+function oik_clone_save_post_dnc( $id, $post, $update ) {
+	$dnc = bw_array_get( $_REQUEST, 'dnc', null );
+	bw_trace2( $dnc, "dnc");
+	if ( null !== $dnc && post_type_supports( $post->post_type, 'clone' ) ) {
+		oik_require( 'admin/oik-save-post-dnc.php', 'oik-clone' );
+		oik_clone_lazy_save_post_dnc( $id, $post, $update );
+	} else {
+		// Either no Do Not Clones or cloning not supported for this post type
+	}
+}
+
+/**
  * Implement "add_meta_boxes" for oik-clone
  *
  * Only add the box for post_type's that support 'clone'.
@@ -209,7 +230,8 @@ function oik_clone_add_meta_boxes( $post_type, $post) {
   $clone = post_type_supports( $post_type, "clone" );
   if ( $clone ) {
     oik_require( "admin/oik-clone-meta-box.php", "oik-clone" );
-    add_meta_box( 'oik_clone', __( "Clone on update", 'oik-clone' ), 'oik_clone_box', null, 'side', 'default'  );
+    add_meta_box( 'oik_dnc', __( 'Do Not Clone', 'oik-clone'), 'oik_clone_dnc_box', null, 'side', 'default' );
+    add_meta_box( 'oik_clone', __( "Clone on update", 'oik-clone' ), 'oik_clone_box', null, 'side', 'default' );
   }  
 }
 

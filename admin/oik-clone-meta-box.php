@@ -1,18 +1,17 @@
 <?php // (C) Copyright Bobbing Wide 2015, 2019
 
-
 /**
  * Display the oik-clone metabox
  *
- * - This should be a series of checkboxes, one for each target site 
- * - By default the checkboxes should be deselected since we don't want to update the slaves every time we make a change
+ * - This should be a series of checkboxes, one for each target site.
+ * - The checkbox is ticked by the user when they want to clone the content on update.
+ * - By default the column of checkboxes should be deselected since we don't want to update the slaves every time we make a change
  * - When the user selects "Update" and at least one of the checkboxes is checked then cloning will be performed
- * 
- * cb host - if slave post is set then we make it a simple link
  *
- * x http://qw/wordpress ( cloned )
- * x http://oik-plugins.com ( cloned )
- *
+ * ```
+ * x https://qw/wordpress ( cloned )
+ * x https://oik-plugins.com ( cloned )
+ * ```
  *
  * Messages that may be displayed to the user are:
  * - Enable clone to enable cloning of this post type
@@ -22,7 +21,7 @@
  * Buttons:
  * Clone - not necessary since we use publish to achieve the same thing?
  * Synchronize - with selected
- * Servers - link to wp-admin/admin.phppage=oik-clone&tab=servers
+ * Servers - link to wp-admin/admin.php?page=oik-clone&tab=servers
  * Add slave - link to wp-admin/admin.php?page=
  * 
  * 
@@ -35,12 +34,13 @@ function oik_clone_box( $post, $metabox ) {
   oik_require( "admin/oik-save-post.php", "oik-clone" );
   $clone = post_type_supports( $post->post_type, "clone" );
   if ( $clone ) {
+  	oik_require( 'admin/class-oik-clone-meta-clone-ids.php', 'oik-clone');
+
     $slaves = oik_clone_get_slaves();
-    $clones = get_post_meta( $post->ID, "_oik_clone_ids", false );
-    //print_r( $clones );
-    //print_r( $slaves );
-    oik_clone_display_cbs( $slaves, $clones );
-    oik_clone_check_parent_cloned( $post, $slaves );
+    $clone_meta = new OIK_clone_meta_clone_ids();
+	$clones = $clone_meta->get_clone_info( $post->ID );
+	$clone_meta->display_cbs( $slaves );
+	oik_clone_check_parent_cloned( $post, $slaves );
   } else {
     p( "Cloning not supported for post types that do not support 'clone'" );
   }
@@ -55,42 +55,10 @@ function oik_clone_check_parent_cloned( $post, $slaves ) {
     if ( !count( $clones ) ) {
       echo "<p>Please clone the parent first</p>" ;
     }
-  }    
-    
-}
-                                                    
-/**
- * Display the checkboxes for cloning
- * 
- * For each slave
- * - see if it's been cloned
- * - if so, create cb with link, and remove from the clone array
- * - if not, just create the cb
- * 
- * For each remaining clone
- * - create cb with link
- */                                                    
-function oik_clone_display_cbs( $slaves, $clones ) {
-  bw_trace2( null, null, true, BW_TRACE_DEBUG );
-  $cloned = oik_reduce_from_serialized(  $clones );
-  foreach ( $slaves as $key =>  $slave ) {
-		
-    //$cloned_id = bw_array_get( $cloned, $slave, null );
-		$cloned_id = oik_clone_get_slave_id( $cloned, $slave );
-		$cloned_date = oik_clone_get_slave_cloned( $cloned, $slave );
-		
-    unset( $cloned[ $slave ] );
-    oik_clone_display_cb( $slave, $cloned_id, $cloned_date );
-  }
-  if ( count( $cloned ) ) {
-    echo "<br />Previously cloned" ;
-    foreach ( $cloned as $slave => $cloned_item ) {
-			$cloned_id = oik_clone_get_slave_id( $cloned, $slave );
-			$cloned_date = oik_clone_get_slave_cloned( $cloned, $slave ); 
-      oik_clone_display_cb( $slave, $cloned_id, $cloned_date );
-    }
   }
 }
+
+/* oik_clone_display_cbs is now implemented in OIK_clone_meta_clone_ids::display_cbs */
 
 /**
  * Return the slave id from the _oik_clone_ids post meta structure
@@ -149,6 +117,17 @@ function oik_clone_get_slave_cloned( $cloned, $slave ) {
 	return( $cloned );
 }
 
+function oik_clone_get_slave_dnc( $cloned, $slave ) {
+	$target = bw_array_get( $cloned, $slave, null );
+	if ( is_array( $target ) ) {
+		$dnc = bw_array_get( $target, "dnc", null );
+	} else {
+		$dnc = null; ;
+	}
+	return $dnc;
+
+}
+
 function oik_clone_get_cloned_date( $cloned_date ) {
 	if ( $cloned_date ) {
 		$formatted = "<br />";
@@ -173,7 +152,7 @@ function oik_clone_get_cloned_date( $cloned_date ) {
  * @param integer $cloned_date - the post modified date when last cloned
  * 
  */  
-function oik_clone_display_cb( $slave, $clone_id, $cloned_date=0 ) {
+function oik_clone_display_cb( $slave, $clone_id, $cloned_date=0, $dnc=null ) {
   bw_trace2();
   echo "<br />";
   $name = "slaves[$slave]";
@@ -185,6 +164,25 @@ function oik_clone_display_cb( $slave, $clone_id, $cloned_date=0 ) {
   echo $icheckbox;
   echo $lab;
   //echo $clone_id ;
+}
+
+function oik_clone_display_dnc( $slave, $dnc ) {
+	bw_trace2();
+	echo "<br />";
+	$name = "dnc[$slave]";
+	//$text = oik_clone_get_label_or_link( $slave, $clone_id );
+	//$text .= oik_clone_get_cloned_date( $cloned_date );
+	if ( $dnc ) {
+		$text = __( sprintf( '%1$s: Do not clone', $slave ), 'oik-clone' );
+	} else {
+		$text = __( sprintf( '%1$s: OK to clone', $slave ), 'oik-clone' );
+	}
+	$lab = label( $name, $text );
+	$value = $dnc;
+	$icheckbox = icheckbox( $name, $value );
+	echo $icheckbox;
+	echo $lab;
+
 }
 
 /**
@@ -209,7 +207,6 @@ function oik_clone_get_label_or_link( $server, $clone_id ) {
   }
   return( $label );
 }
-    
 
 /**
  * Reduce a serialised array to a simpler version
@@ -227,8 +224,35 @@ function oik_reduce_from_serialized( $serialized ) {
   }
   bw_trace2( $reduced, "reduced", true ); //, BW_TRACE_DEBUG );
   return( $reduced );
-}   
-    
-  
+}
 
+/**
+ * Display the oik-clone Do Not Clone metabox
+ *
+ * - This should be a series of checkboxes, one for each target site.
+ * - The checkbox indicates if the post has been marked as Do Not Clone to a particular slave
+ * - When the user selects update the values are saved
+ *
+ * ```
+ * x https://qw/wordpress: Do not clone
+ *   https://oik-plugins.com OK to clone
+ * ```
+ *
+ * @param object $post - the post object
+ * @param object $metabox - the metabox object
+ */
+function oik_clone_dnc_box( $post, $metabox ) {
+	oik_require( "admin/oik-save-post.php", "oik-clone" );
+	$clone = post_type_supports( $post->post_type, "clone" );
+	if ( $clone ) {
+		oik_require( 'admin/class-oik-clone-meta-clone-dnc.php', 'oik-clone');
 
+		$slaves = oik_clone_get_slaves();
+		$clone_meta = new OIK_clone_meta_clone_dnc();
+		$clones = $clone_meta->get_dnc_info( $post->ID );
+		$clone_meta->display_cbs( $post->ID, $slaves );
+
+	} else {
+		p( "Cloning not supported for post types that do not support 'clone'" );
+	}
+}
