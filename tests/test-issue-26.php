@@ -24,7 +24,7 @@ class Tests_issue_26 extends BW_UnitTestCase {
 	 *
 	 * - ensure any database updates are rolled back
 	 */
-	function setUp() {
+	function setUp() : void {
 		parent::setUp();
 		oik_require( "admin/oik-clone-relationships.php", "oik-clone");
 	}
