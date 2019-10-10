@@ -58,6 +58,23 @@ class Tests_issue_38 extends BW_UnitTestCase {
 		return $test3;
 	}
 
+	function get_test4() {
+		$test4 = '<!-- wp:columns -->\n<div class="wp-block-columns">
+<!-- wp:column {"width":81} -->\n<div class="wp-block-column" style="flex-basis:81%">
+<!-- wp:image {"id":3263,"sizeSlug":"large"} -->\n
+<figure class="wp-block-image size-large">
+<img src="https://s.b/wordpress/wp-content/uploads/2019/05/Marmalade-bored-1.jpg" alt="Two cats - two stools" class="wp-image-3263"/>
+<figcaption>Singing for your dinner?\r\nOr are you just bored?\r\n</figcaption></figure>\n
+<!-- /wp:image -->
+</div>\n<!-- /wp:column -->\n\n
+<!-- wp:column {"width":19} -->\n<div class="wp-block-column" style="flex-basis:19%">
+<!-- wp:paragraph -->\n<p>This is the right hand column.</p>\n
+<!-- /wp:paragraph --></div>\n
+<!-- /wp:column --></div>\n
+<!-- /wp:columns -->';
+		return $test4;
+	}
+
 
 	/**
 	 * Here's an example of the structure of the block.
@@ -121,7 +138,8 @@ class Tests_issue_38 extends BW_UnitTestCase {
 		$test1 = $this->get_test1();
 		$test2 = $this->get_test2();
 		$test3 = $this->get_test3();
-		$tests = array( $test1, $test2, $test3 );
+		$test4 = $this->get_test4();
+		$tests = array( $test1, $test2, $test3, $test4 );
 		foreach ( $tests as $content ) {
 			$oik_clone_block_relationships = new OIK_clone_block_relationships();
 			$blocks                        = $oik_clone_block_relationships->parse_blocks( $content );
@@ -143,11 +161,14 @@ class Tests_issue_38 extends BW_UnitTestCase {
 		$test1 = $this->get_test1();
 		$test2 = $this->get_test2();
 		$test3 = $this->get_test3();
+		$test4 = $this->get_test4();
 
 		$tests = array( [ "blah", []]
 		, [ $test1, [15086] ]
 		, [ $test2, [] ]
 		, [ $test3, [] ]
+		, [ $test4, [3263] ]	 // Not 19 or 81
+		, [ $test1 . $test4, [3263, 15086] ]
 		);
 		foreach ( $tests as $test ) {
 			$IDs = [];
@@ -163,22 +184,27 @@ class Tests_issue_38 extends BW_UnitTestCase {
 		$test1 = $this->get_test1();
 		$test2 = $this->get_test2();
 		$test3 = $this->get_test3();
+		$test4 = $this->get_test4();
 
 		$tests = array( [ "blah", [], [] ]
 		, [ $test1, [15086], [68051] ]
 		, [ $test2, [], [] ]
 		, [ $test3, [], [] ]
+		, [ $test4, [3263], [64] ]
+		, [ $test1 . $test4, [ 3263, 15086], [64, 68051]]
 		);
-		$mapping = array( '15086' => array( 'id' => 68051, 'cloned' => 1570724987 ) );
+		$mapping = array( '15086' => array( 'id' => 68051, 'cloned' => 1570724987 ),
+						'3263' => array( 'id' => 64, 'cloned' => 'hmm' )
+		);
 		foreach ( $tests as $test ) {
 			$IDs = [];
 			$post->post_content = $test[0];
 			$IDs = $oik_clone_block_relationships->filter_block_attributes( $IDs, $post );
-			$this->assertEquals( $IDs, $test[1] );
+			$this->assertEquals( $test[1], $IDs);
 			$oik_clone_block_relationships->apply_mapping( $mapping );
 			$mapped_IDs = $oik_clone_block_relationships->find_IDs();
 			//print_r( $mapped_IDs );
-			$this->assertEquals( $mapped_IDs, $test[2]);
+			$this->assertEquals( $test[2], $mapped_IDs );
 
 		}
 
@@ -199,15 +225,22 @@ class Tests_issue_38 extends BW_UnitTestCase {
 		$test1 = $this->get_test1();
 		$test2 = $this->get_test2();
 		$test3 = $this->get_test3();
+		$test4 = $this->get_test4();
 
 		$tests = array( [ "blah", [], [] ]
 		, [ $test1, [15086], [68051] ]
 		, [ $test2, [], [] ]
 		, [ $test3, [], [] ]
+		, [ $test4, [3263], [64]]
+		, [ $test1 . $test4, [ 3263, 15086], [64, 68051]]
 		);
 
-		$mapping = array( '15086' => array( 'id' => 68051, 'cloned' => 1570724987 ) );
-		$reverse_mapping = array( '68051' => array( 'id' => 15086, 'cloned' => 'ignored') );
+		$mapping = array( '15086' => array( 'id' => 68051, 'cloned' => 1570724987 ),
+		                  '3263' => array( 'id' => 64 )
+		);
+		$reverse_mapping = array( '68051' => array( 'id' => 15086, 'cloned' => 'ignored'),
+			'64' => array( 'id' => 3263 )
+		);
 
 		foreach ( $tests as $test ) {
 

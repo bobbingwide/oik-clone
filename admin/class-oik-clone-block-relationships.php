@@ -12,6 +12,8 @@ class OIK_clone_block_relationships {
 	private $blocks; /* Parsed content */
 	private $IDs; /* Array of related IDs */
 
+	//private $valid_tokens;
+
 	function __construct() {
 		$this->blocks = null;
 		$this->IDs = [];
@@ -34,8 +36,6 @@ class OIK_clone_block_relationships {
 		$content = $post->post_content;
 		$blocks = $this->parse_blocks( $content );
 		$this->find_IDs();
-		$this->IDs = array_unique( $this->IDs );
-		sort( $this->IDs );
 		bw_trace2( $this->IDs, "IDs", false, BW_TRACE_DEBUG );
 		return $this->IDs;
 	}
@@ -46,6 +46,8 @@ class OIK_clone_block_relationships {
 		foreach ( $blocks as $key => $block ) {
 			$this->find_blocks_ids( $block );
 		}
+		$this->IDs = array_unique( $this->IDs );
+		sort( $this->IDs );
 		return $this->IDs;
 	}
 
@@ -70,11 +72,25 @@ class OIK_clone_block_relationships {
 	 */
 	function find_attrs_ids( $block ) {
 		foreach ( $block['attrs'] as $key => $value ) {
-			if ( is_numeric( $value ) ) {
+			if ( $this->check_token( $key ) ) {
 				$this->add_id( $value );
 			}
 		}
 	}
+
+	function check_token( $token ) {
+		static $oik_clone_informal_relationships = null;
+		if ( !$oik_clone_informal_relationships ) {
+			oik_require( 'admin/class-oik-clone-informal-relationships.php', 'oik-clone');
+			oik_require( 'admin/class-oik-clone-informal-relationships-source.php', 'oik-clone');
+
+			$oik_clone_informal_relationships = new OIK_clone_informal_relationships_source( null );
+			$oik_clone_informal_relationships->set_valid_tokens();
+		}
+		$in_context = $oik_clone_informal_relationships->check_token( $token );
+		return $in_context;
+	}
+
 
 	function add_id( $ID ) {
 		$this->IDs[] = $ID;
@@ -154,7 +170,6 @@ class OIK_clone_block_relationships {
 	function apply_mapping( $mapping ) {
 		$this->save_mapping( $mapping );
 		$this->map_ids();
-
 	}
 
 	/**
@@ -216,11 +231,12 @@ class OIK_clone_block_relationships {
      */
 	function map_attrs_ids( &$block ) {
 		foreach ( $block['attrs'] as $key => $value ) {
-			if ( is_numeric( $value ) ) {
+			if ( $this->check_token( $key ) ) {
 				$block['attrs'][ $key ] = $this->get_target( $value );
 			}
 		}
 		//print_r( $block );
 	}
+
 
 }
