@@ -120,11 +120,13 @@ function oik_clone_apply_mapping( $post ) {
   // Now apply filters to apply the informal relationship mapping to the post
   add_filter( "oik_clone_apply_informal_mapping", "oik_clone_apply_informal_relationship_mapping", 10, 2 );
   add_filter( "oik_clone_apply_informal_mapping", "oik_clone_apply_informal_relationship_mapping_urls", 11, 2 );
+  add_filter( 'oik_clone_apply_informal_mapping', 'oik_clone_apply_informal_relationship_mapping_blocks', 12, 2);
   $post = apply_filters( "oik_clone_apply_informal_mapping", $post, $mapping->mapping );
   remove_filter( "oik_clone_apply_informal_mapping", "oik_clone_apply_informal_relationship_mapping", 10 );
-  remove_filter( "oik_clone_apply_informal_mapping", "oik_clone_apply_informal_relationship_mapping_urls", 11 );
+	remove_filter( "oik_clone_apply_informal_mapping", "oik_clone_apply_informal_relationship_mapping_urls", 11 );
+	remove_filter( "oik_clone_apply_informal_mapping", "oik_clone_apply_informal_relationship_mapping_blocks", 12 );
 
-  return( $post );
+	return( $post );
 }
 
 /**
@@ -183,6 +185,29 @@ function oik_clone_apply_informal_relationship_mapping_urls( $post, $target_ids 
   $post->post_excerpt = str_replace( $master, $target, $post->post_excerpt );
   bw_trace2( $post, "post", false, BW_TRACE_VERBOSE );
   return $post ;
+}
+
+/**
+ *
+ * Implement "oik_clone_apply_informal_mapping" to the target post IDs within block's attributes
+ *
+ * At the target we apply the mapping to the content when
+ * - we have a candidate post ID
+ * - there is a known mapping in table
+ * - the ID passes the tests
+ *
+ * @param object $post - the post object
+ * @param array $target_ids - the mapping from source to target IDs
+ * @return object - the updated post object
+ *
+ */
+function oik_clone_apply_informal_relationship_mapping_blocks( $post, $target_ids ) {
+	oik_require( "admin/class-oik-clone-block-relationships.php", "oik-clone" );
+	$oik_clone_block_relationships = new OIK_clone_block_relationships( );
+	//$target_informal_relationships->set_mapping( $target_ids );
+	$post->post_content = $oik_clone_block_relationships->update_target( $post, $target_ids );
+	//$post->post_excerpt = $target_informal_relationships->map_ids( $post->post_excerpt );
+	return( $post );
 }
 
 function oik_clone_get_master_schemeless() {

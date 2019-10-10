@@ -270,7 +270,40 @@ class Tests_issue_38 extends BW_UnitTestCase {
 
 	}
 
+	/**
+	 * Do we need to test this logic?
+	 * It's a method so I suppose s
+	 * It's just a simpler version of test_parse_map_reform ?
+	 */
+	function test_update_target() {
+		$oik_clone_block_relationships = new OIK_clone_block_relationships();
+		$post = new stdClass;
+		$test1 = $this->get_test1();
+		$test2 = $this->get_test2();
+		$test3 = $this->get_test3();
+		$test4 = $this->get_test4();
 
+		$tests = array( [ "blah", [], [] ]
+		, [ $test1, [15086], [68051] ]
+		, [ $test2, [], [] ]
+		, [ $test3, [], [] ]
+		, [ $test4, [3263], [64]]
+		, [ $test1 . $test4, [ 3263, 15086], [64, 68051]]
+		);
 
+		$mapping = array( '15086' => array( 'id' => 68051, 'cloned' => 1570724987 ),
+		                  '3263' => array( 'id' => 64 )
+		);
+		$reverse_mapping = array( '68051' => array( 'id' => 15086, 'cloned' => 'ignored'),
+		                          '64' => array( 'id' => 3263 )
+		);
 
+		foreach ( $tests as $test ) {
+
+			$post->post_content = $test[0];
+			$target_content = $oik_clone_block_relationships->update_target( $post, $mapping );
+			$round_trip_content = $oik_clone_block_relationships->update_target( $post, $reverse_mapping );
+			$this->assertEquals( $test[0], $round_trip_content );
+		}
+	}
 }

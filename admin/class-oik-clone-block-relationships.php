@@ -238,5 +238,12 @@ class OIK_clone_block_relationships {
 		//print_r( $block );
 	}
 
+	function update_target( $post, $target_ids ) {
+		$this->parse_blocks( $post->post_content );
+		$this->apply_mapping( $target_ids );
+		$target_content = $this->reform_blocks();
+		return $target_content;
+	}
+
 
 }
