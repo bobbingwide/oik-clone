@@ -6,9 +6,9 @@
 	convertNoticesToExceptions="true"
 	convertWarningsToExceptions="true"
 	>
-	<!-- for PHPUnit 5.7, 6.1, 6.2, 6.5-->
+	<!-- for PHPUnit 8-->
 	<testsuites>
-		<testsuite>
+		<testsuite name="oik-clone">
 			<directory prefix="test-" suffix=".php">tests/</directory>
 		</testsuite>
 	</testsuites>

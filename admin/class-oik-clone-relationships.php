@@ -13,6 +13,8 @@ class OIK_clone_relationships {
   public $source_post_meta; // array of source post_meta data
   public $target_relationships; // mapping array of source IDs to target IDs, with cloned date 
   public $target ; // target host
+
+ public $oik_clone_block_relationships = null;
    
   /**
    * Initialise the class
@@ -25,6 +27,22 @@ class OIK_clone_relationships {
     $this->target_relationships = array();
     $this->target = null;
   }
+
+	/**
+	 * Register the informal relationships filters
+	 *
+	 * For block relationships we load a separate class which will be used in the filter function.
+	 */
+	function register_relationship_filters() {
+		static $add_filter = true;
+		if ( $add_filter ) {
+			add_filter( 'oik_clone_build_list', array( $this, 'filter_metadata' ), 10, 2 );
+			add_filter( 'oik_clone_build_list', array( $this, 'filter_block_attributes' ), 10, 2 );
+			$add_filter = false;
+			oik_require( 'admin/class-oik-clone-block-relationships.php', 'oik-clone' );
+			$this->oik_clone_block_relationships = new OIK_clone_block_relationships();
+		}
+	}
  
   /**
    * Build a list of relationships to other posts
@@ -43,11 +61,7 @@ class OIK_clone_relationships {
     if ( $post->post_parent ) {
       $source_IDs[] = $post->post_parent;
     }
-		static $add_filter = true;
-		if ( $add_filter ) {
-			add_filter( "oik_clone_build_list", array( $this, "filter_metadata"), 10, 2 );
-			$add_filter = false;
-		}
+	$this->register_relationship_filters();
     $this->source_IDs = apply_filters( "oik_clone_build_list", $source_IDs, $post );
   }
   
@@ -186,6 +200,12 @@ class OIK_clone_relationships {
      $this->target_relationships = $target_relationships;
      bw_trace2( $this->target_relationships, "target relationships", true, BW_TRACE_DEBUG );
      return( $this->target_relationships );
+   }
+
+   function filter_block_attributes( $source_IDs, $post ) {
+   	   $IDs = $this->oik_clone_block_relationships->filter_block_attributes( $source_IDs, $post );
+	   bw_trace2( $IDs, "IDs", false, BW_TRACE_DEBUG );
+	   return $IDs;
    }
 }
  

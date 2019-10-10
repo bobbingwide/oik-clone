@@ -67,15 +67,21 @@ class OIK_clone_meta_clone_dnc {
 	/**
 	 * Reduce a serialised array to a simpler version
 	 *
+	 * @TODO Investigate why we were having problems with serialzed post meta data being cloned
+	 * but not being correctly stored on the slave. Appearing as a string that produces warnings
+	 * when we tried to run this method.
+	 *
 	 * @param array $serialized
 	 * @return array reduced array
 	 */
 	static function reduce_from_serialized( $serialized ) {
 		bw_trace2();
 		$reduced = array();
-		foreach ( $serialized as $serial ) {
-			foreach ( $serial as $key => $value ) {
-				$reduced[ $key ] = $value;
+		if ( $serialized && is_array( $serialized ) ) {
+			foreach ( $serialized as $serial ) {
+				foreach ( $serial as $key => $value ) {
+					$reduced[ $key ] = $value;
+				}
 			}
 		}
 		bw_trace2( $reduced, "reduced", true ); //, BW_TRACE_DEBUG );
