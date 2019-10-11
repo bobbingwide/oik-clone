@@ -5,7 +5,7 @@
 * Tags: clone, compare, update, MultiSite
 * Requires at least: 5.2
 * Tested up to: 5.2.3
-* Stable tag: 2.0.0-beta-20191008
+* Stable tag: 2.0.0-beta-20191011
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 * Text Domain: oik-clone
@@ -139,6 +139,9 @@ Other methods will be implemented in future versions.
 4. Do Not Clone meta box
 
 ## Upgrade Notice 
+# 2.0.0-beta-20191011 
+Upgrade for logic to map IDs in block attributes and content
+
 # 2.0.0-beta-20191008 
 Upgrade for 'Do Not Clone' capability. Currently only implemented for Push cloning.
 
@@ -224,6 +227,14 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 ## Changelog 
+# 2.0.0-beta-20191011 
+* Added: Map IDs found in block attributes and content,https://github.com/bobbingwide/oik-clone/issues/38
+* Changed: Support PHPUnit 8,https://github.com/bobbingwide/oik-clone/issues/42
+* Tested: With WordPress 5.2.3 and WordPress Multi Site
+* Tested: With WordPress 5.3-beta3 as a server
+* Tested: With PHP 7.3
+* Tested: With Gutenberg 6.5.0
+
 # 2.0.0-beta-20191008 
 * Added: Do Not Clone meta box and logic to selectively restrict cloning to slaves,https://github.com/bobbingwide/oik-clone/issues/37
 * Tested: With WordPress 5.2.3 and WordPress Multi Site
