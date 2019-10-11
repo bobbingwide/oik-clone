@@ -222,9 +222,8 @@ class OIK_clone_block_relationships {
 
 	/**
      * Maps the attrs which contain post IDs
-     *
-     * A very quick and dirty routine to map post IDs.
-     * It assumes that any value that's numeric is a post ID
+	 *
+	 * Also applies the mapping to innerContent.
 	 *
      * @TODO See find_attrs_ids for TODO's to do
      * @param $block
@@ -232,10 +231,26 @@ class OIK_clone_block_relationships {
 	function map_attrs_ids( &$block ) {
 		foreach ( $block['attrs'] as $key => $value ) {
 			if ( $this->check_token( $key ) ) {
-				$block['attrs'][ $key ] = $this->get_target( $value );
+				$target = $this->get_target( $value );
+				$block['attrs'][ $key ] = $target;
+				$this->apply_to_innerContent( $block, $key, $value, $target );
 			}
 		}
 		//print_r( $block );
+	}
+
+	function apply_to_innerContent( &$block, $key, $value, $target ) {
+		//print_r( $block['innerContent']);
+		foreach ( $block['innerContent'] as $index => $innerContent ) {
+			if ( is_string( $innerContent ) ) {
+				$new_innerContent = str_replace( $value, $target, $innerContent );
+				//echo $index . $new_innerContent;
+				$block['innerContent'][ $index ] = $new_innerContent;
+			}
+		}
+		//print_r( $block['innerContent']);
+
+
 	}
 
 	function update_target( $post, $target_ids ) {

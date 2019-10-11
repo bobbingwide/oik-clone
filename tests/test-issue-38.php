@@ -254,6 +254,7 @@ class Tests_issue_38 extends BW_UnitTestCase {
 			$this->assertEquals( $mapped_IDs, $test[2]);
 
 			$target_content = $oik_clone_block_relationships->reform_blocks();
+			//echo $target_content;
 			$post->post_content = $target_content;
 			$IDs = [];
 			$IDs = $oik_clone_block_relationships->filter_block_attributes( $IDs, $post );
@@ -302,6 +303,12 @@ class Tests_issue_38 extends BW_UnitTestCase {
 
 			$post->post_content = $test[0];
 			$target_content = $oik_clone_block_relationships->update_target( $post, $mapping );
+
+			// Confirm that the mapping keys are not present in the $target_content
+			// This implicitely tests the apply_to_InnerContent method
+			foreach ( $mapping as $source => $target ) {
+				$this->assertStringNotContainsString( $source, $target_content );
+			}
 			$round_trip_content = $oik_clone_block_relationships->update_target( $post, $reverse_mapping );
 			$this->assertEquals( $test[0], $round_trip_content );
 		}
