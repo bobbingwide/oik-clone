@@ -11,12 +11,14 @@ class OIK_clone_block_relationships {
 
 	private $blocks; /* Parsed content */
 	private $IDs; /* Array of related IDs */
+	private $source_IDs;
 
 	//private $valid_tokens;
 
 	function __construct() {
 		$this->blocks = null;
 		$this->IDs = [];
+		$this->source_IDs = [];
 	}
 
 	/**
@@ -32,7 +34,7 @@ class OIK_clone_block_relationships {
 	}
 
 	function filter_block_attributes( $source_IDs, $post ) {
-		$this->IDs = $source_IDs;
+		$this->source_IDs = $source_IDs;
 		$content = $post->post_content;
 		$blocks = $this->parse_blocks( $content );
 		$this->find_IDs();
@@ -41,7 +43,7 @@ class OIK_clone_block_relationships {
 	}
 
 	function find_ids() {
-		$this->IDs = [];
+		$this->IDs = $this->source_IDs;
 		$blocks = $this->blocks;
 		foreach ( $blocks as $key => $block ) {
 			$this->find_blocks_ids( $block );
