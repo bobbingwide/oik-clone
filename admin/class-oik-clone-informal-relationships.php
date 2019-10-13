@@ -156,6 +156,7 @@ abstract class OIK_clone_informal_relationships {
 	                            , 'productID'
 	    , 'mediaId'
 	    , 'productId'
+	    , 'products'
                                );
     // $this->valid_tokens = apply_filters( "oik_clone_valid_tokens", $this->valid_tokens );
     $this->valid_tokens = array_flip( $this->valid_tokens );                           
