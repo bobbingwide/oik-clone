@@ -75,6 +75,11 @@ class Tests_issue_38 extends BW_UnitTestCase {
 		return $test4;
 	}
 
+	function get_test5() {
+		$test5 = '<!-- wp:woocommerce/handpicked-products {"columns":2,"editMode":false,"products":[3263,2183]} /-->';
+		return $test5;
+	}
+
 
 	/**
 	 * Here's an example of the structure of the block.
@@ -134,12 +139,53 @@ class Tests_issue_38 extends BW_UnitTestCase {
 	)
 	 */
 
+
+	/**
+	 * Here's an example of a block with two values for the products attribute and no innerContent.
+	 * We need to be able to parse and reform it.
+	 *
+	 *     [0] => Array
+	(
+	[blockName] => woocommerce/handpicked-products
+	[attrs] => Array
+	(
+	[columns] => 2
+	[editMode] =>
+	[products] => Array
+	(
+	[0] => 2184
+	[1] => 2183
+	)
+
+	)
+
+	[innerBlocks] => Array
+	(
+	)
+
+	[innerHTML] =>
+	[innerContent] => Array
+	(
+	)
+
+	)
+	 */
+
+
+
+	function dont_test_parse_block( ) {
+		$test5 = $this->get_test5();
+		$blocks = parse_blocks( $test5 );
+		print_r( $blocks );
+	}
+
 	function test_parse_and_reform() {
 		$test1 = $this->get_test1();
 		$test2 = $this->get_test2();
 		$test3 = $this->get_test3();
 		$test4 = $this->get_test4();
-		$tests = array( $test1, $test2, $test3, $test4 );
+		$test5 = $this->get_test5();
+		$tests = array( $test1, $test2, $test3, $test4,  $test5 );
 		foreach ( $tests as $content ) {
 			$oik_clone_block_relationships = new OIK_clone_block_relationships();
 			$blocks                        = $oik_clone_block_relationships->parse_blocks( $content );
@@ -162,12 +208,14 @@ class Tests_issue_38 extends BW_UnitTestCase {
 		$test2 = $this->get_test2();
 		$test3 = $this->get_test3();
 		$test4 = $this->get_test4();
+		$test5 = $this->get_test5();
 
 		$tests = array( [ "blah", []]
 		, [ $test1, [15086] ]
 		, [ $test2, [] ]
 		, [ $test3, [] ]
 		, [ $test4, [3263] ]	 // Not 19 or 81
+		, [ $test5, [2183, 3263 ] ]
 		, [ $test1 . $test4, [3263, 15086] ]
 		);
 		foreach ( $tests as $test ) {
@@ -185,12 +233,14 @@ class Tests_issue_38 extends BW_UnitTestCase {
 		$test2 = $this->get_test2();
 		$test3 = $this->get_test3();
 		$test4 = $this->get_test4();
+		$test5 = $this->get_test5();
 
 		$tests = array( [ "blah", [], [] ]
 		, [ $test1, [15086], [68051] ]
 		, [ $test2, [], [] ]
 		, [ $test3, [], [] ]
 		, [ $test4, [3263], [64] ]
+		, [ $test5, [2183, 3263], [64, 2183] ]
 		, [ $test1 . $test4, [ 3263, 15086], [64, 68051]]
 		);
 		$mapping = array( '15086' => array( 'id' => 68051, 'cloned' => 1570724987 ),

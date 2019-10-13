@@ -95,7 +95,13 @@ class OIK_clone_block_relationships {
 
 
 	function add_id( $ID ) {
-		$this->IDs[] = $ID;
+		if ( is_array( $ID ) ) {
+			foreach ( $ID as $anID) {
+				$this->IDs[] = $anID;
+			}
+		} else {
+			$this->IDs[] = $ID;
+		}
 	}
 
 	/**
@@ -118,17 +124,16 @@ class OIK_clone_block_relationships {
 	}
 
 	function reform_block( $block=null ) {
-		//print_r( $block );
-
 		$block_content = '';
 		$index         = 0;
 		$block_content .= $this->reform_html_comment( $block );
 
-		foreach ( $block['innerContent'] as $chunk ) {
-			$block_content .= is_string( $chunk ) ? $chunk : $this->reform_block( $block['innerBlocks'][ $index ++ ] );
+		if ( count( $block['innerContent'])) {
+			foreach ( $block['innerContent'] as $chunk ) {
+				$block_content .= is_string( $chunk ) ? $chunk : $this->reform_block( $block['innerBlocks'][ $index ++ ] );
+			}
+			$block_content .= $this->end_html_comment( $block );
 		}
-
-		$block_content .= $this->end_html_comment( $block );
 		return $block_content;
 	}
 
@@ -148,9 +153,13 @@ class OIK_clone_block_relationships {
 				$output .= json_encode( $block['attrs'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
 
 			}
-			//$output .= ' {';
-			//$output .= $this->reform_attrs( $block['attrs'] );
-			$output .= ' -->';
+			if ( count( $block['innerContent']) ) {
+				//$output .= ' {';
+				//$output .= $this->reform_attrs( $block['attrs'] );
+				$output .= ' -->';
+			} else {
+				$output .= ' /-->';
+			}
 		}
 		return $output;
 	}
@@ -191,7 +200,14 @@ class OIK_clone_block_relationships {
 
 	function get_target( $source_ID ) {
 		//echo "Getting: " . $source_ID;
-		$target_ID = bw_array_get( $this->mapping, $source_ID, $source_ID );
+		if ( is_array( $source_ID) ) {
+			$target_ID = [];
+			foreach ( $source_ID as $ID ) {
+				$target_ID[] = bw_array_get( $this->mapping, $ID, $ID );
+			}
+		} else {
+			$target_ID = bw_array_get( $this->mapping, $source_ID, $source_ID );
+		}
 		//echo "Got: " . $target_ID;
 		return $target_ID;
 	}
