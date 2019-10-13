@@ -120,7 +120,9 @@ function oik_clone( $atts=null, $content=null, $tag=null ) {
 	
 	$id = bw_array_get_from( $atts, "id,0", null );
   if ( null == $id ) {
-    $id = bw_current_post_id();
+  	if ( is_single() ) {
+	    $id = bw_current_post_id();
+    }
   }
   if ( $id ) {
     $atts['id'] = $id;
