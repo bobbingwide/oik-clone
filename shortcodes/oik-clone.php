@@ -120,8 +120,10 @@ function oik_clone( $atts=null, $content=null, $tag=null ) {
 	
 	$id = bw_array_get_from( $atts, "id,0", null );
   if ( null == $id ) {
-  	if ( is_single() ) {
+  	if ( is_single() || is_front_page() ) {
 	    $id = bw_current_post_id();
+    } else {
+  		bw_trace2();
     }
   }
   if ( $id ) {
