@@ -15,7 +15,11 @@
 function oik_cloned( $atts=null, $content=null, $tag=null ) {
   $id = bw_array_get_from( $atts, "id,0", null ); 
   if ( null == $id ) {
-    $id = bw_current_post_id();
+      if ( is_single() || is_front_page() ) {
+		  $id = bw_current_post_id();
+	  } else {
+		  bw_trace2();
+	  }
   }
   if ( $id ) {
     $atts['id'] = $id;
