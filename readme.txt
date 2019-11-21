@@ -3,8 +3,8 @@ Contributors: bobbingwide
 Donate link: https://www.oik-plugins.com/oik/oik-donate/
 Tags: clone, compare, update, MultiSite
 Requires at least: 5.2
-Tested up to: 5.2.3
-Stable tag: 2.0.0-beta-20191103
+Tested up to: 5.3
+Stable tag: 2.0.0-beta-20191121
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: oik-clone
@@ -138,6 +138,9 @@ Other methods will be implemented in future versions.
 4. Do Not Clone meta box 
 
 == Upgrade Notice ==
+= 2.0.0-beta-20191121 =
+Upgrade so you can clone reusable blocks. 
+
 = 2.0.0-beta-20191103 = 
 Upgrade for improved mapping of post IDs in block attrs
 
@@ -229,6 +232,12 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 == Changelog ==
+= 2.0.0-beta-20191121 = 
+* Changed: map the ref attr used in the reusable blocks block,[github bobbingwide oik-clone issues 38]
+* Changed: Only expand clone/cloned shortcodes when just one thing is being displayed, [github bobbingwide oik-clone issues 43]
+* Tested: With WordPress 5.3 and WordPress Multi Site
+* Tested: With Gutenberg 6.8.0
+
 = 2.0.0-beta-20191103 =
 * Changed: Change [clone] and [cloned] shortcodes to only run for a single post ID display,[github bobbingwide oik-clone issues 43]
 * Changed: Improve mapping of post IDs in block attrs,[github bobbingwide oik-clones issues 38]
