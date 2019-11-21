@@ -117,15 +117,7 @@ function oik_clone( $atts=null, $content=null, $tag=null ) {
 		$form = bw_validate_torf( $form );
 	}
 	$atts['form'] = $form;
-	
-	$id = bw_array_get_from( $atts, "id,0", null );
-  if ( null == $id ) {
-  	if ( is_single() || is_front_page() ) {
-	    $id = bw_current_post_id();
-    } else {
-  		bw_trace2();
-    }
-  }
+	$id = oik_clone_maybe_get_current_post_id( $atts );
   if ( $id ) {
     $atts['id'] = $id;
 		if ( $form ) {
@@ -142,6 +134,27 @@ function oik_clone( $atts=null, $content=null, $tag=null ) {
   }
 	return( bw_ret() );
 }
+
+/**
+ * Returns the current post ID when it's sensible
+ *
+ * @param array $atts - which may have the id= parameter or passed positionally
+ *
+ */
+
+function oik_clone_maybe_get_current_post_id( $atts ) {
+	$id = bw_array_get_from( $atts, "id,0", null );
+	if ( null == $id ) {
+		if ( is_single() || is_singular() ) {
+			$id = bw_current_post_id();
+		} else {
+			bw_trace2();
+		}
+	}
+	return $id;
+
+}
+
 
 
 /*
