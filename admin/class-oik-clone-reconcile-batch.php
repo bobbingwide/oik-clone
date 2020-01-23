@@ -1,212 +1,189 @@
-<?php
-/**
- * Oik_clone_reconcile class.
- *
- * @copyright (C) Copyright Bobbing Wide 2020
- */
+<?php // (C) Copyright Bobbing Wide 2019
+
+if ( PHP_SAPI !== "cli" ) { 
+	die();
+}
 
 /**
- * Class: OIK_clone_reconcile
- *
+ * Class: OIK_clone_reconcile_batch
+ * 
  * Reconcile the master posts with a slave server
  *
- * Similar to OIK_clone_pull this routine determines the status of posts on the server
+ * Similar to OIK_clone_reconcile_batch this routine determines the status of posts on the server
  * then attempts to reconcile changes between master and slave.
  * This will involve pushing and pulling.
  *
  *
- *
+ * 
  */
-class OIK_clone_reconcile {
+class OIK_clone_reconcile_batch{
 
-	public $slave;          // The URL of the slave
-	public $slave_url;      // The actual URL to use for the selected slave
-	public $apikey;         // The oik-clone APIkey
-	public $master=null;    // The master URL
-	public $post_type;      // The clone post type
-	public $mapping;        //
+	public $slave; 
+	public $slave_url;
+	public $apikey;
+	public $master = null;
+	public $post_type;
+	public $mapping;
 	public $dry_run;
 	public $verbose;
 	public $action;
 
 	/**
 	 * Constructor for OIK_clone_reconcile_batch
-	 *
+	 * 
 	 * Controls the resetting of the _oik_clone_id
 	 */
 	function __construct() {
 		oik_require( "includes/bw_posts.php" );
 		oik_require( "admin/oik-save-post.php", "oik-clone" );
 		oik_require_lib( "class-oik-remote" );
+		$this->set_slave();
 		$this->set_apikey();
 		$this->set_master();
-		$this->dry_run = true;
-		$this->verbose = false;
-
-
-		/*
-		 * The calling routine needs to do all these things
-		$this->set_slave();
-		$this->set_slave_url();
-
 		$this->get_dry_run();
 		$this->get_verbose();
 		$this->sanity_check();
 		$this->process_post_types();
-		 */
 	}
-
+	
 	/**
 	 * Obtain the value for the slave
-	 *
+	 * 
 	 * If not specified then die.
 	 * If it is specified perhaps we should check it to be a valid URL
 	 * or maybe we can determine the slave as the first from the list of slaves
-	 *
+	 * 
 	 * More importantly, we also need the slave's target URL - where we ask another server for the information that the real URL might tell us.
 	 */
-	function set_slave( $slave=null ) {
-		//$slave=oik_batch_query_value_from_argv( 1, null );
-		if ( ! $slave ) {
-			echo PHP_EOL;
-			echo "Syntax: oikwp class-oik-clone-reconcile-batch.php slave" . PHP_EOL;
+	function set_slave() {
+		$slave = oik_batch_query_value_from_argv( 1, null );
+		if ( !$slave ) {
+			echo PHP_EOL;																
+			echo "Syntax: oikwp class-oik-clone-reconcile-batch.php slave" . PHP_EOL ;
 			echo "e.g. oikwp class-oik-clone-reconcile-batch.php https://oik-plugins.co.uk" . PHP_EOL;
 			echo "or, to reconcile with a local copy of the slave at s.b/oikcouk," . PHP_EOL;
 			echo "oikwp class-oik-clone-reconcile-batch.php https://oik-plugins.co.uk http://s.b/oikcouk " . PHP_EOL;
-			die( "Try again with the right parameters" );
+			die( "Try again with the right parameters");
 		}
-		$this->slave    =$slave;
+		$this->slave = $slave;
+		$this->slave_url = oik_batch_query_value_from_argv( 2, $slave );
 	}
-
-	function set_slave_url( $slave_url=null ) {
-		$this->slave_url = $slave_url;
-
-	}
-
-	/**
+	
+	/** 
 	 * Retrieve the API key for the AJAX calls
 	 */
 	function set_apikey() {
-		$this->apikey=oik_clone_get_apikey();
+		$this->apikey = oik_clone_get_apikey();
 		bw_trace2( $this->apikey, "API key" );
 	}
-
-
-	/**
+	
+	
+	/** 
 	 * Set the master URL
 	 */
 	function set_master() {
-		$this->master=site_url( null, 'https' );
+		$this->master = site_url( null, 'https');
 		bw_trace2( $this->master, "master" );
 	}
 
 	function get_dry_run() {
-		$dry_run      =oik_batch_query_value_from_argv( "dry-run", "y" );
-		$this->dry_run=bw_validate_torf( $dry_run );
+		$dry_run = oik_batch_query_value_from_argv( "dry-run", "y");
+		$this->dry_run = bw_validate_torf( $dry_run );
 		if ( $this->dry_run ) {
-			$this->echo( "Dry run:", 'Yes' );
+			$this->echo( "Dry run:", 'Yes');
 		} else {
-			$this->echo( "Dry run:", 'No' );
+			$this->echo( "Dry run:", 'No');
 		}
 	}
 
 	function get_verbose() {
-		$verbose      =oik_batch_query_value_from_argv( "verbose", "n" );
-		$this->verbose=bw_validate_torf( $verbose );
+		$verbose = oik_batch_query_value_from_argv( "verbose", "n");
+		$this->verbose = bw_validate_torf( $verbose );
 		if ( $this->verbose ) {
-			$this->echo( "Verbose:", 'Yes' );
+			$this->echo( "Verbose:", 'Yes');
 
 		} else {
-			$this->echo( "Verbose", 'No' );
+			$this->echo( "Verbose", 'No');
 		}
 	}
-
+	
 	function sanity_check() {
 		if ( $this->slave_url == $this->master ) {
 			die( "Slave and master should not be the same: " . $this->slave_url );
-		}
+		} 
 	}
 
-	function get_post_types( $post_type) {
-		//$post_type=oik_batch_query_value_from_argv( "post-type", null );
+	function get_post_types() {
+		$post_type = oik_batch_query_value_from_argv( "post-type", null );
 		if ( null !== $post_type ) {
-			$post_types=explode( ',', $post_type );
+			$post_types = explode( ',' , $post_type );
 		} else {
-			$post_types=get_post_types();
+			$post_types = get_post_types();
 		}
-
 		return $post_types;
 
 	}
-
-
+	
+	
 	/**
 	 * Reconcile IDs for each clonable post type
 	 *
 	 * foreach clonable post type
 	 * - request the array of mappings of source to target IDs incl. cloned time stamp and last modified date.
 	 * - reconcile the posts
-	 *
+	 *  	
 	 */
 	function process_post_types() {
-		$post_types=$this->get_post_types();
+		$post_types = $this->get_post_types();
 		//print_r( $post_types );
 		foreach ( $post_types as $post_type ) {
-			$supports=post_type_supports( $post_type, "clone" );
+			$supports = post_type_supports( $post_type, "clone" );
 			if ( $supports ) {
 				$this->echo( "Processing:", $post_type );
-				$this->post_type=$post_type;
+				$this->post_type = $post_type;
 				$this->process_post_type( $post_type );
-			} else {
+			}	else {
 				$this->echo( "Skipping:", $post_type );
 			}
 		}
 	}
-
+	
 	/**
 	 * Send an AJAX request to the server
 	 */
 	function process_post_type( $post_type ) {
-		$this->post_type = $post_type;
-		$result  =$this->request_mapping( $post_type );
-		$mappings=$this->extract_mappings( $result );
+		$result = $this->request_mapping( $post_type );
+		$mappings = $this->extract_mappings( $result );
 		$this->apply_mappings( $mappings );
 	}
-
+	
 	/**
 	 * Request the mapping of cloned posts
-	 *
-	 * The server is expected to reply with a JSON array consisting of the
+	 * 
+	 * The server is expected to reply with a JSON array consisting of the 
 	 * narrative and the mappings
 	 * where each mapping consists of: master_ID, slave_ID and time
-	 *
+	 * 
 	 * @param string $post_type - the post type for which the mapping is requested
-	 *
 	 * @return array the result of the AJAX request
 	 */
 	function request_mapping( $post_type ) {
-		$url   =$this->slave_url . "/wp-admin/admin-ajax.php";
-		$body  =array(
-			"action"    =>"oik_clone_request_mapping"
-		,
-			"master"    =>$this->master
-		,
-			"oik_apikey"=>$this->apikey
-		,
-			"post_type" =>$post_type
-		);
-		$args  =array(
-			"body"   =>$body
-		,
-			'timeout'=>30
-		);
-		$result=oik_remote::bw_remote_post( $url, $args );
+		$url = $this->slave_url . "/wp-admin/admin-ajax.php" ;
+		$body = array( "action" => "oik_clone_request_mapping" 
+								 , "master" => $this->master
+								 , "oik_apikey" => $this->apikey
+								 , "post_type" => $post_type
+								 );
+		$args = array( "body" => $body 
+								 , 'timeout' => 30
+								 ); 
+		$result = oik_remote::bw_remote_post( $url, $args );
 		bw_trace2( $result );
-		if ( ! is_wp_error( $result ) ) {
+		if ( !is_wp_error( $result ) ) {
 			$this->echo( "Result:", $result );
 		} else {
 			$this->report_wp_error( $result );
-			$result=null;
+			$result = null;
 		}
 
 		return $result;
@@ -214,24 +191,23 @@ class OIK_clone_reconcile {
 
 	function report_wp_error( $result ) {
 		//print_r( $result );
-		$error=$result->get_error_message();
-		$code =$result->get_error_code();
+		$error = $result->get_error_message();
+		$code = $result->get_error_code();
 		$this->echo( "WP Error: $code", $error );
 
 	}
-
+	
 	/**
 	 * Extract the mappings from the JSON result
 	 */
 	function extract_mappings( $result ) {
 		bw_trace2( null, null, true, BW_TRACE_DEBUG );
-		$result=oik_remote::bw_json_decode( $result );
-		bw_trace2( $result, "result", false, BW_TRACE_DEBUG );
-		$mappings=bw_array_get( $result, "slave", array() );
-
-		return ( $mappings );
-	}
-
+		$result = oik_remote::bw_json_decode( $result );
+		//bw_trace2( $result, "result", false );
+		$mappings = bw_array_get( $result, "slave", array() );
+		return( $mappings );
+	}	
+	
 	/**
 	 * Apply the mapping for each master ID
 	 */
@@ -241,52 +217,46 @@ class OIK_clone_reconcile {
 			$this->apply_mapping( $mapping );
 		}
 	}
-
+	
 	/**
 	 * Apply the mapping to the master ID
-	 *
+	 * 
 	 * We need to check the post type and post name ( slug ) before updating the clone IDs
 	 * as the post ID returned from the slave might not actually match.
 	 *
 	 * Get the ID the slave reckons it should be and check if it's a match.
 	 * If not found or not a match then try accessing the post by name, and if found, use the target ID returned locally.
-	 *
+	 * 
 	 * @param object $mapping - mapping object for a cloned slave post
 	 */
 	function apply_mapping( $mapping ) {
-		$match=false;
-		bw_trace2();
-
+		$match = false;
 
 		//print_r( $mapping );
-		$post=null;
+		$post = null;
 		if ( null === $mapping->id ) {
 			$this->echo( "Not cloned:", $mapping->slave );
-			gob();
 		} else {
-			$post=get_post( $mapping->id );
+			$post = get_post( $mapping->id );
 		}
 		if ( $post ) {
-			bw_trace2( $post, "post", false );
 			$this->echo( "Title:", $post->post_title );
 			$this->echo( "Post type:", $this->post_type );
-
-			$match=$post->post_type == $this->post_type;
-			bw_trace2( $match, "$post->post_type-$this->post_type", false );
+			$match = $post->post_type == $this->post_type;
 			$this->echo( "Name:", $post->post_name );
 			$this->echo( "Mapping:", $mapping->name );
-			$match&=$post->post_name === $mapping->name;
+			$match &= $post->post_name === $mapping->name;
 		}
-		if ( ! $match ) {
-			$this->echo( "Trying match by post name:", $mapping->name );
-			$post=bw_get_post( $mapping->name, $this->post_type );
-			if ( $post ) {
-				$mapping->id=$post->ID;
-				$match      =true;
+		if ( !$match ) {
+			$this->echo("Trying match by post name:" , $mapping->name );
+			$post = bw_get_post( $mapping->name, $this->post_type );
+			if( $post ) {
+				$mapping->id = $post->ID;
+				$match = true;
 			}
 		}
-		if ( ! $match ) {
-			$this->echo( "Bad match on slave:", $mapping->slave . " " . $mapping->name );
+		if ( !$match ) {
+			$this->echo( "Bad match on slave:", $mapping->slave ." ". $mapping->name );
 			$this->perform_import( $mapping );
 		} else {
 			$this->reconcile( $post, $mapping );
@@ -296,7 +266,7 @@ class OIK_clone_reconcile {
 	}
 
 	function set_action( $action=null ) {
-		$this->action=$action;
+		$this->action = $action;
 	}
 
 
@@ -320,18 +290,18 @@ class OIK_clone_reconcile {
 	 * @param $mapping
 	 */
 	function reconcile( $post, $mapping ) {
-		$date_master_cloned=$this->get_date_master_cloned( $post, $mapping );
+		$date_master_cloned = $this->get_date_master_cloned( $post, $mapping );
 		//echo PHP_EOL;
 		$this->echo( "Reconciling:", $post->ID );
 		$this->echo( "Cloned:", $date_master_cloned );
 		$this->echo( "Modified:", $post->post_modified_gmt );
 		$this->echo( "With:", $mapping->slave );
 		$this->echo( "Name:", $mapping->name );
-		$date_mapping_cloned=date( "Y-m-d H:i:s", $mapping->cloned );
-		$this->echo( "Cloned:", $date_mapping_cloned );
+		$date_mapping_cloned = date( "Y-m-d H:i:s", $mapping->cloned );
+		$this->echo( "Cloned:", $date_mapping_cloned  );
 		$this->echo( "Modified:", $mapping->modified );
 
-		$clone_mismatch=$date_master_cloned != $date_mapping_cloned;
+		$clone_mismatch = $date_master_cloned != $date_mapping_cloned;
 		if ( $clone_mismatch ) {
 			$this->echo( "Clone mismatch:", "Cloned: dates!" );
 
@@ -341,33 +311,33 @@ class OIK_clone_reconcile {
 		//	$mapping->modified = $date_mapping_cloned;
 		//}
 
-		$date_master_cloned=$this->get_date_master_cloned( $post, $mapping );
+		$date_master_cloned = $this->get_date_master_cloned( $post, $mapping );
 
-		$master_changed_since_clone=$post->post_modified_gmt > $date_master_cloned;
-		$slave_changed_since_clone =$this->has_slave_been_changed( $mapping );
+		$master_changed_since_clone = $post->post_modified_gmt > $date_master_cloned;
+		$slave_changed_since_clone = $this->has_slave_been_changed( $mapping );
 
 		if ( $post->post_modified_gmt > $mapping->modified ) {
-			if ( $master_changed_since_clone ) {
+			if( $master_changed_since_clone ) {
 				$this->echo( "Push:", $post->ID );
 				$this->push( $post, $mapping );
 			} else {
 				$this->echo( "Slave changed?", $slave_changed_since_clone );
 				$this->pull( $post, $mapping );
-				$this->set_action( "????" );
+				$this->set_action( "????");
 			}
 		} elseif ( $post->post_modified_gmt < $mapping->modified ) {
 			if ( $slave_changed_since_clone ) {
 				$this->echo( "Pull:", $mapping->id );
 				$this->pull( $post, $mapping );
 			} else {
-				$this->echo( " Wacky:", "Master reverted perhaps?" );
+				$this->echo( " Wacky:", "Master reverted perhaps?");
 				$this->push( $post, $mapping );
-				$this->set_action( "Wack" );
+				$this->set_action( "Wack");
 			}
 
 		} else {
 			$this->echo( "Match:", 'Yes' );
-			$this->set_action( "None" );
+			$this->set_action( "None");
 		}
 		$this->echo();
 
@@ -384,17 +354,17 @@ class OIK_clone_reconcile {
 	}
 
 	function get_date_master_cloned( $post, $mapping ) {
-		$master_cloned=null;
-		$post_meta    =get_post_meta( $post->ID, "_oik_clone_ids", false );
+		$master_cloned = null;
+		$post_meta = get_post_meta( $post->ID, "_oik_clone_ids", false );
 		if ( $post_meta ) {
-			$slaves=$post_meta[0];
+			$slaves = $post_meta[0];
 
-			$slave_info=bw_array_get( $slaves, $this->slave_url, null );
+			$slave_info = bw_array_get( $slaves, $this->slave_url, null );
 			if ( $slave_info['id'] !== $mapping->slave ) {
 				$this->echo( "Error:", "Clone mismatch" );
 			} else {
-				$master_cloned=$slave_info['cloned'];
-				$master_cloned=date( "Y-m-d H:i:s", $master_cloned );
+				$master_cloned = $slave_info['cloned'];
+				$master_cloned = date( "Y-m-d H:i:s", $master_cloned );
 			}
 		}
 
@@ -402,26 +372,25 @@ class OIK_clone_reconcile {
 	}
 
 	function has_slave_been_changed( $mapping ) {
-		$cloned  =$mapping->cloned;
-		$modified=strtotime( $mapping->modified );
+		$cloned   = $mapping->cloned;
+		$modified = strtotime( $mapping->modified );
 		$this->echo( "Cloned:", $cloned );
 		$this->echo( "Modified:", $modified );
-		$diff=$cloned - $modified;
+		$diff = $cloned - $modified;
 		$this->echo( "Diff:", $diff );
 
-		$diff   =absint( $diff );
-		$changed=$diff >= 60;
-
+		$diff = absint( $diff );
+		$changed = $diff >= 60;
 		return $changed;
 	}
 
 	function pull( $post, $mapping ) {
-		$this->set_action( "Pull" );
-		oik_require( "admin/oik-clone-pull.php", "oik-clone" );
+		$this->set_action( "Pull");
+		oik_require( "admin/oik-clone-pull.php", "oik-clone");
 		if ( $this->dry_run ) {
 			$this->echo( "Dry pull:", $post->ID );
 		} else {
-			$target_id=oik_clone_master_pull( $this->slave_url, $post, $mapping );
+			$target_id = oik_clone_master_pull( $this->slave_url, $post, $mapping );
 			if ( $target_id === $post->ID ) {
 				$this->echo( "Pulled:", $this->slave_url );
 				$this->echo( "ID:", $target_id );
@@ -433,13 +402,13 @@ class OIK_clone_reconcile {
 	}
 
 	function push( $post, $mapping ) {
-		$this->set_action( "Push" );
+		$this->set_action( "Push");
 		$this->echo( "Pushing:", $post->ID );
 		$this->echo( "Slave:", $this->slave_url );
 		$this->echo( "Mapping:", $mapping->slave );
 
 		//oik_require( "admin/oik-save-post.php", "oik-clone" );
-		$slaves=[ $this->slave_url ];
+		$slaves = [ $this->slave_url ];
 		if ( $this->dry_run ) {
 			$this->echo( "Dry push:", $post->post_name );
 		} else {
@@ -459,15 +428,14 @@ class OIK_clone_reconcile {
 	 */
 
 	function perform_import( $mapping ) {
-		$post=null;
+		$post = null;
 		if ( $this->dry_run ) {
-			$this->set_action( "Dry import" );
+			$this->set_action( "Dry import");
 		} else {
-			$post=$this->insert_post( $mapping );
+			$post = $this->insert_post( $mapping );
 			$this->pull( $post, $mapping );
 			$this->set_action( "Import" );
 		}
-
 		return $post;
 	}
 
@@ -479,49 +447,32 @@ class OIK_clone_reconcile {
 	 * @return array|WP_Post|null
 	 */
 	function insert_post( $mapping ) {
-		$post=array(
-			'post_type'        =>$this->post_type
-		,
-			'post_title'       =>$mapping->name
-		,
-			'post_name'        =>$mapping->name
-		,
-			'post_content'     =>$mapping->name
-		,
-			'post_date'        =>$mapping->modified
-		,
-			'post_date_gmt'    =>$mapping->modified
-		,
-			'post_modified'    =>$mapping->modified
-		,
-			'post_modified_gmt'=>$mapping->modified
-		,
-			'post_status'      =>'published'
+		$post = array( 'post_type' => $this->post_type
+		    , 'post_title' => $mapping->name
+			, 'post_name' => $mapping->name
+			, 'post_content' => $mapping->name
+			, 'post_date' => $mapping->modified
+			, 'post_date_gmt' => $mapping->modified
+			, 'post_modified' => $mapping->modified
+			, 'post_modified_gmt' => $mapping->modified
+			, 'post_status' => 'published'
 		);
 
-		$post_id=wp_insert_post( $post, true );
-		if ( is_wp_error( $post_id ) ) {
-			p( "oops" );
-			bw_trace2( $post_id, "wperror", false );
-		} else {
-			p( "Post created: " . $post_id );
-			$post=get_post( $post_id );
-		}
-
-		return $post;
+		$post_id = wp_insert_post( $post, true );
+        if ( is_wp_error( $post_id ) ) {
+            p( "oops" );
+            bw_trace2( $post_id, "wperror", false );
+        } else {
+	        p( "Post created: " . $post_id );
+	        $post = get_post( $post_id );
+        }
+        return $post;
 	}
-
-	/**
-	 * Echoes output if verbose is true.
-	 *
-	 * @param null $prefix
-	 * @param null $value
-	 */
 
 	function echo( $prefix=null, $value=null ) {
 		if ( $this->verbose ) {
-			e( "$prefix $value" );
-			br();
+			echo "$prefix $value";
+			echo PHP_EOL;
 		}
 	}
 
@@ -538,87 +489,33 @@ class OIK_clone_reconcile {
 
 	function summarise( $post, $mapping, $match ) {
 
-		$summary  =[];
-		$summary[] = $this->action_link( $this->action, $mapping->slave );
-		$summary[] = $this->slave_link( $mapping->slave );
+		$summary   = [];
+		$summary[] = $this->action;
+		$summary[] = $mapping->slave;
 		if ( $mapping->cloned ) {
-			$summary[]=date( "Y-m-d H:i:s", $mapping->cloned );
+			$summary[] = date( "Y-m-d H:i:s", $mapping->cloned );
 		} else {
-			$summary[]=null;
-		}
-		$summary[]=$mapping->modified;
-
-
-		if ( $match ) {
-			$summary[]=$post->post_modified_gmt;
-			$summary[] = $post->post_name . '<br />' . $mapping->name;
-			$summary[]=$post->post_type;
-			$summary[] = $post->ID;
-			$summary[]= $this->master_link( $post->ID );
-			//$summary[]=$post->post_name;
-
-		} else {
-			$summary[]=null;
-			$summary[]=$mapping->name;
-
-			$summary[]=$this->post_type;
 			$summary[] = null;
-			$summary[]=null;
+		}
+		$summary[] = $mapping->modified;
+		if ( $match ) {
+			$summary[] = $post->post_modified_gmt;
+			$summary[] = $post->post_type;
+			$summary[] = $post->ID;
+			$summary[] = $post->post_name;
 
+		} else {
+			$summary[] = null;
+			$summary[] = $this->post_type;
+			$summary[] = null;
+			$summary[] = $mapping->name;
 		}
 
-		$summarised=implode( ',', $summary );
-		bw_tablerow( $summary );
-;		//echo $summarised;
-		//echo PHP_EOL;
+		$summarised = implode( ',', $summary );
+
+		echo $summarised;
+		echo PHP_EOL;
 	}
-
-	function table_start() {
-		stag( 'table', 'form-table' );
-		$headers = bw_as_array( 'Action,SlaveID,Cloned,Modified,Local-modified,Title,Type,ID,Name' );
-		bw_tablerow( $headers, 'tr', 'th');
-
-	}
-	function table_end() {
-		etag( 'table');
-
-	}
-
-	function admin_clone_url( $action, $key ) {
-		$admin_clone_url = admin_url( 'admin.php?page=oik_clone&amp;tab=slave' );
-		$args = [ 'slave' => $this->slave_url
-				, 'clone_post_type' => $this->post_type
-				, $action => $key
-				];
-		$admin_clone_url = add_query_arg( $args, $admin_clone_url );
-		return $admin_clone_url;
-	}
-
-	function action_link( $action, $slave_id ) {
-
-		$retlink = $action;
-		switch ( $action ) {
-			case 'Dry import':
-				$link = $this->admin_clone_url( 'import', $slave_id );
-				$retlink = retlink( null, $link, $action );
-				break;
-
-		}
-		return $retlink;
-	}
-
-	function slave_link( $slave_id ) {
-		$slave_link = $this->slave;
-		$slave_link .= '/?p=';
-		$slave_link .= $slave_id;
-		return retlink( null, $slave_link, $slave_id );
-	}
-
-	function master_link( $post_id ) {
-		return retlink( null, get_permalink( $post_id ), get_the_title( $post_id ) );
-	}
-
 
 
 }
-

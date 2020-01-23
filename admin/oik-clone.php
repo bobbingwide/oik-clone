@@ -18,6 +18,7 @@ function oik_clone_nav_tabs( $nav_tabs, $tab ) {
   //$nav_tabs['oauth1'] = "WP-API OAuth1";
   //$nav_tabs['custom'] = "WP-API Custom";
   //$nav_tabs['import'] = "Import";
+	$nav_tabs['slave'] = "Slave";
   
   
   return( $nav_tabs);
@@ -76,6 +77,11 @@ function oik_clone_reset_request_uri() {
 function oik_clone_nav_tab_self() {
   oik_require( "admin/oik-clone-self.php", "oik-clone" );
   oik_clone_lazy_nav_tab_self();
+}
+
+function oik_clone_nav_tab_slave() {
+	echo "Slave";
+	echo __FUNCTION__;
 }
 
 /**

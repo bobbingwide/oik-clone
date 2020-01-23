@@ -48,7 +48,7 @@ function oik_clone_loaded() {
 	add_action( "run_class-oik-clone-reset-ids.php", "oik_clone_run_oik_reset_ids" );
 	add_action( "run_class-oik-clone-pull.php", "oik_clone_run_oik_clone_pull" );
 	add_action( "run_class-oik-clone-push.php", "oik_clone_run_oik_clone_push" );
-	add_action( "run_class-oik-clone-reconcile.php", "oik_clone_run_oik_clone_reconcile" );
+	add_action( "run_class-oik-clone-reconcile-batch.php", "oik_clone_run_oik_clone_reconcile_batch" );
 	
 	add_action( "wp_ajax_oik_clone_request_mapping", "oik_clone_nopriv_oik_clone_request_mapping" );
 	add_action( "wp_ajax_nopriv_oik_clone_request_mapping", "oik_clone_nopriv_oik_clone_request_mapping" );
@@ -164,6 +164,10 @@ function oik_clone_admin_head() {
       oik_require( "admin/oik-clone-servers.php", "oik-clone" );
       oik_clone_lazy_nav_tabs_servers();
       break;
+
+	  case 'slave':
+	  	oik_require( 'admin/oik-clone-slave.php', 'oik-clone');
+	  	oik_clone_lazy_nav_tabs_slave();
         
     default:
       // Someone else will handle this
@@ -484,12 +488,12 @@ function oik_clone_run_oik_clone_push() {
 }
 
 /**
- * Load and run class-oik-clone-reconcile.php
+ * Load and run class-oik-clone-reconcile-batch.php
  *
  */
-function oik_clone_run_oik_clone_reconcile() {
-	oik_require( "admin/class-oik-clone-reconcile.php", "oik-clone");
-	$oik_clone_reconcile = new OIK_clone_reconcile();
+function oik_clone_run_oik_clone_reconcile_batch() {
+	oik_require( "admin/class-oik-clone-reconcile-batch.php", "oik-clone");
+	$oik_clone_reconcile_batch = new OIK_clone_reconcile_batch();
 }
 
 
