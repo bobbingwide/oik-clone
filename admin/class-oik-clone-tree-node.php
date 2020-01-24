@@ -1,12 +1,13 @@
-<?php // (C) Copyright Bobbing Wide 2015-2019
-
+<?php
 /**
- * Class OIK_clone_tree_node 
+ * Class OIK_clone_tree_node.
+ *
+ * @copyright (C) Copyright Bobbing Wide 2015-2020
+ * @package oik-clone
  *
  * Implements a node in the OIK_clone_tree
- * 
- * We need some information about each post in the tree
- * 
+ *
+ * We need some information about each post in the tree.
  */
 class OIK_clone_tree_node {
 	public $id; // The ID of the post
@@ -65,13 +66,17 @@ class OIK_clone_tree_node {
 	}
 	
 	/**
-	 * Get the post's meta data
+	 * Get the post's meta data.
+	 *
+	 * Note: Post types such as wp_block may not have any post meta data.
+	 * But we might want to clone them, so it's OK if they don't have any.
 	 */
 	function get_post_meta() {
+		bw_trace2( $this->post, 'this->post', false, BW_TRACE_DEBUG );
 		if ( !$this->post->post_meta ) {
 			$this->post->post_meta = get_post_meta( $this->id );
-		} 
-		return( $this->post->post_meta );
+		}
+		return true;
 	}
 	
 	/**
@@ -80,7 +85,6 @@ class OIK_clone_tree_node {
 	 * This is a very simple version to start with
 	 */
 	function display() {
-		//print_r( $this );
 		$this->get_post();
 		if ( $this->post ) {
 			if ( $this->post->post_type != 'revision' ) {
@@ -114,21 +118,17 @@ class OIK_clone_tree_node {
 		$clone_status = null;
 		$count_to_clone = 0;
 		if ( $this->valid_type() && $this->valid_status() && $this->get_post_meta() ) {
-			if ( $this->post->post_meta ) {
-				$modified_gmt = $this->get_post_modified_gmt();
-				$servers = $this->get_targets();
-				$to_clone = $this->to_clone( $servers, $modified_gmt );
-				$count_to_clone = count( $to_clone );
-				$count_servers = count( $servers );
-				$clone_status = " $count_to_clone / $count_servers";
-				if ( $count_to_clone ) {
-					$form = OIK_clone_tree::get_atts( "form" );
-					if ( $form ) {
-						$clone_status .= $this->clone_link( $to_clone );
-					}
+			$modified_gmt = $this->get_post_modified_gmt();
+			$servers = $this->get_targets();
+			$to_clone = $this->to_clone( $servers, $modified_gmt );
+			$count_to_clone = count( $to_clone );
+			$count_servers = count( $servers );
+			$clone_status = " $count_to_clone / $count_servers";
+			if ( $count_to_clone ) {
+				$form = OIK_clone_tree::get_atts( "form" );
+				if ( $form ) {
+					$clone_status .= $this->clone_link( $to_clone );
 				}
-			} else {
-				$clone_status = " ?";
 			}
 		} else {
 			$clone_status = " n/a";
@@ -307,9 +307,9 @@ class OIK_clone_tree_node {
 	}
 	
 	/**
-	 * Check if the post type is valid for cloning
+	 * Checks if the post type is valid for cloning.
 	 *
-	 * @return bool - true when valid for cloning, false when not
+	 * @return bool - true when valid for cloning, false when not.
 	 */
 	function valid_type() {
 		$valid = true;
@@ -325,6 +325,7 @@ class OIK_clone_tree_node {
 		} else {
 			$valid = false;
 		}
+		bw_trace2( $valid, 'valid type?', false, BW_TRACE_DEBUG );
 		return( $valid );
 			
 	}
