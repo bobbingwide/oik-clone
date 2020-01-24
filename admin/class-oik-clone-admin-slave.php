@@ -155,6 +155,7 @@ class Oik_clone_admin_slave {
 	function validate_slave_form_fields() {
 		$this->validate_slave();
 		$this->validate_clone_post_type();
+		$this->validate_show_same();
 		$slave_list = $this->slave && $this->clone_post_type;
 		return $slave_list;
 
@@ -170,9 +171,9 @@ class Oik_clone_admin_slave {
 	}
 
 	function validate_show_same() {
-		$show_same = bw_array_get( $_REQUEST, 'show_same', null );
-		$this->show_same = bw_validate_torf( $show_same );
-
+		$show_same = bw_array_get( $_REQUEST, 'show_same', 'on' );
+		//echo $show_same;
+		$this->show_same = $show_same ;
 	}
 
 	/**
