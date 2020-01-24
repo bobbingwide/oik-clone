@@ -248,10 +248,10 @@ function oik_clone_match_post( $ID, $data, $fields ) {
 /**
  * Displays a select list of cloneable post types.
  */
-function oik_clone_post_type_select( $post_type = null) {
+function oik_clone_post_type_select( $clone_post_type = null) {
 	$post_types = get_post_types();
-	if ( null === $post_type ) {
-		$post_type=bw_array_get( $_REQUEST, "clone_post_type", "any" );
+	if ( null === $clone_post_type ) {
+		$clone_post_type=bw_array_get( $_REQUEST, "clone_post_type", "any" );
 	}
 	$cloneable_post_types = [];
 	foreach ( $post_types as $post_type ) {
@@ -259,7 +259,7 @@ function oik_clone_post_type_select( $post_type = null) {
 			$cloneable_post_types[ $post_type ] = $post_type;
 		}
 	}
-	bw_select( "clone_post_type", "Post Type", $post_type, array( '#options' => $cloneable_post_types ) );
+	bw_select( "clone_post_type", "Post Type", $clone_post_type, array( '#options' => $cloneable_post_types ) );
 
 }
 
