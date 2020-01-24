@@ -35,7 +35,7 @@ class Oik_clone_admin_slave {
 				oik_box( null, 'slave_action', 'Processing', [ $this, 'oik_clone_slave_action' ] );
 			}
 		}
-		oik_box( null, 'slave_form', "Slave", [ $this, 'oik_clone_slave_form' ] );
+		oik_box( null, 'slave_form', "Slave post selection", [ $this, 'oik_clone_slave_form' ] );
 		oik_box( null, 'slave_posts', 'Posts', [ $this, 'oik_clone_slave_posts' ] );
 		oik_menu_footer();
 
@@ -105,8 +105,6 @@ class Oik_clone_admin_slave {
 
 	/**
 	 * Imports a new post from the chosen slave ID.
-	 *
-	 *
 	 */
 	function oik_clone_slave_action_import() {
 		p( "Processing import..." );
@@ -136,6 +134,7 @@ class Oik_clone_admin_slave {
 		$oik_clone_reconcile->set_dry_run( false );
 		$oik_clone_reconcile->push_updates( $this->slave_id );
 	}
+
 	/**
 	 * Pulls an update from the slave.
 	 */
@@ -169,21 +168,35 @@ class Oik_clone_admin_slave {
 		$this->clone_post_type = $clone_post_type;
 	}
 
+	/**
+	 * Displays the slave field as a select list of the slaves listed in servers
+	 */
+
 	function display_slave_field() {
-		bw_textfield( 'slave', 80, 'Slave', $this->slave );
+		$slaves = bw_get_option( "slaves", "bw_clone_servers" );
+		$slaves = bw_as_array( $slaves );
+		$slaves = bw_assoc( $slaves );
+		//print_r( $slaves );
+		//bw_textfield( 'slave', 80, 'Slave', $this->slave );
+		//bw_select( 'slave', )
+		bw_select( 'slave', "Slave", $this->slave, array( '#options' => $slaves ) );
 	}
 
+	/**
+	 * Displays the clone post type as a select list of cloneable post types.
+	 */
 	function display_post_type_field() {
-		bw_textfield( 'clone_post_type', 32, 'Post type', $this->clone_post_type );
+		// bw_textfield( 'clone_post_type', 32, 'Post type', $this->clone_post_type );.
+		oik_clone_post_type_select( $this->clone_post_type );
 
 	}
 
-
+	/**
+	 * Displays the Slave post selection form
+	 */
 	function oik_clone_slave_form_display() {
-
 		bw_form();
 		stag( 'table', "form-table" );
-		//bw_flush();
 
 		$this->display_slave_field();
 		$this->display_post_type_field();
