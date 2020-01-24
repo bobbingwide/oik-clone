@@ -24,15 +24,19 @@ class Oik_clone_admin_slave {
 	}
 
 	function do_admin_page() {
-		$action = $this->validate_action();
-		$slave_id = $this->validate_slave_id();
-		$slave_fields = $this->validate_slave_form_fields();
-		if ( $action && $slave_id && $slave_fields ) {
-			oik_box( null, 'slave_action', 'Processing', [$this, 'oik_clone_slave_action' ] );
+		$slave_list = $this->oik_clone_slave_form_validate();
+		if ( $slave_list ) {
+			// If they've requested a list we don't perform the action.
+		} else {
+			$action      =$this->validate_action();
+			$slave_id    =$this->validate_slave_id();
+			$slave_fields=$this->validate_slave_form_fields();
+			if ( $action && $slave_id && $slave_fields ) {
+				oik_box( null, 'slave_action', 'Processing', [ $this, 'oik_clone_slave_action' ] );
+			}
 		}
 		oik_box( null, 'slave_form', "Slave", [ $this, 'oik_clone_slave_form' ] );
 		oik_box( null, 'slave_posts', 'Posts', [ $this, 'oik_clone_slave_posts' ] );
-
 		oik_menu_footer();
 
 	}
@@ -78,12 +82,13 @@ class Oik_clone_admin_slave {
 				add_action( 'oik-clone-slave-action-import', [$this, 'oik_clone_slave_action_import'] );
 				break;
 			case 'pull':
+				add_action( 'oik-clone-slave-action-pull', [$this, 'oik_clone_slave_action_pull'] );
+				break;
 			case 'push':
-				die( "Why don't you die now?");
+				add_action( 'oik-clone-slave-action-push', [ $this, 'oik_clone_slave_action_push'] );
 				break;
 			default:
 				$action = null;
-
 		}
 		$this->action = $action;
 		return $this->action;
@@ -98,8 +103,13 @@ class Oik_clone_admin_slave {
 		return $this->slave_id;
 	}
 
+	/**
+	 * Imports a new post from the chosen slave ID.
+	 *
+	 *
+	 */
 	function oik_clone_slave_action_import() {
-		p( "Processing import" );
+		p( "Processing import..." );
 		p( "Slave ID: " . $this->slave_id );
 		oik_require( 'admin/class-oik-clone-reconcile.php', 'oik-clone' );
 		$oik_clone_reconcile = new Oik_clone_reconcile();
@@ -109,6 +119,37 @@ class Oik_clone_admin_slave {
 		$oik_clone_reconcile->set_verbose( true );
 		$oik_clone_reconcile->set_dry_run( false );
 		$oik_clone_reconcile->import( $this->slave_id );
+	}
+
+	/**
+	 * Pushes an update to the slave.
+	 */
+	function oik_clone_slave_action_push() {
+		p( "Processing push..." );
+		p( "Slave ID: " . $this->slave_id );
+		oik_require( 'admin/class-oik-clone-reconcile.php', 'oik-clone' );
+		$oik_clone_reconcile = new Oik_clone_reconcile();
+		$oik_clone_reconcile->set_slave( $this->slave );
+		$oik_clone_reconcile->set_slave_url( $this->slave );
+		$oik_clone_reconcile->set_post_type( $this->clone_post_type );
+		$oik_clone_reconcile->set_verbose( true );
+		$oik_clone_reconcile->set_dry_run( false );
+		$oik_clone_reconcile->push_updates( $this->slave_id );
+	}
+	/**
+	 * Pulls an update from the slave.
+	 */
+	function oik_clone_slave_action_pull() {
+		p( "Processing pull..." );
+		p( "Slave ID: " . $this->slave_id );
+		oik_require( 'admin/class-oik-clone-reconcile.php', 'oik-clone' );
+		$oik_clone_reconcile = new Oik_clone_reconcile();
+		$oik_clone_reconcile->set_slave( $this->slave );
+		$oik_clone_reconcile->set_slave_url( $this->slave );
+		$oik_clone_reconcile->set_post_type( $this->clone_post_type );
+		$oik_clone_reconcile->set_verbose( true );
+		$oik_clone_reconcile->set_dry_run( false );
+		$oik_clone_reconcile->pull_updates( $this->slave_id );
 	}
 
 	function validate_slave_form_fields() {
