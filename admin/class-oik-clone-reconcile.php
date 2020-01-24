@@ -648,6 +648,45 @@ class OIK_clone_reconcile {
 	}
 
 	/**
+	 * Pushes updates to a slave.
+	 *
+	 * This logic discovers the master post ID from the server. Weird eh?
+	 * It's consistent with the reconciliation logic.
+	 * It's not used to push a post on first cloning.
+	 *
+	 * @param ID $slave_id the post ID of the slave post
+	 */
+	function push_updates( $slave_id ) {
+		$mapping  = $this->retrieve_mapping( $slave_id );
+		if ( $mapping ) {
+			e( "Found: " . $mapping->slave );
+			$post = get_post( $mapping->id );
+			$this->push( $post, $mapping );
+		} else {
+			e( "Could not find slave post in mapping" );
+		}
+	}
+
+	/**
+	 * Pulls updates from a slave.
+	 * This logic discovers the master post ID from the server. Weird eh?
+	 * It's consistent with the reconciliation logic.
+	 * It's not used to push a post on first - that's import
+	 *
+	 * @param ID $slave_id the post ID of the slave post
+	 */
+	function pull_updates( $slave_id ) {
+		$mapping=$this->retrieve_mapping( $slave_id );
+		if ( $mapping ) {
+			e( "Found: " . $mapping->slave );
+			$post=get_post( $mapping->id );
+			$this->pull( $post, $mapping );
+		} else {
+			e( "Could not find slave post in mapping" );
+		}
+	}
+
+	/**
 	 * Retrieves the latest mapping for the slave ID.
 	 *
 	 * @param ID $slave_id Post ID on the slave.
