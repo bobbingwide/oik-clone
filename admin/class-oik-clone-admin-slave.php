@@ -14,6 +14,7 @@ class Oik_clone_admin_slave {
 	private $table;
 	private $action; // The action to perform for a selected post
 	private $slave_id; // The slave ID against which to perform the action
+	private $show_same; // True if we want to display items with "None" in the action.
 
 	function __construct() {
 		$this->slave = null;
@@ -168,6 +169,12 @@ class Oik_clone_admin_slave {
 		$this->clone_post_type = $clone_post_type;
 	}
 
+	function validate_show_same() {
+		$show_same = bw_array_get( $_REQUEST, 'show_same', null );
+		$this->show_same = bw_validate_torf( $show_same );
+
+	}
+
 	/**
 	 * Displays the slave field as a select list of the slaves listed in servers
 	 */
@@ -191,6 +198,10 @@ class Oik_clone_admin_slave {
 
 	}
 
+	function display_show_same_checkbox() {
+		bw_checkbox( 'show_same', 'Display reconciled content', $this->show_same );
+	}
+
 	/**
 	 * Displays the Slave post selection form
 	 */
@@ -200,8 +211,7 @@ class Oik_clone_admin_slave {
 
 		$this->display_slave_field();
 		$this->display_post_type_field();
-
-
+		$this->display_show_same_checkbox();
 
 		etag( "table" );
 		p( isubmit( "_oik_clone_slave_list", "List posts", "button-primary" ) );
@@ -216,6 +226,7 @@ class Oik_clone_admin_slave {
 		$oik_clone_reconcile = new Oik_clone_reconcile();
 		$oik_clone_reconcile->set_slave( $this->slave );
 		$oik_clone_reconcile->set_slave_url( $this->slave );
+		$oik_clone_reconcile->set_show_same( $this->show_same );
 		//$oik_clone_reconcile->get_post_types( $this->clone_post_type );
 		//$oik_clone_reconcile->set_apikey();
 		//$this->set_master();

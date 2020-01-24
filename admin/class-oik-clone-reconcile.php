@@ -102,6 +102,10 @@ class OIK_clone_reconcile {
 		$this->post_type = $post_type;
 	}
 
+	function set_show_same( $show_same ) {
+		$this->show_same = $show_same;
+	}
+
 	function set_dry_run( $dry_run = true ) {
 		$this->dry_run = $dry_run;
 		if ( $this->dry_run ) {
@@ -290,7 +294,10 @@ class OIK_clone_reconcile {
 			$this->reconcile( $post, $mapping );
 			//$post_meta = oik_clone_update_slave_target( $mapping->id, $this->slave, $mapping->slave, $mapping->cloned );
 		}
-		$this->summarise( $post, $mapping, $match );
+
+		if ( $this->show_row() ) {
+			$this->summarise( $post, $mapping, $match );
+		}
 	}
 
 	function set_action( $action=null ) {
@@ -713,6 +720,14 @@ class OIK_clone_reconcile {
 			bw_trace2( $mapping, "Slave ID not found in mapping", true, BW_TRACE_ERROR );
 		}
 		return $slave_mapping;
+	}
+
+	function show_row() {
+		$show = true;
+		if ( !$this->show_same ) {
+			$show = $this->action !== 'None';
+		}
+		return $show;
 	}
 
 
