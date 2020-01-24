@@ -12,6 +12,8 @@ class Oik_clone_admin_slave {
 	private $clone_post_type;
 	private $posts;
 	private $table;
+	private $action; // The action to perform for a selected post
+	private $slave_id; // The slave ID against which to perform the action
 
 	function __construct() {
 		$this->slave = null;
@@ -22,23 +24,40 @@ class Oik_clone_admin_slave {
 	}
 
 	function do_admin_page() {
-
+		$action = $this->validate_action();
+		$slave_id = $this->validate_slave_id();
+		$slave_fields = $this->validate_slave_form_fields();
+		if ( $action && $slave_id && $slave_fields ) {
+			oik_box( null, 'slave_action', 'Processing', [$this, 'oik_clone_slave_action' ] );
+		}
 		oik_box( null, 'slave_form', "Slave", [ $this, 'oik_clone_slave_form' ] );
 		oik_box( null, 'slave_posts', 'Posts', [ $this, 'oik_clone_slave_posts' ] );
+
 		oik_menu_footer();
 
 	}
 
-	function oik_clone_slave_form() {
+	/**
+	 * Performs the requested action against the slave.
+	 *
+	 * The action and slave_id should have been validated
+	 * Now we have to find which parts of the mapping are needed to perform the action!
+	 *
+	 */
+	function oik_clone_slave_action() {
+		do_action( 'oik-clone-slave-action-' . $this->action );
+	}
 
+	function oik_clone_slave_form() {
 		$slave_list = $this->oik_clone_slave_form_validate();
 		if ( $slave_list ) {
 			$slave_list = $this->validate_slave_form_fields();
 		}
 		$this->oik_clone_slave_form_display();
 		if ( $slave_list ) {
-			p( "Getting posts" );
+
 		}
+		return $slave_list;
 	}
 
 	function oik_clone_slave_form_validate() {
@@ -50,6 +69,46 @@ class Oik_clone_admin_slave {
 			$slave_list = bw_verify_nonce( "_oik_clone_slave_list", "_oik_clone_slave" );
 		}
 		return $slave_list;
+	}
+
+	function validate_action() {
+		$action = bw_array_get( $_REQUEST, 'action', null );
+		switch ( $action ) {
+			case 'import':
+				add_action( 'oik-clone-slave-action-import', [$this, 'oik_clone_slave_action_import'] );
+				break;
+			case 'pull':
+			case 'push':
+				die( "Why don't you die now?");
+				break;
+			default:
+				$action = null;
+
+		}
+		$this->action = $action;
+		return $this->action;
+	}
+
+	function validate_slave_id() {
+		$this->slave_id = null;
+		$slave_id = bw_array_get( $_REQUEST, 'slave_id', null );
+		if ( is_numeric( $slave_id ) ) {
+			$this->slave_id = $slave_id;
+		}
+		return $this->slave_id;
+	}
+
+	function oik_clone_slave_action_import() {
+		p( "Processing import" );
+		p( "Slave ID: " . $this->slave_id );
+		oik_require( 'admin/class-oik-clone-reconcile.php', 'oik-clone' );
+		$oik_clone_reconcile = new Oik_clone_reconcile();
+		$oik_clone_reconcile->set_slave( $this->slave );
+		$oik_clone_reconcile->set_slave_url( $this->slave );
+		$oik_clone_reconcile->set_post_type( $this->clone_post_type );
+		$oik_clone_reconcile->set_verbose( true );
+		$oik_clone_reconcile->set_dry_run( false );
+		$oik_clone_reconcile->import( $this->slave_id );
 	}
 
 	function validate_slave_form_fields() {
@@ -69,6 +128,15 @@ class Oik_clone_admin_slave {
 		$this->clone_post_type = $clone_post_type;
 	}
 
+	function display_slave_field() {
+		bw_textfield( 'slave', 80, 'Slave', $this->slave );
+	}
+
+	function display_post_type_field() {
+		bw_textfield( 'clone_post_type', 32, 'Post type', $this->clone_post_type );
+
+	}
+
 
 	function oik_clone_slave_form_display() {
 
@@ -76,8 +144,10 @@ class Oik_clone_admin_slave {
 		stag( 'table', "form-table" );
 		//bw_flush();
 
-		bw_textfield( 'slave', 80, 'Slave', $this->slave );
-		bw_textfield( 'clone_post_type', 32, 'Post type', $this->clone_post_type );
+		$this->display_slave_field();
+		$this->display_post_type_field();
+
+
 
 		etag( "table" );
 		p( isubmit( "_oik_clone_slave_list", "List posts", "button-primary" ) );
@@ -87,7 +157,7 @@ class Oik_clone_admin_slave {
 	}
 
 	function oik_clone_slave_posts() {
-		p( "posts go here");
+		//p( "posts go here");
 		oik_require( 'admin/class-oik-clone-reconcile.php', 'oik-clone' );
 		$oik_clone_reconcile = new Oik_clone_reconcile();
 		$oik_clone_reconcile->set_slave( $this->slave );
