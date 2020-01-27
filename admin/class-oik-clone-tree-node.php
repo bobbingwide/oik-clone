@@ -15,7 +15,8 @@ class OIK_clone_tree_node {
 	public $relative_position; // Relative position in the tree. Starting from 0
 	public $relationship; // How the $post_id is related to the $originator
 	public $post; // Pointer to the post itself
-	//public $cloned; 
+	//public $cloned;
+	private $slave; // Slave URL when not using OIK_clone_tree
 	
 	/**
 	 * @TODO We either use constants to reflect the relationship
@@ -122,12 +123,14 @@ class OIK_clone_tree_node {
 			$servers = $this->get_targets();
 			$to_clone = $this->to_clone( $servers, $modified_gmt );
 			$count_to_clone = count( $to_clone );
-			$count_servers = count( $servers );
-			$clone_status = " $count_to_clone / $count_servers";
-			if ( $count_to_clone ) {
-				$form = OIK_clone_tree::get_atts( "form" );
-				if ( $form ) {
-					$clone_status .= $this->clone_link( $to_clone );
+			if ( !$just_count ) {
+				$count_servers = count( $servers );
+				$clone_status = " $count_to_clone / $count_servers";
+				if ( $count_to_clone ) {
+					$form = OIK_clone_tree::get_atts( "form" );
+					if ( $form ) {
+						$clone_status .= $this->clone_link( $to_clone );
+					}
 				}
 			}
 		} else {
@@ -147,9 +150,18 @@ class OIK_clone_tree_node {
 	 *  
 	 */
 	function get_targets() {
-		$servers = OIK_clone_tree::get_targets( $this );
+		if ( class_exists( 'OIK_clone_tree')) {
+			$servers=OIK_clone_tree::get_targets( $this );
+
+		} else {
+			$servers = [ $this->slave ];
+		}
 		return( $servers );
 		
+	}
+
+	function set_slave( $slave ) {
+		$this->slave = $slave;
 	}
 	
 	/**
@@ -216,6 +228,7 @@ class OIK_clone_tree_node {
 	function to_clone( $servers, $modified_gmt ) {
 		$cloned = $this->get_cloned();
 		$to_clone = array();
+		//print_r( $servers );
 		foreach ( $servers as $server ) {
 
 			$is_dnc = $this->is_slave_dnc( $server );
