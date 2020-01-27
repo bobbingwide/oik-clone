@@ -339,9 +339,10 @@ function oik_clone_update_attachment_metadata( $target_id, $media_file ) {
 }
 
 /**
- * Pulls the media file from the slave site
+ * Pulls the media file from the slave site.
  *
  * @TODO Only pull the file if we don't already have it.
+ * Switch to http: when it's a local slave.
  *
  * @param $time
  * @param $post - post object
@@ -393,6 +394,7 @@ function oik_clone_get_slave_attachment_url( $post ) {
 	//$slave_file .= '/wp-content/uploads/';  // How can we be sure this is the right folder?
 
 	$slave_file = $_REQUEST['upload_dir']->baseurl;
+	$slave_file = str_replace( 'https:', 'http:', $slave_file );
 	$slave_file .= '/';
 	$slave_file .= $post->post_meta->_wp_attached_file[0];
 	bw_trace2( $slave_file, "Slave URL");
