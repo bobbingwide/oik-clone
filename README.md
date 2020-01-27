@@ -4,8 +4,8 @@
 * Donate link: https://www.oik-plugins.com/oik/oik-donate/
 * Tags: clone, compare, update, MultiSite
 * Requires at least: 5.2
-* Tested up to: 5.3
-* Stable tag: 2.0.0-beta-20191121
+* Tested up to: 5.3.2
+* Stable tag: 2.0.0-beta-20200127
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 * Text Domain: oik-clone
@@ -23,15 +23,21 @@ Features:
 - pushes the attached file, for attachments
 * - maintains relationships: e.g. post_parent and fields referencing other content
 * - maintains informal relationships: e.g. in post_content
+- reconciliation of content with a selected slave server.
+- cloning of new content to a selected slave server
 - pull content from other sites in a MultiSite installation
 - compare and update or import from self or a MultiSite site
 - clone virtual field - to display clones of current content
 
 New for version 2.0.0
 
+- Admin UI for reconciliation between the local installation and a selected slave site.
+- Also supports cloning of new content to the slave.
+
+This was originally developed as:
+
 * - Batch reconciliation: push and pull between the local installation and a selected slave site.
 - Per post setting to support selective cloning to slave servers
-
 
 
 oik-clone is dependent on the oik base plugin; using the oik-plugin as a library of functions sitting on top of WordPress.
@@ -55,13 +61,15 @@ Install on both the client and server machines.
 
 # Is there a beta test version? 
 Yes, there's a new beta test version for 2.0.0
-This new version supports batch reconciliation of posts that have been updated in the slave
+This new version supports reconciliation of posts that have been updated in the slave
 and a 'Do Not Clone' capability.
 
+# What does the Slave tab do?
+Use this admin page to reconcile content with a slave server or to push new content to the slave server.
 
 # What does the Multi-Site tab do? 
 
-The initial version of this plugin is designed for use on WordPress MultiSite
+The initial version of this plugin was designed for use on WordPress MultiSite
 where you have cloned an existing site into a new version, developed the new version
 and now want to copy the new contents back into the existing site.
 
@@ -75,7 +83,6 @@ It provides the same actions as the Multisite tab, but the source and target sit
 - You can compare similar content
 - You can duplicate content by performing Import
 
-
 # How does the "Clone on update" work? 
 
 This'll be documented in the FAQs on the site
@@ -84,11 +91,11 @@ This'll be documented in the FAQs on the site
 
 It depends.
 
-- If you have a complex content structure or a lot of new/changed content then the answer is "No, not yet"
-- If you have a simple content structure - just posts and pages - then you may find this useful.
+- If you have a complex content structure or a lot of new/changed content then the answer is to consider using the batch routines.
+- If you have a simple content structure - just posts and pages - then you may find this useful - to both push and pull.
 
 To support pushing from Staging to Production requires additional work to identify the network of posts to be cloned.
-This can be achieved using a shortcode.
+This can be achieved using a the [clone] shortcode in a widget.
 
 # Does this use the REST API? 
 Not yet, though that was the plan.
@@ -123,7 +130,8 @@ but in the mean time you have to download and activate oik to make this work.
 
 Yes. Work is needed in the following areas.
 
-- Hierarchical content requires parent content to be cloned first - partially solved in v0.5
+- Hierarchical content requires parent content to be cloned first.
+- Sometimes you need to clone the tree, update something and clone again.
 - Limitation on media file size imposed by servers
 
 # What authentication method is used? 
@@ -137,8 +145,15 @@ Other methods will be implemented in future versions.
 2. Clone on update meta box - with cloned post links
 3. Clone on update meta box - Previously cloned
 4. Do Not Clone meta box
+5. Clone admin - Slave tab - Slave Post Selection
+6. Clone admin - Slave tab - Slave Post list
+7. Clone admin - Slave tab - Import new post from Slave
+8. Clone admin - Slave tab - Master posts to clone
 
 ## Upgrade Notice 
+# 2.0.0-beta-20200127 
+Adds an admin interface to reconcile with a slave server and clone new content.
+
 # 2.0.0-beta-20191121 
 Upgrade so you can clone reusable blocks.
 
@@ -233,6 +248,13 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 ## Changelog 
+# 2.0.0-beta-20200127 
+* Added: Clone admin Slave tab to reconcile content and/or clone new content between master and slave,https://github.com/bobbingwide/oik-clone/issues/49
+* Tested: With WordPress 5.3.2 and WordPress Multi Site
+* Tested: With Gutenberg 7.3.0
+* Tested: With PHP 7.3 and PHP 7.4
+* Tested: With PHPUnit 8
+
 # 2.0.0-beta-20191121 
 * Changed: map the ref attr used in the reusable blocks block,https://github.com/bobbingwide/oik-clone/issues/38
 * Changed: Only expand clone/cloned shortcodes when just one thing is being displayed, https://github.com/bobbingwide/oik-clone/issues/43
