@@ -402,7 +402,7 @@ function oik_clone_cloning_in_progress( $cloning=null) {
  * 
  */
 function oik_clone_heartbeat_settings( $settings ) {
-  bw_trace2();
+  //bw_trace2();
   $settings['interval'] = 60;
   return( $settings );
 }
@@ -511,7 +511,9 @@ function oik_clone_run_oik_clone_reconcile_batch() {
 function oik_clone_http_request_args( $args, $url ) {
 
 	if ( ! class_exists( "oik_remote" ) ) {
-		oik_require_lib( "class-oik-remote" );
+		if ( function_exists( 'oik_require_lib' )) {
+			oik_require_lib( "class-oik-remote" );
+		}
 	}
 	if ( class_exists( "oik_remote" ) ) {
 		$args = oik_remote::bw_adjust_args( $args, $url );
