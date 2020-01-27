@@ -16,6 +16,8 @@ class Oik_clone_admin_slave {
 	private $slave_id; // The slave ID against which to perform the action
 	private $show_same; // True if we want to display items with "None" in the action.
 
+	private $oik_clone_reconcile; // Instance of Oik_clone_reconcile
+
 	function __construct() {
 		$this->slave = null;
 		$this->clone_post_type = null;
@@ -37,7 +39,8 @@ class Oik_clone_admin_slave {
 			}
 		}
 		oik_box( null, 'slave_form', "Slave post selection", [ $this, 'oik_clone_slave_form' ] );
-		oik_box( null, 'slave_posts', 'Posts', [ $this, 'oik_clone_slave_posts' ] );
+		oik_box( null, 'slave_posts', 'Slave posts', [ $this, 'oik_clone_slave_posts' ] );
+		oik_box( null, 'master_posts', 'Master posts', [ $this, 'oik_clone_master_posts'] );
 		oik_menu_footer();
 
 	}
@@ -88,6 +91,9 @@ class Oik_clone_admin_slave {
 			case 'push':
 				add_action( 'oik-clone-slave-action-push', [ $this, 'oik_clone_slave_action_push'] );
 				break;
+			case 'clone':
+				add_action( 'oik-clone-slave-action-clone', [$this, 'oik_clone_slave_action_clone'] );
+				break;
 			default:
 				$action = null;
 		}
@@ -134,6 +140,22 @@ class Oik_clone_admin_slave {
 		$oik_clone_reconcile->set_verbose( true );
 		$oik_clone_reconcile->set_dry_run( false );
 		$oik_clone_reconcile->push_updates( $this->slave_id );
+	}
+
+	/**
+	 * Clones content to the slave.
+	 */
+	function oik_clone_slave_action_clone() {
+		p( "Processing clone..." );
+		p( "ID: " . $this->slave_id );
+		oik_require( 'admin/class-oik-clone-reconcile.php', 'oik-clone' );
+		$oik_clone_reconcile = new Oik_clone_reconcile();
+		$oik_clone_reconcile->set_slave( $this->slave );
+		$oik_clone_reconcile->set_slave_url( $this->slave );
+		$oik_clone_reconcile->set_post_type( $this->clone_post_type );
+		$oik_clone_reconcile->set_verbose( true );
+		$oik_clone_reconcile->set_dry_run( false );
+		$oik_clone_reconcile->clone( $this->slave_id );
 	}
 
 	/**
@@ -235,9 +257,19 @@ class Oik_clone_admin_slave {
 		//$this->get_verbose();
 		$oik_clone_reconcile->sanity_check();
 		//$oik_clone_reconcile->process_post_types();
-		$oik_clone_reconcile->table_start();
+		$oik_clone_reconcile->slave_table_start();
 		$oik_clone_reconcile->process_post_type( $this->clone_post_type );
 		$oik_clone_reconcile->table_end();
+		$this->oik_clone_reconcile = $oik_clone_reconcile;
+	}
+
+	function oik_clone_master_posts() {
+
+		$this->oik_clone_reconcile->master_posts();
+
+
+
+
 	}
 
 	function the_complicated_stuff() {

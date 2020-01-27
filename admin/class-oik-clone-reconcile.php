@@ -578,9 +578,20 @@ class OIK_clone_reconcile {
 		//echo PHP_EOL;
 	}
 
-	function table_start() {
-		stag( 'table', 'form-table' );
+	function slave_table_start() {
 		$headers = bw_as_array( 'Action,SlaveID,Cloned,Modified,Local-modified,Title,Type,ID,Name' );
+		$this->table_start( $headers );
+	}
+
+	function master_table_start() {
+		$headers = bw_as_array( 'Action,ID,Title,Type,Name,Modified');
+		$this->table_start( $headers );
+
+
+	}
+
+	function table_start( $headers ) {
+		stag( 'table', 'form-table' );
 		bw_tablerow( $headers, 'tr', 'th');
 
 	}
@@ -616,7 +627,9 @@ class OIK_clone_reconcile {
 				$link = $this->admin_clone_url( 'push', $slave_id );
 				break;
 
-
+			case 'Clone':
+				$link = $this->admin_clone_url( 'clone', $slave_id );
+				break;
 		}
 		if ( $link ) {
 			$retlink = retlink( null, $link, $action );
@@ -694,6 +707,15 @@ class OIK_clone_reconcile {
 	}
 
 	/**
+	 * Clones a new post to the selected slave
+	 *
+	 */
+	function clone( $master_id ) {
+		//$post = get_post( $master_id );
+		oik_clone_clone( $master_id, false, [ $this->slave ] );
+	}
+
+	/**
 	 * Retrieves the latest mapping for the slave ID.
 	 *
 	 * @param ID $slave_id Post ID on the slave.
@@ -728,6 +750,79 @@ class OIK_clone_reconcile {
 			$show = $this->action !== 'None';
 		}
 		return $show;
+	}
+
+	function master_posts() {
+		$this->get_master_posts();
+		if ( $this->posts ) {
+			$count=count( $this->posts );
+			p( "Processing: " . $count );
+			$this->master_table();
+		}
+	}
+
+	function get_master_posts() {
+		$atts = array( "post_type" => $this->post_type
+		, 'post_status' => 'any'
+		, "numberposts" => -1
+		, "post_parent" => "."
+		, 'orderby' => 'modified'
+		, 'order' => 'ASC'
+		);
+		$this->posts = bw_get_posts( $atts );
+	}
+
+	function master_table() {
+		$this->master_table_start();
+		foreach ( $this->posts as $post ) {
+			$row = $this->maybe_master_row( $post );
+			if ( count( $row ) ) {
+				bw_tablerow( $row );
+			}
+
+		}
+		$this->table_end();
+	}
+
+
+	/**
+	 * Action,ID,Title,Name,Modified');
+	 * @param $post
+	 */
+
+	function maybe_master_row( $post ) {
+		$clone = $this->maybe_clone( $post );
+		//print_r( $clone );
+		if ( count( $clone ) ) {
+			$row=$this->build_row( $post );
+		} else {
+			$row=[];
+		}
+		return $row;
+	}
+
+	function maybe_clone( $post ) {
+		oik_require( 'admin/class-oik-clone-tree-node.php', 'oik-clone');
+		$node = new Oik_clone_tree_node( $post->ID, $post->ID, 0, 'self', $post );
+		$node->set_slave( $this->slave );
+		$node->get_post_meta();
+		$to_clone = $node->to_clone( [$this->slave], $post->modified_gmt );
+		//print_r( $to_clone );
+		//echo ':' . $post->ID . ' ';
+		//$clone = isset( $to_clone[ $this->slave ] );
+		return $to_clone;
+	}
+
+
+	function build_row( $post ) {
+		$row = [];
+		$row[] = $this->action_link('Clone', $post->ID );
+		$row[] = $post->ID;
+		$row[] = $this->master_link( $post->ID );
+		$row[] = $post->post_type;
+		$row[] = $post->post_name;
+		$row[] = $post->post_modified;
+		return $row;
 	}
 
 
