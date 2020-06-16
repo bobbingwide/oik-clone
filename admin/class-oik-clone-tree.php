@@ -170,20 +170,49 @@ class OIK_clone_tree {
 		bw_trace2( $handled, "handled?", true, BW_TRACE_DEBUG );
 		return( $handled );
 	}
+
+
+	/**
+	 * If the post has a featured image that's not yet been cloned
+	 * then we need to reprocess it.
+	 *
+	 * @param $node
+	 */
+
+	function maybe_reprocess_node( $node ) {
+		bw_trace2();
+		$reprocess = $this->is_thumbnail_cloned( $node );
+		if ( $reprocess ) {
+
+			$this->add_reprocess_node( $node );
+		}
+	}
+
+	function is_thumbnail_cloned( $node ) {
+		$cloned = false;
+		$thumbnail_id = get_post_thumbnail_id( $node->id );
+		if ( $thumbnail_id ) {
+			$cloned_ids = get_post_meta( $node->id, '_oik_clone_ids', false );
+			$cloned = isset( $cloned_ids );
+		}
+		return $cloned;
+	}
 	
 	
 	/**
 	 * Add a node to the reprocess list
 	 */
 	function add_reprocess_node( $node ) {
-		gobang();
+		$this->reprocess_nodes[ $node->id ] = $node;
+
 	}
 	
 	/** 
 	 * Check if the node is in the reprocess list
 	 */
-	function is_reprocess_node() {
-		gobang();
+	function is_reprocess_node( $node ) {
+		$reprocess = isset( $this->reprocess_nodes[ $node->id ] );
+		return $reprocess;
 	}
 	
 	/**
@@ -369,11 +398,36 @@ class OIK_clone_tree {
 			$clone_me = in_array( $node->id, $clone_ids ); 
 			if ( $clone_me ) {
 				$node->cloneme();
+				$this->maybe_reprocess_node( $node );
 			} else {
 				//e( "Not cloning {$node->id}" );
 			}	
 		}
 	 
+	}
+
+
+	/**
+	 * Reclone posts if they need it
+	 *
+	 * We probably don't need the list of IDs in $clone_ids
+	 *
+	 * @param $clone_ids
+	 */
+
+	function reclone_these( $clone_ids ) {
+
+		//bw_trace2();
+		p( "Recloning...");
+		$this->order_nodes();
+		foreach ( $this->ordered_nodes as $node ) {
+			$reprocess = $this->is_reprocess_node( $node );
+			if ( $reprocess ) {
+				$node->cloneme();
+			} else {
+				p( "Not recloning {$node->id}" );
+			}
+		}
 	}
 
 	/**

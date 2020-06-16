@@ -63,6 +63,7 @@ function oik_clone_maybe_perform_clones( $id, $atts ) {
 				bw_trace2( $clone_ids, "clone_ids", false, BW_TRACE_DEBUG );
 				$clone = oik_clone_build_tree( $id, $atts );
 				$clone->clone_these( $clone_ids );
+				$clone->reclone_these( $clone_ids );
 			}
 	
 		
