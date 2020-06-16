@@ -3,8 +3,8 @@ Contributors: bobbingwide
 Donate link: https://www.oik-plugins.com/oik/oik-donate/
 Tags: clone, compare, update, MultiSite
 Requires at least: 5.2
-Tested up to: 5.3.2
-Stable tag: 2.0.0-beta-20200127
+Tested up to: 5.4.2
+Stable tag: 2.0.0-beta-20200616
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: oik-clone
@@ -13,7 +13,7 @@ Domain Path: /languages/
 == Description ==
 Clone content between sites
 
-oik-clone provides tools to merge and synchronise content between WordPress sites.
+oik-clone provides tools to merge and synchronize content between WordPress sites.
 
 Features:
 
@@ -32,6 +32,7 @@ New for version 2.0.0
 
 - Admin UI for reconciliation between the local installation and a selected slave site.
 - Also supports cloning of new content to the slave.
+- Automatically reclones content if the featured image was not previously cloned.
 
 This was originally developed as:
 
@@ -60,7 +61,10 @@ Install on both the client and server machines.
 
 = Is there a beta test version? =
 Yes, there's a new beta test version for 2.0.0
-This new version supports reconciliation of posts that have been updated in the slave
+
+The June version improves the cloning process. It reduces the amount of user activity required to clone new posts with newly added ( uncloned ) featured images.
+
+The January 2020 beta version supports reconciliation of posts that have been updated in the slave
 and a 'Do Not Clone' capability.
 
 = What does the Slave tab do?
@@ -150,6 +154,9 @@ Other methods will be implemented in future versions.
 8. Clone admin - Slave tab - Master posts to clone
 
 == Upgrade Notice ==
+= 2.0.0-beta-20200616 =
+Update for an easier process to clone new content with a new featured image. 
+
 = 2.0.0-beta-20200127 =
 Adds an admin interface to reconcile with a slave server and clone new content.
 
@@ -247,6 +254,13 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 == Changelog ==
+= 2.0.0-beta-20200616 = 
+* Added: Reclone logic run immediately after cloning content,[github bobbingwide oik-clone issues 50]
+* Tested: With WordPress 5.4.2 and WordPress Multi Site
+* Tested: With Gutenberg 8.3.0
+* Tested: With PHP 7.3 and PHP 7.4
+* Tested: With PHPUnit 8
+
 = 2.0.0-beta-20200127 = 
 * Added: Clone admin Slave tab to reconcile content and/or clone new content between master and slave,[github bobbingwide oik-clone issues 49]
 * Tested: With WordPress 5.3.2 and WordPress Multi Site
