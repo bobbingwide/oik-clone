@@ -3,9 +3,9 @@
 * Contributors: bobbingwide
 * Donate link: https://www.oik-plugins.com/oik/oik-donate/
 * Tags: clone, compare, update, MultiSite
-* Requires at least: 5.2
-* Tested up to: 5.4.2
-* Stable tag: 2.0.0-beta-20200616
+* Requires at least: 5.5
+* Tested up to: 5.6-RC2
+* Stable tag: 2.0.0
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 * Text Domain: oik-clone
@@ -155,6 +155,9 @@ Other methods will be implemented in future versions.
 8. Clone admin - Slave tab - Master posts to clone
 
 ## Upgrade Notice 
+# 2.0.0 
+Update for a fix to issue #52
+
 # 2.0.0-beta-20200616 
 Update for an easier process to clone new content with a new featured image.
 
@@ -255,6 +258,12 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 ## Changelog 
+# 2.0.0 
+* Fixed: Re-unicodify serialised attributes,https://github.com/bobbingwide/oik-clone/issues/52
+* Tested: With WordPress 5.6-RC2 and WordPress Multi Site
+* Tested: With Gutenberg 9.4.1
+* Tested: With PHP 7.4
+
 # 2.0.0-beta-20200616 
 * Added: Reclone logic run immediately after cloning content,https://github.com/bobbingwide/oik-clone/issues/50
 * Tested: With WordPress 5.4.2 and WordPress Multi Site
