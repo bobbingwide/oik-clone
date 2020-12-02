@@ -150,7 +150,9 @@ class OIK_clone_block_relationships {
 			$output .= $this->blockName( $block );
 			if ( isset( $block['attrs'] ) && count( $block['attrs' ] ) ) {
 				$output .= ' ';
-				$output .= json_encode( $block['attrs'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+				$attributes = json_encode( $block['attrs'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+				$attributes = $this->serializeAttributes( $attributes );
+				$output .= $attributes;
 
 			}
 			if ( count( $block['innerContent']) ) {
@@ -162,6 +164,23 @@ class OIK_clone_block_relationships {
 			}
 		}
 		return $output;
+	}
+
+	/**
+	 * Re-unicodifies Gutenberg's comments in attributes.
+	 *
+	 * Similar to Gutenberg's serializeAttributes() JavaScript function.
+	 *
+	 * @param string $value JSON encoded string to re-unicodify
+	 * @return string
+	 */
+	function serializeAttributes( $value ) {
+		$result = str_replace( '\"', '\u0022', $value);
+		$result = str_replace( '--', '\u002d\u002d', $result);
+		$result = str_replace( '<', '\u003c', $result);
+		$result = str_replace( '>', '\u003e', $result);
+		$result = str_replace( '&', '\u0026', $result);
+		return $result;
 	}
 
 	function end_html_comment( $block ) {
