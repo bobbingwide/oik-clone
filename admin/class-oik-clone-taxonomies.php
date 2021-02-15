@@ -443,6 +443,7 @@ We really only need
    * @return integer - the new target term ID
    */ 
   function create_term( $term, $current_parent ) {
+  	$term_id = null;
     $description = $term->description;
     $args = array( "description" => $description
                  , "parent" => $current_parent
@@ -450,10 +451,21 @@ We really only need
     bw_trace2( $args, "args" );
     $target_term = wp_insert_term( $term->name, $this->taxonomy, $args );
     bw_trace2( $target_term, "target_term", false );
-    $term_id = bw_array_get( $target_term, "term_id", null );
-    // Now add this term to the target_tree
-    $this->add_target_tree_term( $target_term, $term, $current_parent );
-    
+    if ( is_wp_error( $target_term )) {
+    	// Get the term_id from the error data
+	    if ( isset( $target_term->error_data['term_exists'] ) ) {
+	    	$term_id = $target_term->error_data['term_exists'];
+	    	$target_term = get_term( $term_id, $this->taxonomy );
+	    	bw_trace2( $target_term, "target?", false );
+		    //$term_id=bw_array_get( $target_term, "term_id", null );
+	    } else {
+	    	$term_id = null;
+	    }
+    } else {
+	    $term_id=bw_array_get( $target_term, "term_id", null );
+	    // Now add this term to the target_tree
+	    $this->add_target_tree_term( $target_term, $term, $current_parent );
+    }
     return( $term_id );
   }
   
