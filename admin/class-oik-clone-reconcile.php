@@ -395,11 +395,16 @@ class OIK_clone_reconcile {
 			$slaves=$post_meta[0];
 
 			$slave_info=bw_array_get( $slaves, $this->slave_url, null );
-			if ( $slave_info['id'] !== $mapping->slave ) {
-				$this->echo( "Error:", "Clone mismatch" );
+			if ( $slave_info ) {
+				if ( $slave_info['id'] !== $mapping->slave ) {
+					$this->echo( "Error:", "Clone mismatch" );
+				} else {
+					$master_cloned=$slave_info['cloned'];
+					$master_cloned=date( "Y-m-d H:i:s", $master_cloned );
+				}
 			} else {
-				$master_cloned=$slave_info['cloned'];
-				$master_cloned=date( "Y-m-d H:i:s", $master_cloned );
+				$this->echo( "Error:", "Missing slave info");
+				bw_trace2( $slaves, $this->slave_url, true, BW_TRACE_ERROR );
 			}
 		}
 
