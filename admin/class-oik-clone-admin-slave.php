@@ -193,9 +193,13 @@ class Oik_clone_admin_slave {
 	}
 
 	function validate_show_same() {
-		$show_same = bw_array_get( $_REQUEST, 'show_same', 'on' );
-		//echo $show_same;
-		$this->show_same = $show_same ;
+		if ( null === $this->action ) {
+			$show_same=bw_array_get( $_REQUEST, 'show_same', 'on' );
+			//echo $show_same;
+			$this->show_same=$show_same;
+		} else {
+			$this->show_same = 0;
+		}
 	}
 
 	/**
