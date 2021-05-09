@@ -121,10 +121,11 @@ function oik_clone_apply_mapping( $post ) {
   add_filter( "oik_clone_apply_informal_mapping", "oik_clone_apply_informal_relationship_mapping", 10, 2 );
   add_filter( "oik_clone_apply_informal_mapping", "oik_clone_apply_informal_relationship_mapping_urls", 11, 2 );
   add_filter( 'oik_clone_apply_informal_mapping', 'oik_clone_apply_informal_relationship_mapping_blocks', 12, 2);
+  add_filter( 'oik_clone_apply_informal_mapping', 'oik_clone_apply_informal_relationship_mapping_site_id', 13, 2 );
   $post = apply_filters( "oik_clone_apply_informal_mapping", $post, $mapping->mapping );
   remove_filter( "oik_clone_apply_informal_mapping", "oik_clone_apply_informal_relationship_mapping", 10 );
-	remove_filter( "oik_clone_apply_informal_mapping", "oik_clone_apply_informal_relationship_mapping_urls", 11 );
-	remove_filter( "oik_clone_apply_informal_mapping", "oik_clone_apply_informal_relationship_mapping_blocks", 12 );
+  remove_filter( "oik_clone_apply_informal_mapping", "oik_clone_apply_informal_relationship_mapping_urls", 11 );
+  remove_filter( "oik_clone_apply_informal_mapping", "oik_clone_apply_informal_relationship_mapping_site_id", 13 );
 
 	return( $post );
 }
@@ -184,6 +185,8 @@ function oik_clone_apply_informal_relationship_mapping_urls( $post, $target_ids 
   $post->post_content = str_replace( $master, $target, $post->post_content );
   $post->post_excerpt = str_replace( $master, $target, $post->post_excerpt );
   bw_trace2( $post, "post", false, BW_TRACE_VERBOSE );
+
+
   return $post ;
 }
 
@@ -208,6 +211,26 @@ function oik_clone_apply_informal_relationship_mapping_blocks( $post, $target_id
 	$post->post_content = $oik_clone_block_relationships->update_target( $post, $target_ids );
 	//$post->post_excerpt = $target_informal_relationships->map_ids( $post->post_excerpt );
 	return( $post );
+}
+
+/**
+ * Implements "oik_clone_apply_informal_mapping" to any /site/nn/ values in post_content
+ *
+ * @param object $post - the post object
+ * @param array $target_ids - the mapping from source to target IDs
+ * @return object - the updated post object
+ */
+function oik_clone_apply_informal_relationship_mapping_site_id( $post, $target_ids ) {
+	$source_site_id = bw_array_get( $_REQUEST, "site_id", null );
+	oik_require( "admin/oik-save-post.php", "oik-clone" );
+	$target_site_id = oik_clone_get_site_id();
+	//bw_trace2( $source_site_id, "source site id");
+	//bw_trace2( $target_site_id, "target site id", false );
+	if ( $source_site_id && $target_site_id && ($source_site_id !== $target_site_id)  ) {
+		$post->post_content = str_replace( "/wp-content/uploads/sites/$source_site_id/",
+		"/wp-content/uploads/sites/$target_site_id/", $post->post_content );
+	}
+	return $post;
 }
 
 function oik_clone_get_master_schemeless() {

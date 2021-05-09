@@ -335,6 +335,7 @@ function oik_clone_update_slave_simple( $id, $payload, $slave, $target, $mapping
   $body = array( "action" => "oik_clone_post" 
                , "master" => get_site_url()
                , "oik_apikey" => oik_clone_get_apikey()
+               , "site_id" => oik_clone_get_site_id()
                , "target" => $target 
                , "payload" => $payload
                , "mapping" => $mapping
@@ -377,6 +378,7 @@ function oik_clone_update_slave_multipart( $id, $payload, $slave, $target, $mapp
     $body = array( "action" => "oik_clone_post" 
                  , "master" => get_site_url()
                  , "oik_apikey" => oik_clone_get_apikey()
+	             , "site_id" => oik_clone_get_site_id()
                  , "target" => $target 
                  , "payload" => $payload
                  , "mapping" => $mapping
@@ -392,4 +394,17 @@ function oik_clone_update_slave_multipart( $id, $payload, $slave, $target, $mapp
     $result = null;
   }
   return( $result );
+}
+
+/**
+ * Returns the site ID for Multi Site site_id mapping.
+ *
+ * @return int|null Site ID. null if not WPMS
+ */
+function oik_clone_get_site_id() {
+	$site_id = null;
+	if ( is_multisite() ) {
+		$site_id = get_current_blog_id();
+	}
+	return $site_id;
 }
