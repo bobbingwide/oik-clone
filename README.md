@@ -4,8 +4,8 @@
 * Donate link: https://www.oik-plugins.com/oik/oik-donate/
 * Tags: clone, compare, update, MultiSite
 * Requires at least: 5.5
-* Tested up to: 5.6.1
-* Stable tag: 2.0.1
+* Tested up to: 5.7.1
+* Stable tag: 2.1.0
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 * Text Domain: oik-clone
@@ -155,6 +155,9 @@ Other methods will be implemented in future versions.
 8. Clone admin - Slave tab - Master posts to clone
 
 ## Upgrade Notice 
+# 2.1.0 
+Update for a fix to issue #60
+
 # 2.0.1 
 Update for a fix to issue #56
 
@@ -261,6 +264,13 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 ## Changelog 
+# 2.1.0 
+* Fixed: Cater for cloning images between different site IDs in WPMS,https://github.com/bobbingwide/oik-clone/issues/60
+* Tested: With WordPress 5.7.1 and WordPress Multi Site
+* Tested: With Gutenberg 10.6.0-rc.1
+* Tested: With PHP 8.0
+* Tested: With PHPUnit 9
+
 # 2.0.1 
 * Fixed: Cater for term already exists error from wp_insert_term(),https://github.com/bobbingwide/oik-clone/issues/56
 
