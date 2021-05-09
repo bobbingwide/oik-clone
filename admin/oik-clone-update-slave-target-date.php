@@ -3,7 +3,14 @@
 * @copyright (C) Copyright Bobbing Wide 2019
 */
 
-
+/**
+ * Updates the slave's target date.
+ *
+ * @param $master_id
+ * @param $slave_url
+ * @param $slave_id
+ * @param $post_modified_gmt
+ */
 function oik_clone_update_slave_target_date( $master_id, $slave_url, $slave_id, $post_modified_gmt ) {
 	$url = "$slave_url/wp-admin/admin-ajax.php";
 	$body = array( "action" => "oik_clone_update_slave_target",
