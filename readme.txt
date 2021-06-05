@@ -3,8 +3,8 @@ Contributors: bobbingwide
 Donate link: https://www.oik-plugins.com/oik/oik-donate/
 Tags: clone, compare, update, MultiSite
 Requires at least: 5.5
-Tested up to: 5.7.1
-Stable tag: 2.1.0
+Tested up to: 5.7.2
+Stable tag: 2.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: oik-clone
@@ -154,6 +154,9 @@ Other methods will be implemented in future versions.
 8. Clone admin - Slave tab - Master posts to clone
 
 == Upgrade Notice ==
+= 2.1.1 =
+Update for empty output from clone and cloned shortcodes when OIK_APIKEY is not set. 
+  
 = 2.1.0 =
 Update for a fix to issue #60 
 
@@ -263,6 +266,11 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 == Changelog ==
+= 2.1.1 =
+* Changed: Disable clone and cloned shortcodes when OIK_APIKEY is not defined.,[github bobbingwide oik-clone issues 61]
+* Tested: With Gutenberg 10.7.1
+* Tested: With WordPress 5.7.2
+
 = 2.1.0 =
 * Fixed: Cater for cloning images between different site IDs in WPMS,[github bobbingwide oik-clone issues 60]
 * Tested: With WordPress 5.7.1 and WordPress Multi Site
