@@ -112,6 +112,9 @@ function oik_clone_display_form( $tree, $id, $atts ) {
  * @return string information showing the "tree" for the given post
  */
 function oik_clone( $atts=null, $content=null, $tag=null ) {
+
+	if ( !defined( "OIK_APIKEY" )  ) return '';
+
 	$form = current_user_can( "publish_pages" ); 
 	if ( $form ) {
 		$form = bw_array_get( $atts, "form", "y" );

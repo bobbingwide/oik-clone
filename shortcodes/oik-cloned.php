@@ -13,6 +13,7 @@
  * 
  */
 function oik_cloned( $atts=null, $content=null, $tag=null ) {
+	if ( !defined( "OIK_APIKEY" )  ) return '';
 	oik_require( 'shortcodes/oik-clone.php', 'oik-clone');
 	$id = oik_clone_maybe_get_current_post_id( $atts );
 
