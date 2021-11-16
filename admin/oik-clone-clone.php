@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2015, 2016
+<?php // (C) Copyright Bobbing Wide 2015, 2016, 2021
 
 /**
  * Return the target ID 
@@ -190,6 +190,7 @@ function oik_clone_attempt_import( $source, $target, $post ) {
 
 	oik_require( "admin/oik-clone-actions.php", "oik-clone" );
 	oik_require( "admin/oik-clone-relationships.php", "oik-clone" );
+    oik_require( "admin/oik-clone-comments.php", "oik-clone" );
 	$media_file = null;
 	kses_remove_filters();
 
@@ -233,6 +234,7 @@ function oik_clone_attempt_import( $source, $target, $post ) {
 		 oik_clone_update_attachment_metadata( $target_id, $media_file['file'] );
 	}
 	oik_clone_update_taxonomies( $post, $target_id );
+	oik_clone_update_comments( $post, $target_id );
   
 	// update the post meta with the master post ID of the source ... regardless of the current source
 	// Can we trust [HTTP_USER_AGENT] => WordPress/4.1.1; http://qw/oikcom ?
@@ -244,4 +246,3 @@ function oik_clone_attempt_import( $source, $target, $post ) {
 	oik_clone_cloning_in_progress( false );
 	return( $target_id );
 }
-

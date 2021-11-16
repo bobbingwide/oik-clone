@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2014-2016, 2019
+<?php // (C) Copyright Bobbing Wide 2014-2016, 2019, 2021
 
 /**
  * Validate the action against the given parameters
@@ -382,8 +382,11 @@ function oik_clone_load_post( $post_id ) {
   
 		$post->post_taxonomies = $taxonomies;
 
+        oik_require( "admin/oik-clone-comments.php", "oik-clone" );
+        $comments = oik_clone_load_comments( $post_id, $post );
+        $post->comments = $comments;
 
-		bw_trace2( $post, "post" );
+		bw_trace2( $post, "post", true, BW_TRACE_DEBUG );
 
 	} else {
 		bw_trace2( null, null, true, BW_TRACE_ERROR );
