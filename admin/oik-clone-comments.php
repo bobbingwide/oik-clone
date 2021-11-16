@@ -99,7 +99,7 @@ function oik_clone_update_comments( $post, $target_id ) {
  * @param $target_id
  */
 function oik_clone_delete_comments( $target_id ) {
-    $comment_objects = get_comments( [ 'post_id' => $target_id ]);
+    $comments_objects = get_comments( [ 'post_id' => $target_id ]);
     foreach ( $comments_objects as $comment_object ) {
         wp_delete_comment( $comment_object->comment_ID, true );
     }
