@@ -1,11 +1,11 @@
 # oik-clone 
-![banner](https://raw.githubusercontent.com/bobbingwide/oik-clone/master/assets/oik-clone-banner-772x250.jpg)
+![banner](assets/oik-clone-banner-772x250.jpg)
 * Contributors: bobbingwide
 * Donate link: https://www.oik-plugins.com/oik/oik-donate/
 * Tags: clone, compare, update, MultiSite
 * Requires at least: 5.5
-* Tested up to: 5.7.2
-* Stable tag: 2.1.1
+* Tested up to: 5.8.2
+* Stable tag: 2.2.0
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 * Text Domain: oik-clone
@@ -28,6 +28,10 @@ Features:
 - pull content from other sites in a MultiSite installation
 - compare and update or import from self or a MultiSite site
 - clone virtual field - to display clones of current content
+
+New for version 2.2.0
+
+- Capability to clone comments attached to a post. Needed for the documentation of Gutenberg comment related blocks.
 
 New for version 2.0.0
 
@@ -155,6 +159,9 @@ Other methods will be implemented in future versions.
 8. Clone admin - Slave tab - Master posts to clone
 
 ## Upgrade Notice 
+# 2.2.0 
+Update for the ability to clone comments attached to posts.
+
 # 2.1.1 
 Update for empty output from clone and cloned shortcodes when OIK_APIKEY is not set.
 
@@ -267,6 +274,12 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 ## Changelog 
+# 2.2.0 
+* Added: Logic to clone simple ( non hierarchical ) comments,https://github.com/bobbingwide/oik-clone/issues/57
+* Tested: With Gutenberg 11.9.0
+* Tested: With WordPress 5.8.2
+* Tested: With PHP 8.0
+
 # 2.1.1 
 * Changed: Disable clone and cloned shortcodes when OIK_APIKEY is not defined.,https://github.com/bobbingwide/oik-clone/issues/61
 * Tested: With Gutenberg 10.7.1
