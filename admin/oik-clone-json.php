@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2015
+<?php // (C) Copyright Bobbing Wide 2015-2022
 
 /**
  * Validate the API key from the point of view of the oik-clone server
@@ -27,13 +27,18 @@ function oik_clone_oik_validate_apikey( $continue, $passed_api_key ) {
  * @return bool/null - indicator if the API key is valid
  */
 function oik_clone_validate_apikey() {
-  $apikey = bw_array_get( $_REQUEST, "oik_apikey", null );
-  if ( $apikey ) {
-    $apikey = apply_filters( "oik_validate_apikey", null, $apikey );
-  } else { 
-    p( "Missing oik_apikey" );
-  }  
-  return( $apikey );
+    $apikey = bw_array_get( $_REQUEST, "oik_apikey", null );
+    if ( $apikey ) {
+        $apikey = apply_filters( "oik_validate_apikey", null, $apikey );
+		if ( !$apikey ) {
+		    wp_die( "API key mismatch", 401 );
+	    }
+    } else {
+        p( "Missing oik_apikey" );
+	    wp_die( "API key missing", 401 );
+    }
+
+	return( $apikey );
 }
 
 /**

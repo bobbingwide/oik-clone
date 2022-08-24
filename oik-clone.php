@@ -287,8 +287,8 @@ function oik_clone_nopriv_oik_clone_post() {
   if ( $continue ) {
     oik_require( "admin/oik-clone-clone.php", "oik-clone" );
     $target_id = oik_clone_lazy_clone_post();
-  }   
-  oik_clone_reply_with_json( $target_id );
+	oik_clone_reply_with_json( $target_id );
+  }
   bw_backtrace();
   bw_flush();
   exit();
@@ -308,9 +308,7 @@ function oik_clone_nopriv_oik_clone_request_mapping() {
     oik_require( "admin/oik-clone-request-mapping.php", "oik-clone" );
     $mapping = oik_clone_lazy_request_mapping();
     oik_clone_reply_with_json( $mapping );
-  } else {
-		bw_trace2( "Invalid API key" );
-	}	
+  }
 
   bw_backtrace();
   bw_flush();
@@ -329,11 +327,9 @@ function oik_clone_nopriv_oik_clone_pull() {
 	$continue = oik_clone_validate_apikey();
 	if ( $continue ) {
 		oik_require( "admin/oik-clone-pull.php", "oik-clone" );
-		$payload_relationships = oik_clone_lazy_pull();
-	} else {
-		bw_trace2( "Invalid API key" );
+		$payload_relationships=oik_clone_lazy_pull();
+		oik_clone_return_payload_with_json( $payload_relationships );
 	}
-	oik_clone_return_payload_with_json( $payload_relationships );
 	bw_backtrace();
 	bw_flush();
 	exit();
@@ -354,6 +350,7 @@ function oik_clone_nopriv_oik_clone_update_slave_target() {
 		$target_id = oik_clone_lazy_update_slave_target_date();
 	} else {
 		bw_trace2( "Invalid API key" );
+		//p( "API key mismatch");
 	}
 	//oik_clone_re
 	oik_clone_reply_with_json( $target_id );
