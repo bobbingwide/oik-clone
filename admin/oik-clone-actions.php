@@ -260,6 +260,12 @@ function oik_clone_delete_all_post_meta( $target ) {
 
 /**
  * Insert all the post meta data
+ *
+ * Note: add_post_meta() double serializes already serialized data.
+ * IMHO this is as daft as a brush, but since it's been like this for 14 years
+ * it's unlikely to ever be changed. So we have to cater for this feechur by deserializing
+ * any serialized string. Then it'll only be serialized once.
+ * Which is how it was when first created in the source system.
  * 
  * @param object $post - a post object including post_meta data
  * @param ID $target - the post ID of the target post
@@ -271,9 +277,14 @@ function oik_clone_insert_all_post_meta( $post, $target ) {
   unset( $post_meta['_oik_clone_dnc'] );
   bw_trace2( $post_meta, "post_meta", true );
   foreach ( $post_meta as $key=> $meta ) {
-    bw_trace2( $meta, $key, false );
+    //bw_trace2( $meta, $key, false );
     foreach ( $meta as $value ) {
       e( "Adding $key: $value" );
+      bw_trace2( $value, 'value', false, BW_TRACE_VERBOSE );
+      if ( is_serialized( $value )) {
+         $value = unserialize( $value );
+         //bw_trace2( $value, "unserialized", false );
+      }
       add_post_meta( $target, $key, $value );
     }  
   }
