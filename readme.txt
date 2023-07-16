@@ -3,8 +3,8 @@ Contributors: bobbingwide
 Donate link: https://www.oik-plugins.com/oik/oik-donate/
 Tags: clone, compare, update, MultiSite
 Requires at least: 5.5
-Tested up to: 5.8.2
-Stable tag: 2.2.0
+Tested up to: 6.2.2
+Stable tag: 2.3.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: oik-clone
@@ -158,6 +158,9 @@ Other methods will be implemented in future versions.
 8. Clone admin - Slave tab - Master posts to clone
 
 == Upgrade Notice ==
+= 2.3.0 = 
+Upgrade for cloning ACF checkbox and multiple select fields
+
 = 2.2.0 =
 Update for the ability to clone comments attached to posts.
 
@@ -273,6 +276,13 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 == Changelog ==
+= 2.3.0 =
+* Changed: Support serialized post meta data #72
+* Changed: Improve response when API key missing/mismatch #69
+* Fixed: Correct typo in oik_clone_delete_comments #57
+* Tested: With WordPress 6.2.2 and WordPress MultiSite
+* Tested: With PHP 8.0
+
 = 2.2.0 = 
 * Added: Logic to clone simple ( non hierarchical ) comments,[github bobbingwide oik-clone issues 57]
 * Tested: With Gutenberg 11.9.0
