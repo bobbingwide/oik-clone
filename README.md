@@ -164,6 +164,7 @@ Tested with WordPress 6.3
 
 ## Changelog 
 # 2.3.1 
+* Fixed: Avoid Fatal when Settings Advanced tab list is empty #74
 * Tested: With WordPress 6.3 and WordPress MultiSite
 * Tested: With PHP 8.0
 * Tested with PHPUnit 9
