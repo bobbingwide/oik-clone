@@ -1,16 +1,16 @@
-# Copyright (C) 2021 oik-clone
+# Copyright (C) 2023 oik-clone
 # This file is distributed under the same license as the oik-clone package.
 msgid ""
 msgstr ""
-"Project-Id-Version: oik-clone 2.1.1\n"
+"Project-Id-Version: oik-clone 2.3.1\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/oik-clone\n"
-"POT-Creation-Date: 2021-06-05 15:04:21+00:00\n"
+"POT-Creation-Date: 2023-08-12 13:09:38+00:00\n"
 "MIME-Version: 1.0\n"
 "Plural-Forms: nplurals=2; plural=n == 1 ? 0 : 1;\n"
 "Language: bb_BB\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2021-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2023-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 #: admin/class-oik-clone-admin-slave.php:38
@@ -95,7 +95,7 @@ msgid "Import new"
 msgstr "Ipmrot nEw"
 
 #: admin/class-oik-clone-reconcile-batch.php:463
-#: admin/class-oik-clone-reconcile.php:514 admin/oik-clone-actions.php:336
+#: admin/class-oik-clone-reconcile.php:514 admin/oik-clone-actions.php:347
 msgid "oops"
 msgstr "opos"
 
@@ -123,7 +123,7 @@ msgstr "Preofmrnig udptae"
 msgid "Invalid request."
 msgstr "Ivnlaid rqeeust."
 
-#: admin/oik-clone-actions.php:461
+#: admin/oik-clone-actions.php:475
 msgid "Missing attachment file to copy."
 msgstr "Msiisng attcamhnet flie tO cpoy."
 
@@ -135,15 +135,15 @@ msgstr "Pyaolad Is nOt An ojbcet"
 msgid "Missing payload"
 msgstr "Msiisng pyaolad"
 
-#: admin/oik-clone-clone.php:206
+#: admin/oik-clone-clone.php:207
 msgid "That's odd"
 msgstr "Taht's Odd"
 
-#: admin/oik-clone-clone.php:209
+#: admin/oik-clone-clone.php:210
 msgid "Looks like we'll have to create it"
 msgstr "Looks lkie wE'll hvae tO certae It"
 
-#: admin/oik-clone-json.php:34
+#: admin/oik-clone-json.php:37
 msgid "Missing oik_apikey"
 msgstr "Msiisng OIk_aipeky"
 
@@ -281,11 +281,11 @@ msgstr "DO NOt Colne"
 msgid "Clone on update"
 msgstr "Colne On udptae"
 
-#: oik-clone.php:437
+#: oik-clone.php:434
 msgid "Cloned?"
 msgstr "Colend?"
 
-#: oik-clone.php:448
+#: oik-clone.php:445
 msgid "Cloning"
 msgstr "Colinng"
 

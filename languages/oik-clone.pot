@@ -1,14 +1,14 @@
-# Copyright (C) 2021 oik-clone
+# Copyright (C) 2023 oik-clone
 # This file is distributed under the same license as the oik-clone package.
 msgid ""
 msgstr ""
-"Project-Id-Version: oik-clone 2.1.1\n"
+"Project-Id-Version: oik-clone 2.3.1\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/oik-clone\n"
-"POT-Creation-Date: 2021-06-05 15:04:21+00:00\n"
+"POT-Creation-Date: 2023-08-12 13:09:38+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2021-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2023-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 
@@ -95,7 +95,7 @@ msgid "Import new"
 msgstr ""
 
 #: admin/class-oik-clone-reconcile-batch.php:463
-#: admin/class-oik-clone-reconcile.php:514 admin/oik-clone-actions.php:336
+#: admin/class-oik-clone-reconcile.php:514 admin/oik-clone-actions.php:347
 msgid "oops"
 msgstr ""
 
@@ -124,7 +124,7 @@ msgstr ""
 msgid "Invalid request."
 msgstr ""
 
-#: admin/oik-clone-actions.php:461
+#: admin/oik-clone-actions.php:475
 msgid "Missing attachment file to copy."
 msgstr ""
 
@@ -136,15 +136,15 @@ msgstr ""
 msgid "Missing payload"
 msgstr ""
 
-#: admin/oik-clone-clone.php:206
+#: admin/oik-clone-clone.php:207
 msgid "That's odd"
 msgstr ""
 
-#: admin/oik-clone-clone.php:209
+#: admin/oik-clone-clone.php:210
 msgid "Looks like we'll have to create it"
 msgstr ""
 
-#: admin/oik-clone-json.php:34
+#: admin/oik-clone-json.php:37
 msgid "Missing oik_apikey"
 msgstr ""
 
@@ -282,11 +282,11 @@ msgstr ""
 msgid "Clone on update"
 msgstr ""
 
-#: oik-clone.php:437
+#: oik-clone.php:434
 msgid "Cloned?"
 msgstr ""
 
-#: oik-clone.php:448
+#: oik-clone.php:445
 msgid "Cloning"
 msgstr ""
 
