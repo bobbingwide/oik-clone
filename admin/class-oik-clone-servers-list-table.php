@@ -173,7 +173,8 @@ class OIK_Clone_Servers_List_Table extends BW_List_Table {
 	 * 
 	 */
 	function more_items( $servers, $items ) {
-		if ( count( $servers ) ) {
+		//bw_trace2();
+		if ( null !== $servers &&  count( $servers ) ) {
 			foreach ( $servers as $server => $data ) {
 				$data['key'] = $server;
 				$items[] = $data;
