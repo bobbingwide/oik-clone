@@ -1,3 +1,6 @@
+= 2.3.1 = 
+Tested with WordPress 6.3
+
 = 2.3.0 = 
 Upgrade for cloning ACF checkbox and multiple select fields
 
@@ -116,6 +119,12 @@ Prototype for cloning content on Update
 Prototype for WordPress Multi Site cloned sites
 
 == Changelog ==
+= 2.3.1 =
+* Fixed: Avoid Fatal when Settings Advanced tab list is empty #74
+* Tested: With WordPress 6.3 and WordPress MultiSite
+* Tested: With PHP 8.0
+* Tested with PHPUnit 9
+
 = 2.3.0 =
 * Changed: Support serialized post meta data #72
 * Changed: Improve response when API key missing/mismatch #69

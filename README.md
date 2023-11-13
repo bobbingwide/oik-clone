@@ -4,8 +4,8 @@
 * Donate link: https://www.oik-plugins.com/oik/oik-donate/
 * Tags: clone, compare, update, MultiSite
 * Requires at least: 5.5
-* Tested up to: 6.3
-* Stable tag: 2.3.1
+* Tested up to: 6.4.1
+* Stable tag: 2.3.2
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 * Text Domain: oik-clone
@@ -159,15 +159,15 @@ Other methods will be implemented in future versions.
 8. Clone admin - Slave tab - Master posts to clone
 
 ## Upgrade Notice 
-# 2.3.1 
-Tested with WordPress 6.3
+# 2.3.2 
+Tested with PHP 8.1 and PHP 8.2
 
 ## Changelog 
-# 2.3.1 
-* Fixed: Avoid Fatal when Settings Advanced tab list is empty #74
-* Tested: With WordPress 6.3 and WordPress MultiSite
-* Tested: With PHP 8.0
-* Tested with PHPUnit 9
+# 2.3.2 
+* Changed: Support PHP 8.1 and PHP 8.2 #23
+* Tested: With WordPress 6.4.1 and WordPress Multisite
+* Tested: With PHP 8.0, PHP 8.1 and PHP 8.2
+* Tested with PHPUnit 9.6
 
 ## Further reading 
 If you want to read more about the oik plugins then please visit the
