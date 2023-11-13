@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright (C) Copyright Bobbing Wide 2019
+ * @copyright (C) Copyright Bobbing Wide 2019, 2023
  *
  * Manage post relationships in blocks.
  * We need to be able to identify post IDs that have to be mapped to the correct target post ID
@@ -12,6 +12,7 @@ class OIK_clone_block_relationships {
 	private $blocks; /* Parsed content */
 	private $IDs; /* Array of related IDs */
 	private $source_IDs;
+	private $mapping;
 
 	//private $valid_tokens;
 

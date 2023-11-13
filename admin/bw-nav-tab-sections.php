@@ -1,4 +1,4 @@
-<?php // (C) Copright Bobbing Wide 2015
+<?php // (C) Copright Bobbing Wide 2015, 2023
 
 /**
  * Class BW_Nav_Tabs_Sections
@@ -84,7 +84,7 @@ class BW_Nav_Tabs_Sections {
 			}
 			$page = $this->page();
 			$tab = $this->tab();
-			$nav_tab_sections = apply_filters( "bw_nav_tabs_${page}_${tab}", $nav_tab_sections, $page, $tab );
+			$nav_tab_sections = apply_filters( "bw_nav_tabs_{$page}_{$tab}", $nav_tab_sections, $page, $tab );
 			$this->sections = $nav_tab_sections;
 		}
 		return( $this->sections );

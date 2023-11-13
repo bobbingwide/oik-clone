@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2014, 2015, 2019
+<?php // (C) Copyright Bobbing Wide 2014, 2015, 2019, 2023
 
 
 /**
@@ -45,7 +45,7 @@ class OIK_Clone_List_Table extends BW_List_Table {
    * Return the columns to be displayed
    *
    * This function is invoked very early on in the page display. 
-   * It's invoked in response to filter "manage_${screen_id}_columns"
+   * It's invoked in response to filter "manage_{$screen_id}_columns"
    * which is called by 
    * 
    *
@@ -291,7 +291,7 @@ class OIK_Clone_List_Table extends BW_List_Table {
         $flatargs .= "&amp;$key=$value"; 
       }
     }
-    $link = retlink( null, admin_url("admin.php?action=$action${flatargs}"), $action_string ); 
+    $link = retlink( null, admin_url("admin.php?action=$action{$flatargs}"), $action_string ); 
     return( $link );
   }
     

@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2015
+<?php // (C) Copyright Bobbing Wide 2015, 2023
 
 /**
  * Implement the servers list table for oik-clone
@@ -252,7 +252,7 @@ class OIK_Clone_Servers_List_Table extends BW_List_Table {
         $flatargs .= "&amp;$key=$value"; 
       }
     }
-    $link = retlink( null, admin_url("admin.php?action=$action${flatargs}"), $action_string ); 
+    $link = retlink( null, admin_url("admin.php?action=$action{$flatargs}"), $action_string ); 
     return( $link );
   }
 
@@ -439,9 +439,9 @@ class OIK_Clone_Servers_List_Table extends BW_List_Table {
 		// @TODO Messages for invalid fields
 		//$valid = _bw_field_validation_required( $value, $field, $data );
 		if ( $field_type ) {
-			$value = apply_filters( "bw_field_validation_${field_type}", $value, $field, $data ); 
+			$value = apply_filters( "bw_field_validation_{$field_type}", $value, $field, $data ); 
 		}
-		$value = apply_filters( "bw_field_validation_${field}", $value, $field, $data );
+		$value = apply_filters( "bw_field_validation_{$field}", $value, $field, $data );
 		$this->validated_fields[ $field ] = $value;
 		
 	}
@@ -655,7 +655,7 @@ class OIK_Clone_Servers_List_Table extends BW_List_Table {
 		$submit_action = $this->validate_submit_action();
 		if ( $submit_action ) {
 			//p( "Performing action: $submit_action" );
-			$method = "perform_submit_action_${submit_action}";
+			$method = "perform_submit_action_{$submit_action}";
 			if ( method_exists( $this, $method ) ) {
 				$this->$method();
 			} else {

@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2014
+<?php // (C) Copyright Bobbing Wide 2014, 2023
 
 
 /**
@@ -144,20 +144,3 @@ function oik_clone_perform_actions_self() {
 
 
 }
-
-
-/**
- * Create an "Import new" or "Add new" link for the selected post
- * 
- * When the user chooses this link a new post is created.
- * We have to decide how we'll decide the post type for it.
- * 
- *
- */
-function oik_clone_add_new_link( $post ) {
- gobang();
-  $ID = $post['ID'];
-  $links = retlink( null, admin_url("admin.php?page=oik_clone&amp;action=import&amp;source=$ID&amp;tab=self"), "Import new" ); 
-  return( $links );
-}
-

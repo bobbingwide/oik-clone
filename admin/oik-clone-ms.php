@@ -1,4 +1,4 @@
-<?php // (C) Copyright Bobbing Wide 2014, 2019
+<?php // (C) Copyright Bobbing Wide 2014, 2019, 2023
 
 /**
  * Handle the MS tab for oik-clone
@@ -336,12 +336,15 @@ function oik_clone_ms_source() {
  * We have to decide how we'll decide the post type for it.
  *
  */
-function oik_clone_add_new_link( $post ) {
-  bw_trace2( $post );
-  
-  $ID = $post['ID'];
-  $blog_id = oik_clone_ms_source();
-  $links = retlink( null, admin_url("admin.php?page=oik_clone&amp;tab=ms&amp;action=import&amp;source=$ID&amp;_oik_ms_source=$blog_id"), "Import new" ); 
-  return( $links );
+if ( !function_exists( 'oik_clone_add_new_link') ) {
+	function oik_clone_add_new_link( $post ) {
+		bw_trace2( $post );
+
+		$ID     =$post['ID'];
+		$blog_id=oik_clone_ms_source();
+		$links  =retlink( null, admin_url( "admin.php?page=oik_clone&amp;tab=ms&amp;action=import&amp;source=$ID&amp;_oik_ms_source=$blog_id" ), "Import new" );
+
+		return ( $links );
+	}
 }
 
